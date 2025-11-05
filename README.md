@@ -38,7 +38,7 @@ CRUD(Create, Read, Update, Delete) 기능을 직접 경험하게 됩니다.
     - Modal
     - Option
     - Text_Field
-    - main
+    - main (건들지 말것 X)
 
 ---
 
