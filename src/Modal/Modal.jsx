@@ -1,8 +1,119 @@
 import React from 'react'
+import Badge from '../Badge/Badge'
 
-function Modal() {
+/**
+ * Modal 컴포넌트
+ * @param {boolean} isOpen - 모달 열림/닫힘 상태
+ * @param {function} onClose - 모달 닫기 함수
+ * @param {string} profileImage - 프로필 이미지 URL
+ * @param {string} senderName - 보낸 사람 이름
+ * @param {string} relationship - 관계 타입 (coworker, other, family, friend)
+ * @param {string} date - 날짜
+ * @param {string} content - 모달 내용 텍스트
+ * @param {string} buttonText - 버튼 텍스트 (기본값: "확인")
+ * @param {function} onButtonClick - 버튼 클릭 핸들러
+ */
+function Modal({ 
+  isOpen = false, 
+  onClose,
+  profileImage,
+  senderName = '김동훈',
+  relationship = 'coworker',
+  date = '2023.07.08',
+  content = '',
+  buttonText = '확인',
+  onButtonClick
+}) {
+  if (!isOpen) return null
+
+  const handleBackdropClick = (e) => {
+    if (e.target === e.currentTarget) {
+      onClose?.()
+    }
+  }
+
+  const handleButtonClick = () => {
+    onButtonClick?.() || onClose?.()
+  }
+
   return (
-    <></>
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+      onClick={handleBackdropClick}
+    >
+      <div className="relative w-[600px] h-[476px] bg-white rounded-2xl shadow-[0px_2px_12px_rgba(0,0,0,0.08)]">
+        {/* 헤더 영역 */}
+        <div className="relative w-full h-[116px] border-b border-gray-200">
+          <div className="absolute left-[39px] top-[40px] flex flex-row items-center gap-4">
+            {/* 프로필 이미지 */}
+            <div className="w-14 h-14 bg-white border border-gray-200 rounded-full overflow-hidden flex-shrink-0">
+              {profileImage ? (
+                <img 
+                  src={profileImage} 
+                  alt={senderName}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-gray-100" />
+              )}
+            </div>
+
+            {/* 이름과 배지 */}
+            <div className="flex flex-col items-start gap-1.5">
+              <div className="flex flex-row items-start gap-1.5 h-6">
+                <span className="text-[20px] leading-6 font-normal text-black">From.</span>
+                <span className="text-[20px] leading-6 font-bold text-black">{senderName}</span>
+              </div>
+              <Badge type={relationship} />
+            </div>
+          </div>
+
+          {/* 날짜 */}
+          <div className="absolute right-[39px] top-[56px]">
+            <span className="text-[14px] leading-5 font-normal tracking-[-0.005em] text-gray-400">
+              {date}
+            </span>
+          </div>
+        </div>
+
+        {/* 내용 영역 */}
+        <div className="absolute left-10 top-[116px] w-[520px] h-[256px]">
+          <div className="relative w-full h-full overflow-y-auto pr-5">
+            {/* 스크롤바 스타일링 */}
+            <style jsx>{`
+              div::-webkit-scrollbar {
+                width: 20px;
+              }
+              div::-webkit-scrollbar-track {
+                background: transparent;
+              }
+              div::-webkit-scrollbar-thumb {
+                width: 4px;
+                background: #CCCCCC;
+                border-radius: 8px;
+                margin: 0 auto;
+              }
+            `}</style>
+            
+            <p className="text-[18px] leading-[28px] font-normal tracking-[-0.01em] text-[#5A5A5A] w-[500px] pt-4">
+              {content || '코로나가 또다시 기승을 부리는 요즘이네요. 건강, 체력 모두 조심 또 하세요!'}
+            </p>
+          </div>
+        </div>
+
+        {/* 버튼 */}
+        <div className="absolute left-[240px] bottom-5">
+          <button
+            onClick={handleButtonClick}
+            className="flex flex-row justify-center items-center px-4 py-1.5 w-[120px] h-10 bg-purple-600 rounded-md hover:bg-purple-700 transition-colors"
+          >
+            <span className="text-[16px] leading-[26px] font-normal text-white text-center tracking-[-0.01em]">
+              {buttonText}
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
   )
 }
 
