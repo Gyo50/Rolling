@@ -1,24 +1,11 @@
-import logo from './logo.svg';
 import './App.css';
+import CardList from './Card_list/Card_list.jsx';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p className="text-blue-500">
-          4팀 화이팅!!
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React or TailwindCSS
-        </a>
-      </header>
-    </div>
+    <>
+      <CardList />
+    </>
   );
 }
 
