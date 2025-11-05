@@ -30,12 +30,13 @@ CRUD(Create, Read, Update, Delete) 기능을 직접 경험하게 됩니다.
 
 ## 💡 협업 규칙
 - branch : 이름
-    - Badge
+    - Badge: 진아름
     - Button
     - Card
     - Card_list
     - Header
-    - Modal
+    - Modal: 진아름
+    - Toast: 진아름
     - Option
     - Text_Field
     - main (건들지 말것 X)
