@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import logo from './logo.svg';
 import './App.css';
 import Modal from './Modal/Modal';
 
@@ -6,16 +7,35 @@ function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-surface p-8">
-      <div className="max-w-6xl mx-auto space-y-8">
-        <h1 className="text-28 font-bold text-black mb-8">Modal 컴포넌트 테스트</h1>
-
+    <div className="App">
+      <header className="App-header">
+        <img src={logo} className="App-logo" alt="logo" />
+        <p className="text-blue-500">
+          4팀 화이팅!!
+        </p>
+        <a
+          className="App-link"
+          href="https://reactjs.org"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Learn React or TailwindCSS
+        </a>
+        
         {/* Modal 컴포넌트 테스트 */}
-        <section className="bg-white p-6 rounded-lg shadow-sm">
-          <h2 className="text-24-bold mb-4">Modal 컴포넌트</h2>
+        <div style={{ marginTop: '40px', padding: '20px', backgroundColor: '#f0f0f0', borderRadius: '8px' }}>
+          <h2 style={{ color: '#000', marginBottom: '20px' }}>Modal 컴포넌트</h2>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700"
+            style={{
+              padding: '8px 16px',
+              backgroundColor: '#9935FF',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              fontSize: '16px'
+            }}
           >
             모달 열기
           </button>
@@ -28,8 +48,8 @@ function App() {
             content="코로나가 또다시 기승을 부리는 요즘이네요. 건강, 체력 모두 조심 또 하세요! 코로나가 또다시 기승을 부리는 요즘이네요. 건강, 체력 모두 조심 또 하세요!코로나가 또다시 기승을 부리는 요즘이네요. 건강, 체력 모두 조심 또 하세요!코로나가 또다시 기승을 부리는 요즘이네요. 건강, 체력 모두 조심 또 하세요!코로나가 또다시 기승을 부리는 요즘이네요. 건강, 체력 모두 조심 또 하세요!코로나가 또다시 기승을 부리는 요즘이네요. 건강, 체력 모두 조심 또 하세요!"
             buttonText="확인"
           />
-        </section>
-      </div>
+        </div>
+      </header>
     </div>
   );
 }
