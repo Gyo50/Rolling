@@ -31,7 +31,7 @@ function Option() {
         <div 
           key={box.id}
           // 클래스 이름을 동적으로 변경하기 위해 백틱으로 감싸는 템플릿 리터럴 문법
-          className={`w-[120px] h-[120px] ${box.color} rounded-xl cursor-pointer flex items-center justify-center transition-all duration-200`}
+          className={`w-[120px] h-[120px] ${box.color} rounded-xl cursor-pointer flex items-center justify-center`}
           onClick={() => handleBoxClick(box.id)}
         >
           {/* 박스 클릭 시 체크 아이콘이 뜨도록 */}
