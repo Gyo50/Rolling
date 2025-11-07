@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 
 /**
  * Toast 컴포넌트
@@ -19,6 +19,13 @@ function Toast({
 }) {
   const [visible, setVisible] = useState(isOpen)
 
+  const handleClose = useCallback(() => {
+    setVisible(false)
+    setTimeout(() => {
+      onClose?.()
+    }, 300) // 애니메이션 시간
+  }, [onClose])
+
   useEffect(() => {
     setVisible(isOpen)
   }, [isOpen])
@@ -31,14 +38,7 @@ function Toast({
 
       return () => clearTimeout(timer)
     }
-  }, [visible, duration])
-
-  const handleClose = () => {
-    setVisible(false)
-    setTimeout(() => {
-      onClose?.()
-    }, 300) // 애니메이션 시간
-  }
+  }, [visible, duration, handleClose])
 
   if (!visible) return null
 
