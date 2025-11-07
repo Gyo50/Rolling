@@ -21,7 +21,6 @@ export default function Froala() {
     quickInsertTags: [],
     charCounterCount: false,
     attribution: false,
-    language: "ko",
     pluginsEnabled: ["align", "lists", "fontSize", "colors", "table"],
     toolbarButtons: {
       moreText: {

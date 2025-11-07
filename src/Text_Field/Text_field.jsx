@@ -6,9 +6,15 @@ import Froala from "./Froala";
 function Text_field() {
   return (
     <>
-      <Input />
-      <Froala />
-      <SelectBox />
+      <div style={{ marginBottom: "50px" }}>
+        <Input />
+      </div>
+      <div style={{ marginBottom: "50px" }}>
+        <Froala />
+      </div>
+      <div>
+        <SelectBox />
+      </div>
     </>
   );
 }
