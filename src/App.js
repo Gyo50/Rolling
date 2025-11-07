@@ -1,11 +1,10 @@
-import logo from './logo.svg';
 import './App.css';
-import Header from './Header/Header.jsx'
+import MessageHeader from './Header/MessageHeader.jsx';
 
 function App() {
   return (
     <>
-      <Header />
+      <MessageHeader />
     </>
 
   );
