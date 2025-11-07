@@ -1,6 +1,6 @@
 import React from 'react'
 
-function Primary_Pc() {
+function PrimaryPc() {
   return (
     <>
       <div>
@@ -14,4 +14,4 @@ function Primary_Pc() {
   )
 }
 
-export default Primary_Pc
+export default PrimaryPc

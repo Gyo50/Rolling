@@ -1,6 +1,6 @@
 import React from 'react'
 
-function Primary() {
+function primaryMobile() {
   return (
     <>
       <div>
@@ -14,4 +14,4 @@ function Primary() {
   )
 }
 
-export default Primary
+export default primaryMobile

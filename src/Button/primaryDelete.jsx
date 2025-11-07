@@ -1,6 +1,6 @@
 import React from 'react'
 
-function Primary_Delete() {
+function PrimaryDelete() {
   return (
     <>
       <div>
@@ -14,4 +14,4 @@ function Primary_Delete() {
   )
 }
 
-export default Primary_Delete
+export default PrimaryDelete

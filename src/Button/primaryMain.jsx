@@ -1,6 +1,6 @@
 import React from 'react'
 
-function Primary_Main() {
+function PrimaryMain() {
   return (
     <>
       <div>
@@ -14,4 +14,4 @@ function Primary_Main() {
   )
 }
 
-export default Primary_Main
+export default PrimaryMain

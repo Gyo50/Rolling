@@ -1,7 +1,7 @@
 import React from 'react'
 import plus from '../img/plus.png';
 
-function Circle_button() {
+function Circlebutton() {
   return (
     <>
       <div className="w-[56px] h-[56px] inline-block bg-gray-500 rounded-full 
@@ -15,4 +15,4 @@ function Circle_button() {
   )
 }
 
-export default Circle_button
+export default Circlebutton
