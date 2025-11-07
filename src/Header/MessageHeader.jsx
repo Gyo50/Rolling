@@ -82,7 +82,7 @@ function MessageHeader() {
             </button>
           </div>
 
-          {/* ✅ 네가 작성한 드롭다운 이모지 메뉴 그대로 유지 */}
+          {/* 이모지메뉴 */}
           {showEmojiMenu && (
             <div className="absolute right-5 mt- w-80 bg-white rounded-xl shadow-lg p-[24px] grid grid-cols-4 gap-2 justify-items-center">
               {/* 1행 */}
