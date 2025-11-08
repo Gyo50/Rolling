@@ -1,9 +1,10 @@
 import React from 'react'
 
-function Card_list() {
+function CardList() {
   return (
-    <></>
+    <>
+    </>
   )
 }
 
-export default Card_list
+export default CardList
