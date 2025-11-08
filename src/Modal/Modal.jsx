@@ -13,6 +13,8 @@ import Badge from '../Badge/Badge'
  * @param {string} buttonText - 버튼 텍스트 (기본값: "확인")
  * @param {function} onButtonClick - 버튼 클릭 핸들러
  */
+const MODAL_DATA_API_URL = 'https://placeholder.example.com/api/modal'
+
 function Modal({ 
   isOpen = false, 
   onClose,
@@ -22,7 +24,8 @@ function Modal({
   date = '2023.07.08',
   content = '',
   buttonText = '확인',
-  onButtonClick
+  onButtonClick,
+  apiUrl = MODAL_DATA_API_URL
 }) {
   if (!isOpen) return null
 
@@ -35,6 +38,9 @@ function Modal({
   const handleButtonClick = () => {
     onButtonClick?.() || onClose?.()
   }
+
+  // 현재 apiUrl은 더미 링크입니다. 실제 서비스에서는 상위 컴포넌트에서 fetch(apiUrl) 등을 통해
+  // senderName, relationship, date, content, profileImage 값을 받아 props로 내려주면 됩니다.
 
   return (
     <div 
@@ -78,25 +84,33 @@ function Modal({
 
         {/* 내용 영역 */}
         <div className="absolute left-10 top-[116px] w-[520px] h-[256px]">
-          <div className="relative w-full h-full overflow-y-auto pr-5">
+          <div className="relative w-full h-full overflow-y-auto overflow-x-hidden pr-5">
             {/* 스크롤바 스타일링 */}
             <style jsx>{`
               div::-webkit-scrollbar {
-                width: 20px;
+                width: 4px;
               }
               div::-webkit-scrollbar-track {
                 background: transparent;
               }
               div::-webkit-scrollbar-thumb {
-                width: 4px;
                 background: #CCCCCC;
                 border-radius: 8px;
-                margin: 0 auto;
               }
             `}</style>
             
-            <p className="text-[18px] leading-[28px] font-normal tracking-[-0.01em] text-[#5A5A5A] w-[500px] pt-4">
-              {content || '코로나가 또다시 기승을 부리는 요즘이네요. 건강, 체력 모두 조심 또 하세요!'}
+            <p className="text-[18px] leading-[28px] font-normal tracking-[-0.01em] text-[#5A5A5A] w-[500px] pt-4 whitespace-pre-line">
+              {content || `⭐ 스프린트의 최종 목표 ⭐
+
+🧑‍🤝‍🧑 좋은 동료를 얻어가며 함께 성장하기
+🏆 최선의 팀 프로젝트 결과물 완성하기
+🌞 매일 조금씩 성장하는 개발자 되기
+🧑🏻‍💻 협업 잘 하는 개발자로 성장하기
+🧘 포기하지 않고 끝까지 완주하기
+
+모달 스크롤 기능을 확인하기 위한 문장도 이어집니다. 코로나가 또다시 기승을 부리는 요즘이네요. 건강, 체력 모두 조심 또 하세요! 코로나가 또다시 기승을 부리는 요즘이네요. 건강, 체력 모두 조심 또 하세요!
+
+마지막으로 한 번 더 반복합니다. 코로나가 또다시 기승을 부리는 요즘이네요. 건강, 체력 모두 조심 또 하세요! 코로나가 또다시 기승을 부리는 요즘이네요. 건강, 체력 모두 조심 또 하세요!`}
             </p>
           </div>
         </div>
