@@ -1,0 +1,84 @@
+.card {
+    width: 384px;
+    height: 280px;
+    border-radius: 16px;
+    padding: 28px 24px 24px 24px;
+    box-shadow: 0 2px 13px 0 rgba(0,0,0,0.08);
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.cardContent { 
+    display: flex;
+    gap: 14px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(238, 238, 238, 1);
+}
+
+.userInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-left: 10px;
+}   
+.profileImg {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+}
+
+
+.fromName {
+    font-size: 20px;
+    color: #666666;
+}
+
+.fromName span {
+    font-size: 20px;
+    font-weight: bold;
+    color: black
+}
+
+.relationTag {
+    width: 41px;
+    height: 20px;
+    font-size: 14px;
+    color: #9935FF;
+    border-radius: 5px;
+    background-color: #F8F0FF;
+    padding: 0 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.deleteIcon {
+    position: absolute;
+    top: 28px;
+    right: 32px;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    border-radius: 6px;
+    border: 1px solid #CCCCCC;
+    padding: 8px;
+}
+
+.messageContent {
+    width: 336px;
+    height: 106px;
+    font-size: 18px;
+    line-height: 1.5;
+    margin-top: 16px;
+    color: #4A4A4A;
+}
+
+.writtenDate {
+    font-size: 12px;
+    color: #999999;
+    position: absolute;
+    bottom: 24px;
+    left: 24px;
+}
