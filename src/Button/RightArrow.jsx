@@ -1,6 +1,7 @@
 import React from 'react'
 import Right_arrow from '../img/arrow_right.png';  
 
+
 function Rightarrow() {
   return (
     <>

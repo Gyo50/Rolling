@@ -1,6 +1,7 @@
 import React from 'react'
 import deleted from '../img/deleted.png';
 
+
 function DeleteButton() {
   return (
     <>
