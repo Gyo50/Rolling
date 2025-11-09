@@ -1,5 +1,5 @@
 import React from 'react';
-import UserAvatar from './img/User.svg';
+import UserAvatar from '../img/User.svg';
 
 function User() {
   return (

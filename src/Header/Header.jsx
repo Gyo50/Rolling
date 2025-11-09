@@ -1,10 +1,10 @@
 import React from 'react';
-import RollingIcon from './img/logo.svg';
+import RollingIcon from '../img/logo.svg';
 
 function Header() {
   return (
     <>
-      <header className='bg-white sticky top-0 z-50 w-[1119px] h-[64px]'>
+      <header className='bg-white sticky top-0 z-50 max-w-[1119px] h-[64px]'>
         <div className="w-full h-full flex items-center justify-between">
           {/* Rolling 로고 영역 */}
           <div className='flex items-center justify-center justify-items-center z-60 w-[106.82px] h-[30px]'>

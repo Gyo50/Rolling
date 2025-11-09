@@ -1,5 +1,5 @@
 import React from 'react'
-import addIcon from './assets/addButton.svg';
+import Circlebutton from "../Button/Circle-button"
 
 // 카드 추가 컴포넌트
 function AddCard() {
@@ -15,14 +15,14 @@ function AddCard() {
           flex justify-center items-center
         "
       >
-        <button
+        <div
           className="
             w-[56px] h-[56px]
             flex justify-center items-center
           "
-        >
-          <img src={addIcon} alt='추가' />
-        </button>
+          >
+          <Circlebutton/>
+        </div>
       </div>
     </>
   )

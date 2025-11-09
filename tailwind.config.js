@@ -47,7 +47,7 @@ module.exports = {
           800: '#2B2B2B',
           900: '#181818',
         },
-        white:'#fffff',
+        white:'#ffffff',
         black:'#000000',
         error: '#DC3A3A',
         surface: '#F6F8FF',

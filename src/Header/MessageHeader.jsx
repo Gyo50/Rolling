@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import sharingIcon from "./img/sharing.svg";
-import { ReactComponent as PlusIcon } from "./img/plus.svg";
-import { ReactComponent as ArrowIcon } from "./img/Arrow.svg";
+import sharingIcon from "../img/share-24.svg";
+import { ReactComponent as PlusIcon } from "../img/add-24.svg";
+import { ReactComponent as ArrowIcon } from "../img/arrow_down.svg";
 
 function MessageHeader() {
   const [showEmojiMenu, setShowEmojiMenu] = useState(false);
@@ -85,7 +85,7 @@ function MessageHeader() {
               {/* 화살표 버튼 */}
               <button onClick={toggleEmojiMenu} className="mx-2 transition">
                 <ArrowIcon
-                  className={`w-[12px] h-[6.46px] transition-transform duration-200 ${
+                  className={`transition-transform duration-200 ${
                     showEmojiMenu ? "rotate-180" : "rotate-0"
                   }`}
                 />
@@ -128,7 +128,7 @@ function MessageHeader() {
 
           {/* 추가 버튼 */}
           <button className="flex items-center justify-center gap-1 border border-gray-300 text-gray-900 rounded-md bg-white w-[88px] h-[36px]">
-            <PlusIcon className="w-[20.14px] h-[20.14px]" />
+            <PlusIcon className="" />
             추가
           </button>
 
@@ -146,7 +146,6 @@ function MessageHeader() {
               <img
                 src={sharingIcon}
                 alt="공유"
-                className="w-[19.2px] h-[21.45px]"
               />
             </button>
 

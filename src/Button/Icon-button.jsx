@@ -1,5 +1,5 @@
 import React from 'react'
-import Emoji from '../img/add-24.png';
+import Emoji from '../img/add-24.svg';
 
 
 function IconButton() {

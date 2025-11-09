@@ -1,5 +1,5 @@
-import React from 'react'
-import deleteIcon from './assets/deleted.svg'
+import React from "react";
+import DeleteButton from "../Button/Delete-button";
 
 // 카드 컴포넌트
 function Card() {
@@ -18,47 +18,37 @@ function Card() {
       >
         <div
           className="
-            flex gap-[14px]
+            flex justify-between
             pb-4
             border-b border-[rgba(238,238,238,1)]
           "
         >
-          <img
-            className="w-14 h-14 rounded-full"
-            src="https://entertainimg.kbsmedia.co.kr/cms/uploads/PERSON_20220112081105_4217f0cc8e5e82a908647d8e1de448a5.jpg"
-            alt="프로필 이미지"
-          />
+          <div className="flex flex-wrap">
+            <img
+              className="w-14 h-14 rounded-full"
+              src="https://entertainimg.kbsmedia.co.kr/cms/uploads/PERSON_20220112081105_4217f0cc8e5e82a908647d8e1de448a5.jpg"
+              alt="프로필 이미지"
+            />
 
-          <div className="flex flex-col gap-[5px] ml-[10px]">
-            <div className="text-20-regular text-black">
-              From. <span className="text-20-bold text-black">남주혁</span>
-            </div>
+            <div className="flex flex-col gap-[5px] pl-[10px]">
+              <div className="text-20-regular text-black">
+                From.&nbsp;<span className="text-20-bold text-black">남주혁</span>
+              </div>
 
-            <div
-              className="
+              <div
+                className="
                 w-[41px] h-5
                 text-[14px] text-purple-600
                 rounded-[5px] bg-purple-100
                 px-[5px]
                 flex items-center justify-center
               "
-            >
-              동료
+              >
+                동료
+              </div>
             </div>
           </div>
-
-          <img
-            className="
-              absolute top-[28px] right-8
-              cursor-pointer
-              w-10 h-10
-              rounded-[6px]
-              border border-grayscale-300
-              p-2
-            "
-            src={deleteIcon}
-            alt="삭제 아이콘"
-          />
+          <DeleteButton />
         </div>
 
         <div
@@ -82,7 +72,7 @@ function Card() {
         </div>
       </div>
     </>
-  )
+  );
 }
 
-export default Card
+export default Card;

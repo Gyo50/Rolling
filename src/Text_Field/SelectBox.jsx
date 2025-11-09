@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import dropDownIcon from "./asset/ico_arr_dropdown.svg";
-import dropDownOpenIcon from "./asset/ico_arr_dropdown_active.svg";
+import dropDownIcon from "../img/arrow_down.svg";
+import dropDownOpenIcon from "../img/arrow_top.svg";
 
 export default function SelectBox() {
   const [isOpen, setIsOpen] = useState(false);
@@ -45,7 +45,7 @@ export default function SelectBox() {
 
   return (
     <>
-      <div className="relative" ref={selectBoxRef}>
+      <div className="relative z-30" ref={selectBoxRef}>
         <button
           onClick={handleToggle}
           style={{ backgroundImage: isOpen ? `url(${dropDownOpenIcon})` : `url(${dropDownIcon})` }}
@@ -57,7 +57,7 @@ export default function SelectBox() {
           {selectedValue || "Placeholder"}
         </button>
         {isOpen && (
-          <ul className="absolute top-[calc(100%+8px)] border border-grayscale-300 rounded-[8px] py-[10px] shadow-[0_2px_12px_rgba(0,0,0,0.08)]">
+          <ul className="bg-white absolute top-[calc(100%+8px)] border border-grayscale-300 rounded-[8px] py-[10px] shadow-[0_2px_12px_rgba(0,0,0,0.08)]">
             {["text1", "text2", "text3"].map((text) => (
               <li
                 key={text}

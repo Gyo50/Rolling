@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import sharingIcon from "./img/sharing.svg";
-import { ReactComponent as PlusIcon } from "./img/plus.svg";
-import { ReactComponent as ArrowIcon } from "./img/Arrow.svg";
+import sharingIcon from "../img/share-24.svg";
+import { ReactComponent as PlusIcon } from "../img/add-24.svg";
+import { ReactComponent as ArrowIcon } from "../img/arrow_down.svg";
 
 function MobileHeader() {
   const [showEmojiMenu, setShowEmojiMenu] = useState(false);

@@ -1,5 +1,6 @@
 import React from 'react'
 import Badge from '../Badge/Badge'
+import Modalbtn from "../Button/Modal-button"
 
 // TODO: 실제 API 연동 시 아래 URL을 서버에서 제공하는 Endpoint로 교체하세요.
 export const MODAL_DATA_API_URL = 'https://placeholder.example.com/api/modal'
@@ -24,7 +25,6 @@ function Modal({
   relationship = 'coworker',
   date = '2023.07.08',
   content = '',
-  buttonText = '확인',
   onButtonClick,
   apiUrl = MODAL_DATA_API_URL
 }) {
@@ -107,14 +107,7 @@ function Modal({
 
         {/* 버튼 */}
         <div className="absolute left-[240px] bottom-5">
-          <button
-            onClick={handleButtonClick}
-            className="flex flex-row justify-center items-center px-4 py-1.5 w-[120px] h-10 bg-purple-600 rounded-md hover:bg-purple-700 transition-colors"
-          >
-            <span className="text-[16px] leading-[26px] font-normal text-white text-center tracking-[-0.01em]">
-              {buttonText}
-            </span>
-          </button>
+          <Modalbtn onClick={handleButtonClick}/>
         </div>
       </div>
     </div>
