@@ -74,7 +74,7 @@ function CardList2() {
               text-white
             "
           >
-            👍 20
+            👍&nbsp;20
           </div>
           <div
             className="
@@ -85,7 +85,7 @@ function CardList2() {
               text-white
             "
           >
-            😍 12
+            😍&nbsp;12
           </div>
           <div
             className="
@@ -96,7 +96,7 @@ function CardList2() {
               text-white
             "
           >
-            😢 7
+            😢&nbsp;7
           </div>
         </div>
       </div>
