@@ -1,4 +1,5 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Header from '../Header/Header'
 import CardList from '../CardList/CardList'
 import PrimaryMain from '../Button/Primary-main'
@@ -13,6 +14,24 @@ const CARD_GAP = 20
 
 const POPULAR_CARDS = Array.from({ length: 12 }, (_, index) => ({ id: index }))
 const RECENT_CARDS = Array.from({ length: 12 }, (_, index) => ({ id: index + 100 }))
+
+function NavigableCard({ cardId }) {
+  const navigate = useNavigate()
+
+  const handleNavigate = useCallback(() => {
+    if (cardId === undefined || cardId === null) return
+    navigate(`/post/${cardId}`)
+  }, [cardId, navigate])
+
+  return (
+    <div
+      onClick={handleNavigate}
+      className="cursor-pointer"
+    >
+      <CardList />
+    </div>
+  )
+}
 
 function PlaceholderCard({ index }) {
   return (
@@ -70,7 +89,7 @@ function RollingSwiper({ cards, sliderKey }) {
           card.placeholder ? (
             <PlaceholderCard key={`${sliderKey}-${card.id}`} index={index} />
           ) : (
-            <CardList key={`${sliderKey}-${card.id}`} />
+            <NavigableCard key={`${sliderKey}-${card.id}`} cardId={card.id} />
           )
         )}
       </div>
@@ -110,7 +129,7 @@ function RollingSwiper({ cards, sliderKey }) {
       >
         {displayCards.map((card, index) => (
           <SwiperSlide key={`${sliderKey}-${card.id}`} className="!w-[275px] flex justify-center">
-            {card.placeholder ? <PlaceholderCard index={index} /> : <CardList />}
+            {card.placeholder ? <PlaceholderCard index={index} /> : <NavigableCard cardId={card.id} />}
           </SwiperSlide>
         ))}
       </Swiper>
@@ -163,6 +182,7 @@ function ListPage() {
           <PrimaryMain
             className="mt-6 shadow-[0_4px_10px_rgba(153,53,255,0.2)]"
             text="나도 만들어보기"
+            to="/post"
           />
         </div>
       </main>
