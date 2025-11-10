@@ -43,3 +43,5 @@ function CreatePostPage() {
 }
 
 export default CreatePostPage;
+
+// 만들면서 느낀 개선점: 헤더 부분 반응형으로 만들어야할 듯?
