@@ -15,7 +15,7 @@ import FroalaEditorComponent from "react-froala-wysiwyg";
 
 export default function Froala() {
   const config = {
-    width: 800,
+    width: 720,
     height: 200,
     placeholderText: "내용을 입력하세요...",
     quickInsertTags: [],
