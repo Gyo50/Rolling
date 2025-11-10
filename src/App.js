@@ -1,10 +1,15 @@
 import "./App.css";
-import Messagepage from "./MessagePage/MessagePage"
+import MessageHeader from "./Header/MessageHeader"
+import Header from "./Header/Header"
+import MobileHeader from "./Header/MobileHeader";
+
 
 function App() {
   return (
     <>
-      <Messagepage/>
+    <Header/>
+    <MessageHeader/>
+    <MobileHeader/>
     </>
   );
 }
