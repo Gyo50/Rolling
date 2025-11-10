@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Check from './img/Check.svg'; 
+import Check from '../img/Check.svg'; 
 
 const CheckIcon = () => (
   // 체크 표시
@@ -28,13 +28,13 @@ function Option() {
 
   return (
     // 전체 컨테이너
-    <div className="flex p-4 gap-[16px]">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full flex justify-center items-center">
       
       {boxData.map((box) => (
         <div 
           key={box.id}
           // 클래스 이름을 동적으로 변경하기 위해 백틱으로 감싸는 템플릿 리터럴 문법
-          className={`w-[120px] h-[120px] ${box.color} rounded-xl cursor-pointer flex items-center justify-center transition-all duration-200`}
+          className={`w-[154px] md:w-[168px] h-[154px] md:h-[168px] ${box.color} rounded-xl cursor-pointer flex items-center justify-center transition-all duration-200`}
           onClick={() => handleBoxClick(box.id)}
         >
           {/* 박스 클릭 시 체크 아이콘이 뜨도록 */}
