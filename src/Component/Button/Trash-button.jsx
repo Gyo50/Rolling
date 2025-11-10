@@ -1,5 +1,5 @@
 import React from 'react'
-import deleted from '../img/deleted.svg';
+import deleted from '../../img/deleted.svg';
 
 
 function Trashbutton() {

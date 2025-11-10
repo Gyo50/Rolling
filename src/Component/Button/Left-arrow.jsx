@@ -1,5 +1,5 @@
 import React from 'react'
-import Leftarrow from '../img/arrow_left.svg';
+import Leftarrow from '../../img/arrow_left.svg';
 
 
 function LeftArrow() {

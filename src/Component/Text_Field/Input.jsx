@@ -20,13 +20,8 @@ export default function Input({text="이름을 입력해주세요."}) {
         onChange={handleChange}
         onBlur={handleBlurValidation}
         type="text"
-<<<<<<< HEAD
-        placeholder="받는 사람 이름을 입력해 주세요."
-        className={`max-[360px] w-[720px] max-w-full px-[16px] h-[50px] border text-grayscale-900 rounded-[8px] ${
-=======
         placeholder={text}
         className={`max-[360px]:w-[320px] w-[720px] max-w-full px-[16px] h-[50px] border  text-grayscale-900 rounded-[8px] ${
->>>>>>> messagepage
           error ? "border-error" : "border-grayscale-300"
         }`}
       />

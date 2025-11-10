@@ -1,5 +1,5 @@
 import React from 'react';
-import '../index.css';
+import '../../index.css';
 import profile01 from './assets/profile01.svg';
 import profile02 from './assets/profile02.svg';
 import profile03 from './assets/profile03.svg';

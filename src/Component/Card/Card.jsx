@@ -1,5 +1,5 @@
 import React from "react";
-import DeleteButton from "../Button/Delete-button";
+import DeleteButton from "../Component/Button/Delete-button";
 
 // 카드 컴포넌트
 function Card() {

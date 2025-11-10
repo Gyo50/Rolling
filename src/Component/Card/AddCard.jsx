@@ -1,5 +1,5 @@
 import React from 'react'
-import Circlebutton from "../Button/Circle-button"
+import Circlebutton from "../Component/Button/Circle-button"
 
 // 카드 추가 컴포넌트
 function AddCard() {

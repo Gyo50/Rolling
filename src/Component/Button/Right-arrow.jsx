@@ -1,5 +1,5 @@
 import React from 'react'
-import Right_arrow from '../img/arrow_right.svg';  
+import Right_arrow from '../../img/arrow_right.svg';  
 
 
 function Rightarrow() {
