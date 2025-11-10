@@ -22,11 +22,7 @@ function MobileHeader() {
       // 드롭다운이 열려있을 때 적용
       ${showShareMenu ? "border-gray-500" : "bg-white hover:bg-gray-100"} 
     `;
-  const shareButtonClasses = `
-      flex items-center justify-center 
-      border border-gray-300 w-[36px] h-[32px] rounded-md 
-      ${showShareMenu ? "border-gray-500" : "bg-white hover:bg-gray-100"}
-      `;
+
   return (
     <>
       {/* 수신자 헤더 */}
