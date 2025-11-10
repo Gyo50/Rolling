@@ -17,6 +17,7 @@ export const MODAL_DATA_API_URL = 'https://placeholder.example.com/api/modal'
  * @param {string} buttonText - 버튼 텍스트 (기본값: "확인")
  * @param {function} onButtonClick - 버튼 클릭 핸들러
  */
+
 function Modal({ 
   isOpen = false, 
   onClose,

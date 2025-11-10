@@ -26,7 +26,7 @@ function MessageHeader() {
 
   return (
     <>
-      <div className="flex items-center justify-between w-[1200px] h-[68px] bg-white relative">
+      <div className="flex items-center justify-between w-[1200px] h-[68px] bg-white relative mx-auto">
         {/* 왼쪽: 수신자 */}
         <div className="text-gray-800 text-28-bold">To. Ashley Kim</div>
 

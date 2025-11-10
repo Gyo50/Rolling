@@ -16,20 +16,22 @@ function MobileHeader() {
   };
 
   // 공유 버튼의 클래스를 조건부로 정의
-  const shareButtonClasses =
-      `
-      flex items-center justify-center 
-      border border-gray-300 w-[36px] h-[32px] rounded-md 
-      ${showShareMenu ? "border-gray-500" : "bg-white hover:bg-gray-100"}
-      `;
+  const shareButtonClasses = `
+    flex items-center justify-center 
+    border border-gray-300 w-[36px] h-[32px] rounded-md 
+    
+    // 드롭다운이 열려있을 때 적용
+    ${showShareMenu ? "border-gray-500" : "bg-white hover:bg-gray-100"} 
+  `;
+
   return (
     <>
       {/* 수신자 헤더 */}
-      <div className="flex items-center justify-between w-[360px] h-[52px] bg-white relative px-[20px] py-[12px]">
+      <div className="flex items-center justify-between w-[360px] h-[52px] bg-white relative px-[20px] py-[12px] mx-auto">
         <div className="text-gray-800 text-18-bold">To. Ashley Kim</div>
       </div>
 
-      <div className="flex items-center justify-between w-[360px] h-[52px] bg-white relative px-[20px] py-[12px]">
+      <div className="flex items-center justify-between w-[360px] h-[52px] bg-white relative px-[20px] py-[12px] mx-auto">
         {/* 이모지 + 화살표 */}
         <div className="relative">
           <div className="flex items-center gap-1">
@@ -92,12 +94,13 @@ function MobileHeader() {
         <span className="w-[1px] h-[28px] bg-gray-200 mx-2"></span>
 
         {/* 공유 버튼 + 드롭다운 메뉴 */}
-        <div className="relative">
+        <div className="relative flex items-center justify-center border border-gray-300 rounded-md w-[36px] h-[32px] bg-white hover:bg-gray-100 focus:border-gray-500">
           <button
             onClick={toggleShareMenu}
-            // 조건부 클래스 변수 사용
             className={shareButtonClasses}
             aria-expanded={showShareMenu}
+            // 조건부 클래스 변수 사용
+            
           >
             <img
               src={sharingIcon}
@@ -108,7 +111,7 @@ function MobileHeader() {
 
           {/* 공유 메뉴 */}
           {showShareMenu && (
-            <div className="absolute right-0 mt-2 bg-white shadow-lg rounded-md py-[10px] w-[140px] h-[120px] z-10 text-gray-900 border border-gray-300 text-16-regular">
+            <div className="absolute right-0 mt-44 bg-white shadow-lg rounded-md py-[10px] w-[140px] h-[120px] z-10 text-gray-900 border border-gray-300 text-16-regular">
               <button className="text-left px-4 py-2 hover:bg-gray-100 w-[138px] h-[50px]">
                 카카오톡 공유
               </button>
