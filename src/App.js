@@ -1,10 +1,8 @@
-import "./App.css";
-import "./Header/MessageHeader.jsx"
+import './App.css';
 
 function App() {
   return (
     <>
-      
     </>
   );
 }
