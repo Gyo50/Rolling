@@ -1,10 +1,8 @@
-import './App.css';
+import './App.css'
+import ListPage from './ListPage/ListPage'
 
 function App() {
-  return (
-    <>
-    </>
-  );
+  return <ListPage />
 }
 
-export default App;
+export default App

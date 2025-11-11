@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import Header from '../Header/Header'
-import CardList from '../CardList/CardList'
-import PrimaryMain from '../Button/Primary-main'
-import LeftArrow from '../Button/Left-arrow'
-import RightArrow from '../Button/Right-arrow'
+import Header from '../Component/Header/Header'
+import CardList from '../Component/CardList/CardList'
+import PrimaryMain from '../Component/Button/Primary-main'
+import LeftArrow from '../Component/Button/Left-arrow'
+import RightArrow from '../Component/Button/Right-arrow'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import 'swiper/css'
 
@@ -163,27 +163,31 @@ function ListPage() {
         </div>
       </header>
 
-      <main className="flex flex-col items-center gap-16 py-16">
-        <section className="w-full max-w-[1160px] flex flex-col gap-6">
+      <main className="flex flex-col items-center gap-[50px] pt-[54px] pb-[172px]">
+        <section className="w-full max-w-[1160px] flex flex-col gap-4">
           <div className="flex items-center justify-between">
             <h2 className="text-24-bold text-gray-900">인기 롤링 페이퍼 🔥</h2>
           </div>
           <RollingSwiper cards={POPULAR_CARDS} sliderKey="popular" />
         </section>
 
-        <section className="w-full max-w-[1160px] flex flex-col gap-6">
+        <section className="w-full max-w-[1160px] flex flex-col gap-4">
           <div className="flex items-center justify-between">
             <h2 className="text-24-bold text-gray-900">최근에 만든 롤링 페이퍼 ⭐️️</h2>
           </div>
           <RollingSwiper cards={RECENT_CARDS} sliderKey="recent" />
         </section>
 
-        <div className="w-full max-w-[1201px] flex flex-col items-center">
-          <PrimaryMain
-            className="mt-6 shadow-[0_4px_10px_rgba(153,53,255,0.2)]"
-            text="나도 만들어보기"
-            to="/post"
-          />
+        <div className="w-full max-w-[1201px] flex flex-col items-center mt-[14px]">
+          <div
+            className="relative flex justify-center [&>button]:!w-[280px] [&>button]:!h-[56px] [&>button]:!bg-[#9935FF] [&>button]:!rounded-[12px] [&>button]:px-6 [&>button]:py-[14px] [&>button]:gap-[10px] [&>button]:font-[700] [&>button]:text-[18px] [&>button]:leading-[28px] [&>button]:tracking-[-0.01em]"
+          >
+            <PrimaryMain
+              className="shadow-[0_4px_10px_rgba(153,53,255,0.2)]"
+              text="나도 만들어보기"
+              to="/post"
+            />
+          </div>
         </div>
       </main>
     </div>
