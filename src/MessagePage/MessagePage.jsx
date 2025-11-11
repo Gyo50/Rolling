@@ -1,11 +1,11 @@
 // src/pages/Send.jsx
 import React, { useState } from "react";
-import Header from "../Header/HeaderNobutton";
-import Input from "../Text_Field/Input";
-import User from "../Option/User";
-import Select from "../Text_Field/SelectBox";
-import Froala from "../Text_Field/Froala";
-import PrimaryPc from "../Button/Primary-pc";
+import Header from "../Component/Header/HeaderNobutton";
+import Input from "../Component/Text_Field/Input";
+import User from "../Component/Option/User";
+import Select from "../Component/Text_Field/SelectBox";
+import Froala from "../Component/Text_Field/Froala";
+import PrimaryPc from "../Component/Button/Primary-pc";
 
 function Send() {
   // 관계 선택 상태
