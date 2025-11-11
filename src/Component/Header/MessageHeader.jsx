@@ -116,7 +116,7 @@ function MessageHeader() {
     setShowEmojiPicker(false);
   };
 
-  // 🔹 토글 함수 (하나 열리면 나머지 닫힘)
+  // 토글 함수 (하나 열리면 나머지 닫힘)
   const toggleEmojiMenu = () => {
     setShowEmojiMenu((prev) => !prev);
     setShowShareMenu(false);
