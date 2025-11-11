@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import sharingIcon from "../img/share-24.svg";
 import { ReactComponent as PlusIcon } from "../img/add-24.svg";
 import { ReactComponent as ArrowIcon } from "../img/arrow_down.svg";
@@ -9,12 +9,39 @@ function MessageHeader() {
   const [showEmojiMenu, setShowEmojiMenu] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const [animatedId, setAnimatedId] = useState(null); // 애니메이션 추적용
+  const [animatedId, setAnimatedId] = useState(null);
+  const [popup, setPopup] = useState({ visible: false, message: "" });
+
+  // 🔹 사용자 식별용 ID
+  const [userId] = useState(() => {
+    const saved = localStorage.getItem("userId");
+    if (saved) return saved;
+    const newId = `user-${Math.random().toString(36).slice(2, 9)}`;
+    localStorage.setItem("userId", newId);
+    return newId;
+  });
+
+  // 🔹 localStorage 불러오기
+  useEffect(() => {
+    const saved = localStorage.getItem("reactions");
+    if (saved) setReactions(JSON.parse(saved));
+  }, []);
+
+  // 🔹 localStorage 저장
+  useEffect(() => {
+    localStorage.setItem("reactions", JSON.stringify(reactions));
+  }, [reactions]);
+
+  // 🔹 팝업 표시
+  const showPopup = (msg) => {
+    setPopup({ visible: true, message: msg });
+    setTimeout(() => setPopup({ visible: false, message: "" }), 2000);
+  };
 
   const sortedReactions = [...reactions].sort((a, b) => b.count - a.count);
 
-  // 이모지 추가 또는 카운트 증가 처리
-  const handleEmojiSelect = (emojiData, event) => {
+  // 🔹 이모지 클릭/추가
+  const handleEmojiSelect = (emojiData) => {
     const selectedEmoji =
       typeof emojiData === "string"
         ? emojiData
@@ -22,67 +49,87 @@ function MessageHeader() {
 
     if (!selectedEmoji) return;
 
-    let updated;
     setReactions((prev) => {
       const existing = prev.find((r) => r.emoji === selectedEmoji);
       if (existing) {
-        updated = prev.map((r) =>
-          r.emoji === selectedEmoji ? { ...r, count: r.count + 1 } : r
+        const userClickedCount =
+          existing.users[userId] !== undefined ? existing.users[userId] : 0;
+
+        if (userClickedCount >= 5) {
+          showPopup("이 이모지는 최대 5번까지만 누를 수 있어요 😅");
+          return prev;
+        }
+
+        return prev.map((r) =>
+          r.emoji === selectedEmoji
+            ? {
+                ...r,
+                count: r.count + 1,
+                users: { ...r.users, [userId]: userClickedCount + 1 },
+              }
+            : r
         );
       } else {
-        updated = [...prev, { emoji: selectedEmoji, count: 1, id: Date.now() }];
+        // 새 이모지 추가
+        return [
+          ...prev,
+          {
+            emoji: selectedEmoji,
+            count: 1,
+            users: { [userId]: 1 },
+            id: Date.now(),
+          },
+        ];
       }
-      return updated;
     });
 
-    // 애니메이션 트리거 (1초간 강조)
     const target = reactions.find((r) => r.emoji === selectedEmoji);
     setAnimatedId(target ? target.id : Date.now());
     setTimeout(() => setAnimatedId(null), 250);
-
     setShowEmojiPicker(false);
   };
 
   const toggleEmojiMenu = () => {
-    if (sortedReactions.length < 3) return;
     setShowEmojiMenu((prev) => !prev);
     if (showEmojiPicker) setShowEmojiPicker(false);
   };
 
-  const toggleShareMenu = () => {
-    setShowShareMenu((prev) => !prev);
-  };
-
+  const toggleShareMenu = () => setShowShareMenu((prev) => !prev);
   const toggleEmojiPicker = () => {
     setShowEmojiPicker((prev) => !prev);
     if (showEmojiMenu) setShowEmojiMenu(false);
   };
 
   const shareButtonClasses = `
-        flex items-center justify-center 
-        border border-gray-300 w-[56px] h-[36px] rounded-md 
-        ${showShareMenu ? "border-gray-500" : "bg-white hover:bg-gray-100"} 
-    `;
+    flex items-center justify-center 
+    border border-gray-300 w-[56px] h-[36px] rounded-md 
+    ${showShareMenu ? "border-gray-500" : "bg-white hover:bg-gray-100"} 
+  `;
 
   const plusButtonClasses = `
-        flex items-center justify-center gap-1 border border-gray-300 text-gray-900 rounded-md 
-        w-[88px] h-[36px] transition
-        ${
-          showEmojiPicker
-            ? "bg-gray-100 border-gray-500"
-            : "bg-white hover:bg-gray-50"
-        }
-    `;
+    flex items-center justify-center gap-1 border border-gray-300 text-gray-900 rounded-md 
+    w-[88px] h-[36px] transition
+    ${
+      showEmojiPicker
+        ? "bg-gray-100 border-gray-500"
+        : "bg-white hover:bg-gray-50"
+    }
+  `;
 
   return (
-    <div className="border-b border-gray-200">
+    <div className="border-b border-gray-200 relative">
+      {/* 팝업 */}
+      {popup.visible && (
+        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-80 text-white text-sm px-5 py-3 rounded-lg shadow-lg z-50 animate-fadeIn">
+          {popup.message}
+        </div>
+      )}
+
       <div className="flex items-center justify-between w-[1200px] h-[68px] bg-white relative mx-auto">
-        {/* 왼쪽: 수신자 */}
         <div className="text-gray-800 text-28-bold">To. Ashley Kim</div>
 
-        {/* 오른쪽 */}
         <div className="flex items-center gap-3 relative">
-          {/* 작성자 수, 아바타 등 */}
+          {/* 작성자 */}
           <div className="flex items-center gap-2">
             <div className="flex items-center -space-x-[12px]">
               {[...Array(3)].map((_, i) => (
@@ -103,10 +150,11 @@ function MessageHeader() {
             <span className="w-[1px] h-[28px] bg-gray-200 mx-4"></span>
           </div>
 
-          {/* 이모지 표시 + 화살표 */}
+          {/* 이모지 표시 */}
           {sortedReactions.length > 0 && (
             <div className="relative">
               <div className="flex items-center gap-1">
+                {/* Top3 */}
                 <div className="flex items-center gap-2">
                   {sortedReactions.slice(0, 3).map((reaction) => (
                     <button
@@ -121,8 +169,12 @@ function MessageHeader() {
                   ))}
                 </div>
 
-                {sortedReactions.length >= 3 && (
-                  <button onClick={toggleEmojiMenu} className="mx-2 transition">
+                {/* 화살표 토글 */}
+                {sortedReactions.length > 3 && (
+                  <button
+                    onClick={toggleEmojiMenu}
+                    className="mx-2 transition-transform duration-200"
+                  >
                     <ArrowIcon
                       className={`transition-transform duration-200 ${
                         showEmojiMenu ? "rotate-180" : "rotate-0"
@@ -132,9 +184,10 @@ function MessageHeader() {
                 )}
               </div>
 
-              {showEmojiMenu && sortedReactions.length >= 3 && (
+              {/* 1~7번째 이모지 + 7개 이후 +N */}
+              {showEmojiMenu && sortedReactions.length > 3 && (
                 <div className="absolute right-5 mt-2 w-80 bg-white rounded-xl shadow-lg p-[24px] grid grid-cols-4 gap-2 justify-items-center z-10">
-                  {reactions.map((reaction) => (
+                  {sortedReactions.slice(0, 7).map((reaction) => (
                     <button
                       key={reaction.id}
                       onClick={() => handleEmojiSelect(reaction.emoji)}
@@ -145,6 +198,12 @@ function MessageHeader() {
                       {reaction.emoji}&nbsp;{reaction.count}
                     </button>
                   ))}
+
+                  {sortedReactions.length > 7 && (
+                    <div className="flex items-center justify-center bg-black bg-opacity-[54%] rounded-full px-[12px] py-[6px] text-white w-full">
+                      +{sortedReactions.length - 7}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -190,11 +249,19 @@ function MessageHeader() {
         </div>
       </div>
 
-      {/* 애니메이션 스타일 */}
       <style>{`
         .emoji-animate {
           transform: scale(1.3) !important;
           transition: transform 0.15s ease-in-out !important;
+        }
+
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(-5px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-fadeIn {
+          animation: fadeIn 0.3s ease-out;
         }
       `}</style>
     </div>
