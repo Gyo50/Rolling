@@ -10,8 +10,9 @@ function CardList() {
         data-cardlist
         className="
           relative overflow-hidden flex-shrink-0
-          w-[275px] h-[260px] rounded-[16px] box-border
-          pt-[30px] pr-6 pb-5 pl-6
+          w-[208px] h-[232px] rounded-[16px] box-border
+          pt-6 pr-5 pb-5 pl-5
+          md:w-[275px] md:h-[260px] md:pt-[30px] md:pr-6 md:pb-5 md:pl-6
           bg-white
           border border-grayscale-500/20
           shadow-[0_2px_13px_rgba(0,0,0,0.08)]
@@ -74,7 +75,8 @@ function CardList() {
         <div
           className="
             flex items-end
-            mt-[17px] pt-[18px]
+            mt-4 pt-[14px]
+            md:mt-[17px] md:pt-[18px]
             border-t border-grayscale-500/40
             absolute z-[1]
           "
