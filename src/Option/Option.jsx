@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Check from '../img/Check.svg'; 
+import Check from '../../img/Check.svg'; 
 
 const CheckIcon = () => (
   // 체크 표시

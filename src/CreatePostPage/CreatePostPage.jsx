@@ -1,9 +1,9 @@
-import HeaderNobutton from "../Header/HeaderNobutton";
+import HeaderNobutton from "../Component/Header/HeaderNobutton";
 import React from "react";
-import Input from "../Text_Field/Input.jsx";
-import ToggleButton from "../Button/Toggle-button.jsx";
-import Option from "../Option/Option.jsx";
-import PrimaryMain from "../Button/Primary-main.jsx";
+import Input from "../Component/Text_Field/Input.jsx";
+import ToggleButton from "../Component/Button/Toggle-button.jsx";
+import Option from "../Component/Option/Option.jsx";
+import PrimaryMain from "../Component/Button/Primary-main.jsx";
 
 function CreatePostPage() {
     return (
