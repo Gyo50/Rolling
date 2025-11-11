@@ -1,12 +1,13 @@
 import "./App.css";
-import OwnerPage from "./RollingPage/OwnerPage";
-import Modal from "./Component/Modal/Modal";
+// import OwnerPage from "./RollingPage/OwnerPage";
+import Card from "./Component/Card/Card";
+import DeleteButton from "./Component/Button/Delete-button"
 
 function App() {
   return (
     <>
-      <OwnerPage/>
-      <Modal/>
+      {/* <OwnerPage/> */}
+      <Card/>
     </>
   );
 }

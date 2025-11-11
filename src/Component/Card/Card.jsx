@@ -1,5 +1,5 @@
 import React from "react";
-import DeleteButton from "../Component/Button/Delete-button";
+import Trashbutton from "../../Component/Button/Trashbutton";
 
 // 카드 컴포넌트
 function Card() {
@@ -48,7 +48,7 @@ function Card() {
               </div>
             </div>
           </div>
-          <DeleteButton />
+          <Trashbutton />
         </div>
 
         <div
