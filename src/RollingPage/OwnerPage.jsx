@@ -104,14 +104,14 @@ function OwnerPage() {
           </div>
 
           {/* 카드 영역 */}
-          <div className="flex-1 w-full pt-[180px] pb-10 relative">
+          <div className="flex-1 w-full pt-[213px] pb-10 relative">
             <div className="mx-auto px-6 relative max-w-7xl">
               {/* 페이지 삭제 버튼 */}
               <div
-                className="absolute top-[-50px] right-8 z-10"
+                className="absolute top-[-63px] right-8 z-10"
                 onClick={handleOpenPageDeleteModal}
               >
-                <DeleteButton text="삭제하기" />
+                <DeleteButton text="삭제하기"/>
               </div>
 
               {/* 카드 리스트 */}
