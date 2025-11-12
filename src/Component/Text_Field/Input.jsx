@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-export default function Input({text="이름을 입력해주세요."}) {
+export default function Input({text="이름을 입력해주세요.", onChangeValue}) {
   const [value, setValue] = useState("");
   const [error, setError] = useState(false);
   const handleBlurValidation = (e) => {
@@ -10,7 +10,12 @@ export default function Input({text="이름을 입력해주세요."}) {
     }
   };
 
-  const handleChange = (e) => setValue(e.target.value);
+  const handleChange = (e) => {
+    setValue(e.target.value);
+    if (onChangeValue) {
+      onChangeValue(e.target.value);
+    }
+  };
 
   return (
     <>

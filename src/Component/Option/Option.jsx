@@ -28,13 +28,13 @@ function Option() {
 
   return (
     // 전체 컨테이너
-    <div className="w-full max-[360px]:w-[320px] grid grid-cols-2 sm:grid-cols-4 gap-6">
-      
+    <div className="w-full gap-4 grid grid-cols-4 max-xt:grid-cols-2">
+
       {boxData.map((box) => (
         <div 
           key={box.id}
           // 클래스 이름을 동적으로 변경하기 위해 백틱으로 감싸는 템플릿 리터럴 문법
-          className={`w-full aspect-square md:w-[168px] md:h-[168px]
+          className={`shadow-[inset_0_0_0_2px_rgba(0,0,0,0.08)] aspect-square md:w-[168px] md:h-[168px]
                       ${box.color} rounded-xl cursor-pointer flex items-center justify-center transition-all duration-200`}
           onClick={() => handleBoxClick(box.id)}
         >
