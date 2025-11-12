@@ -64,7 +64,7 @@ function OwnerPage({ recipientId }) {
         const [recipientData, messageData, reactionData] = await Promise.all([
           fetchRecipient(currentRecipientId), // 대상 상세 정보 요청
           fetchRecipientMessages(currentRecipientId, { limit: 20 }), // 메시지 목록 요청
-          fetchRecipientReactions(currentRecipientId)
+          fetchRecipientReactions(currentRecipientId) // 현재 수신인의 반응 카운트 요청
         ])
 
         if (!active) return // 컴포넌트가 언마운트되면 상태 업데이트 중단
@@ -256,6 +256,7 @@ function OwnerPage({ recipientId }) {
         alert('현재 지원하지 않는 이모지입니다.')
         return
       }
+      // 선택한 이모지를 별칭으로 변환 후 Rolling API에 증가 요청
       await reactToRecipient(currentRecipientId, { emoji: alias, type: 'increase' })
       const updated = await fetchRecipientReactions(currentRecipientId)
       setReactions(normalizeReactionsResponse(updated))

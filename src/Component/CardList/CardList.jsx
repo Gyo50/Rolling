@@ -13,16 +13,15 @@ const COLOR_STYLE_MAP = {
   purple: { hex: '#ECD9FF', pattern: pattern01 },
   blue: { hex: '#B1E4FF', pattern: pattern03 },
   green: { hex: '#D0F5C3', pattern: pattern04 }
-}
+}//컬러 카드 리스트
 
 const DEFAULT_BACKGROUND =
   "https://mblogthumb-phinf.pstatic.net/MjAyMTAzMDVfOTYg/MDAxNjE0OTU1MTgyMzYz.ozwJXDtUw0V_Gniz6i7qgDOkNs09MX-rJdCcaw6AAeAg.DZivXhGnQDUUx7kgkRXNOEI0DEltAo6p9Jk9SDBbxRcg.JPEG.sosohan_n/IMG_3725.JPG?type=w800"
 
 function CardList({ recipient }) {
-  //API에서 받은 recipient.name이 있으면 그 이름을, 없으면 기존 텍스트 To.Sowon을 그대로 보여줘요!
+  // API에서 내려온 수신인 정보(name, messageCount 등)를 카드 UI에 반영
   const name = recipient?.name || 'To.Sowon'
-  //API 응답의 recipient.messageCount가 숫자/문자열 형태로 오면 숫자로 변환해서 사용합니다.
-  // 값이 없거나 변환이 실패하면 기존 숫자 30을 그대로
+  // messageCount는 API가 문자열을 줄 수도 있어 Number 변환 후 기본값 처리
   const messageCount = useMemo(() => {
     if (recipient?.messageCount === undefined || recipient?.messageCount === null) return 30
     const parsed = Number(recipient.messageCount)
@@ -77,7 +76,7 @@ function CardList({ recipient }) {
   const reactionBadgeClass = isImageCard
     ? 'bg-black/60 text-white'
     : 'bg-white/80 text-gray-900 border border-white/60 shadow-sm'
-
+//가을님 작업 복붙했어요
   return (
     <div
       data-cardlist

@@ -6,6 +6,7 @@ import EmojiPicker from "emoji-picker-react";
 import { Link } from "react-router-dom";
 import { EMOJI_TO_ALIAS } from "../../api/recipients";
 
+// Rolling API가 허용하는 이모지를 제한적으로 노출하기 위한 셋
 const ALLOWED_EMOJIS = Object.keys(EMOJI_TO_ALIAS);
 const ALLOWED_EMOJI_SET = new Set(ALLOWED_EMOJIS);
 
@@ -63,6 +64,7 @@ function MessageHeader({
     });
 
     if (typeof onAddReaction === 'function') {
+      // 부모(OwnerPage)에서 API 호출을 수행하도록 콜백 전달
       onAddReaction(selectedEmoji);
     }
 

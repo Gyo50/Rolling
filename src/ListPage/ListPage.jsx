@@ -193,10 +193,12 @@ function ListPage() {
       try {
         setLoading(true)
         setError(null)
+        // 수신인 목록을 불러와 리스트 카드에 필요한 기본 데이터 확보
         const data = await fetchRecipients({ limit: 12 })
         if (!active) return
         const results = Array.isArray(data?.results) ? data.results : []
 
+        // 각 수신인에 대한 반응 카운트를 따로 요청하여 카드에 전달
         const enriched = await Promise.all(
           results.map(async (item) => {
             if (!item?.id) return { ...item, reactions: [] }
