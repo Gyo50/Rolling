@@ -1,9 +1,15 @@
+<<<<<<< HEAD
 import React from 'react'
 import Badge from '../../Component/Badge/Badge'
 import Modalbtn from "../../Component/Button/Modal-button"
+=======
+import React from "react";
+import Badge from "../Badge/Badge";
+import Modalbtn from "../Button/Modal-button";
+>>>>>>> RecipientPage
 
 // TODO: 실제 API 연동 시 아래 URL을 서버에서 제공하는 Endpoint로 교체하세요.
-export const MODAL_DATA_API_URL = 'https://placeholder.example.com/api/modal'
+export const MODAL_DATA_API_URL = "https://placeholder.example.com/api/modal";
 
 /**
  * Modal 컴포넌트
@@ -18,34 +24,33 @@ export const MODAL_DATA_API_URL = 'https://placeholder.example.com/api/modal'
  * @param {function} onButtonClick - 버튼 클릭 핸들러
  */
 
-function Modal({ 
-  isOpen = false, 
-  onClose,
-  profileImage,
-  senderName = '김동훈',
-  relationship = 'coworker',
-  date = '2023.07.08',
-  content = '',
-  onButtonClick,
-  apiUrl = MODAL_DATA_API_URL
-}) {
-  if (!isOpen) return null
+/*******************************변경사항*************************/
+// profileImage,senderName,relationship, date, content, apiUrl 삭제
+// message객체로  페이지에서 데이터를 받아 처리
+
+function Modal({ isOpen = false, onClose, onButtonClick, message }) {
+  if (!isOpen) return null;
 
   const handleBackdropClick = (e) => {
     if (e.target === e.currentTarget) {
-      onClose?.()
+      onClose?.();
     }
-  }
+  };
 
   const handleButtonClick = () => {
-    onButtonClick?.() || onClose?.()
-  }
+    onButtonClick?.() || onClose?.();
+  };
 
   // apiUrl은 현재 더미 값이며, 상위 컴포넌트에서 fetch(apiUrl)로 데이터를 받아와 props에 주입하면 됩니다.
 
   return (
+<<<<<<< HEAD
     <div 
       className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(0,0,0,0.54)]"
+=======
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[#F1F1F1]"
+>>>>>>> RecipientPage
       onClick={handleBackdropClick}
     >
       <div className="relative w-[600px] h-[476px] bg-white rounded-2xl shadow-[0px_2px_12px_rgba(0,0,0,0.08)]">
@@ -54,10 +59,10 @@ function Modal({
           <div className="absolute left-[39px] top-[40px] flex flex-row items-center gap-4">
             {/* 프로필 이미지 */}
             <div className="w-14 h-14 bg-white border border-gray-200 rounded-full overflow-hidden flex-shrink-0">
-              {profileImage ? (
-                <img 
-                  src={profileImage} 
-                  alt={senderName}
+              {message ? (
+                <img
+                  src={message.profileImageURL}
+                  alt={message.profileImageURL}
                   className="w-full h-full object-cover"
                 />
               ) : (
@@ -69,16 +74,16 @@ function Modal({
             <div className="flex flex-col items-start gap-1.5">
               <div className="flex flex-row items-start gap-1.5 h-6">
                 <span className="text-[20px] leading-6 font-normal text-black">From.</span>
-                <span className="text-[20px] leading-6 font-bold text-black">{senderName}</span>
+                <span className="text-[20px] leading-6 font-bold text-black">{message.sender}</span>
               </div>
-              <Badge type={relationship} />
+              <Badge text={message.relationship} />
             </div>
           </div>
 
           {/* 날짜 */}
           <div className="absolute right-[39px] top-[56px]">
             <span className="text-[14px] leading-5 font-normal tracking-[-0.005em] text-gray-400">
-              {date}
+              {message.createdAt}
             </span>
           </div>
         </div>
@@ -95,25 +100,31 @@ function Modal({
                 background: transparent;
               }
               div::-webkit-scrollbar-thumb {
-                background: #CCCCCC;
+                background: #cccccc;
                 border-radius: 8px;
               }
             `}</style>
-            
+
             <p className="text-[18px] leading-[28px] font-normal tracking-[-0.01em] text-[#5A5A5A] w-[500px] pt-4">
-              {content || '코로나가 또다시 기승을 부리는 요즘이네요. 건강, 체력 모두 조심 또 하세요!'}
+              {message.content ||
+                "코로나가 또다시 기승을 부리는 요즘이네요. 건강, 체력 모두 조심 또 하세요!"}
             </p>
           </div>
         </div>
 
         {/* 버튼 */}
+<<<<<<< HEAD
         <div className="absolute left-[240px] bottom-[40px]">
           <Modalbtn onClick={handleButtonClick} text="확인"
           className="px-[15px] py-[7px] text-16-regular text-white"/>
+=======
+        <div className="absolute left-[240px] bottom-5">
+          <Modalbtn onClick={handleButtonClick} />
+>>>>>>> RecipientPage
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 /* 사용법
@@ -132,4 +143,4 @@ function App() {
   }
 }
 */
-export default Modal
+export default Modal;

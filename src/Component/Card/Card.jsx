@@ -1,5 +1,9 @@
 import React from "react";
+<<<<<<< HEAD
 import Trashbutton from "../../Component/Button/Trash-button";
+=======
+import DeleteButton from "../Button/Delete-button";
+>>>>>>> RecipientPage
 
 function Card({
   senderName,
