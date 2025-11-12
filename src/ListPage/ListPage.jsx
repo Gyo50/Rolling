@@ -273,13 +273,23 @@ function ListPage() {
   useEffect(() => {
     if (typeof window === 'undefined') return undefined
 
+    // 리사이즈 이벤트에 대한 throttle 적용 및 passive 옵션 추가
+    let timeoutId = null
     const handleResize = () => {
-      const measured = window.innerWidth || document.documentElement.clientWidth || 1920
-      setViewportWidth(Math.round(measured))
+      // throttle: 150ms마다 한 번만 실행하여 성능 최적화
+      if (timeoutId) return
+      timeoutId = setTimeout(() => {
+        const measured = window.innerWidth || document.documentElement.clientWidth || 1920
+        setViewportWidth(Math.round(measured))
+        timeoutId = null
+      }, 150)
     }
-    window.addEventListener('resize', handleResize)
+    window.addEventListener('resize', handleResize, { passive: true }) // passive: true로 터치/스크롤 성능 개선
 
-    return () => window.removeEventListener('resize', handleResize)
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId) // 컴포넌트 언마운트 시 타이머 정리
+      window.removeEventListener('resize', handleResize)
+    }
   }, [])
 
   useEffect(() => {
