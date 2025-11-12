@@ -5,25 +5,20 @@ import { ReactComponent as ArrowIcon } from "../../img/arrow_down.svg";
 import EmojiPicker from "emoji-picker-react";
 import Toast from "../Toast/Toast.jsx";
 
-function MessageHeader() {
+function MessageHeader({ hideAvatars = false }) {
   // ==========================
   // 상태
   // ==========================
-
-  const [reactions, setReactions] = useState([]); // 이모지 반응 목록
-  const [showEmojiMenu, setShowEmojiMenu] = useState(false); // 이모지 펼침 메뉴 표시 여부
-  const [showShareMenu, setShowShareMenu] = useState(false); // 공유 메뉴 표시 여부
-  const [showEmojiPicker, setShowEmojiPicker] = useState(false); // 이모지 추가 창 표시 여부
-  const [animatedId, setAnimatedId] = useState(null); // 애니메이션 적용 중인 이모지 ID
-  const [popup, setPopup] = useState({ visible: false, message: "" }); // 상단 팝업 (메시지 안내 등)
-  const [toastOpen, setToastOpen] = useState(false); // Toast 표시 여부
-  const [toastMessage, setToastMessage] = useState(""); // Toast 메시지 내용
-  const [toastType, setToastType] = useState("success"); // Toast 타입 ("success" | "error")
-  const AUTO_RESET_ON_LOAD = false; // 새로고침 시 반응 데이터 초기화 여부
-
-  // ==========================
-  // 사용자 구분 (User ID)
-  // ==========================
+  const [reactions, setReactions] = useState([]);
+  const [showEmojiMenu, setShowEmojiMenu] = useState(false);
+  const [showShareMenu, setShowShareMenu] = useState(false);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [animatedId, setAnimatedId] = useState(null);
+  const [popup, setPopup] = useState({ visible: false, message: "" });
+  const [toastOpen, setToastOpen] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastType, setToastType] = useState("success");
+  const AUTO_RESET_ON_LOAD = false;
 
   const [userId] = useState(() => {
     const saved = localStorage.getItem("userId");
@@ -34,17 +29,14 @@ function MessageHeader() {
   });
 
   // ==========================
-  // 반응 데이터 관리
+  // 로컬스토리지 로드/저장
   // ==========================
-
-  // reactions 데이터 초기화 함수 (디버깅용)
   const resetReactions = useCallback(() => {
     localStorage.removeItem("reactions");
     setReactions([]);
     console.log("reactions가 초기화되었습니다!");
   }, []);
 
-  // 페이지 로드 시 localStorage의 반응 데이터 불러오기
   useEffect(() => {
     if (AUTO_RESET_ON_LOAD) {
       resetReactions();
@@ -53,33 +45,26 @@ function MessageHeader() {
       if (saved) {
         try {
           setReactions(JSON.parse(saved));
-        } catch (err) {
-          console.error("reactions 파싱 실패:", err);
+        } catch {
           setReactions([]);
         }
       }
     }
-
-    // 브라우저 콘솔에서 resetReactions() 실행 가능하게 등록
     window.resetReactions = resetReactions;
   }, [AUTO_RESET_ON_LOAD, resetReactions]);
 
-  // reactions 상태 변경 시 localStorage 동기화
   useEffect(() => {
     localStorage.setItem("reactions", JSON.stringify(reactions));
   }, [reactions]);
 
   // ==========================
-  // 팝업 / 토스트 함수
+  // 팝업 / 토스트
   // ==========================
-
-  // 상단 팝업 표시
   const showPopup = (msg) => {
     setPopup({ visible: true, message: msg });
     setTimeout(() => setPopup({ visible: false, message: "" }), 2000);
   };
 
-  // Toast 표시
   const showToast = (msg, type = "success") => {
     setToastMessage(msg);
     setToastType(type);
@@ -87,15 +72,12 @@ function MessageHeader() {
   };
 
   // ==========================
-  // 이모지 관련 로직
+  // 이모지 처리
   // ==========================
-
-  // 이모지 정렬 (많이 누른 순)
   const sortedReactions = Array.isArray(reactions)
     ? [...reactions].sort((a, b) => b.count - a.count)
     : [];
 
-  // 이모지 클릭 / 추가
   const handleEmojiSelect = (emojiData) => {
     const selectedEmoji =
       typeof emojiData === "string"
@@ -144,36 +126,31 @@ function MessageHeader() {
   };
 
   // ==========================
-  // 토글 함수 (하나만 열리게)
+  // 토글
   // ==========================
-
   const toggleEmojiMenu = () => {
-    setShowEmojiMenu((prev) => !prev);
+    setShowEmojiMenu((p) => !p);
     setShowShareMenu(false);
     setShowEmojiPicker(false);
   };
-
   const toggleShareMenu = () => {
-    setShowShareMenu((prev) => !prev);
+    setShowShareMenu((p) => !p);
     setShowEmojiMenu(false);
     setShowEmojiPicker(false);
   };
-
   const toggleEmojiPicker = () => {
-    setShowEmojiPicker((prev) => !prev);
+    setShowEmojiPicker((p) => !p);
     setShowEmojiMenu(false);
     setShowShareMenu(false);
   };
 
   // ==========================
-  // 공유 기능
+  // 공유
   // ==========================
-
   const handleKakaoShare = () => {
     showToast("카카오톡 URL이 복사되었습니다!", "success");
     setShowShareMenu(false);
   };
-
   const handleCopyURL = async () => {
     try {
       await navigator.clipboard.writeText(window.location.href);
@@ -185,15 +162,13 @@ function MessageHeader() {
   };
 
   // ==========================
-  // 버튼 스타일
+  // 스타일
   // ==========================
-
   const shareButtonClasses = `
     flex items-center justify-center 
     border border-gray-300 w-[56px] h-[36px] rounded-md 
     ${showShareMenu ? "border-gray-500" : "bg-white hover:bg-gray-100"} 
   `;
-
   const plusButtonClasses = `
     flex items-center justify-center gap-1 border border-gray-300 text-gray-900 rounded-md 
     w-[88px] h-[36px] transition
@@ -207,10 +182,8 @@ function MessageHeader() {
   // ==========================
   // 렌더링
   // ==========================
-
   return (
-    <div className="border-b border-gray-200 relative mx-auto">
-      {/* Toast 컴포넌트 */}
+    <div className="border-b border-gray-200 relative mx-auto w-full">
       <Toast
         isOpen={toastOpen}
         onClose={() => setToastOpen(false)}
@@ -219,43 +192,50 @@ function MessageHeader() {
         duration={2000}
       />
 
-      {/* 상단 팝업 */}
       {popup.visible && (
         <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-80 text-white text-sm px-5 py-3 rounded-lg shadow-lg z-50 animate-fadeIn">
           {popup.message}
         </div>
       )}
 
-      {/* 헤더 콘텐츠 */}
-      <div className="flex items-center justify-between w-[1200px] h-[68px] bg-white relative mx-auto">
-        <div className="text-gray-800 text-28-bold">To. Ashley Kim</div>
+      {/* 반응형 + 토글 */}
+      <div
+        className="
+          flex justify-between items-center flex-wrap w-full py-3 mx-auto bg-white transition-all duration-300 overflow-visible max-w-[1200px] px-[24px]">
+        {/* 왼쪽 텍스트 */}
+        <div className="text-gray-800 text-28-bold flex-shrink-0 min-w-[160px]">
+          To. Ashley Kim
+        </div>
 
-        {/* 오른쪽 버튼들 */}
-        <div className="flex items-center gap-3 relative">
+        {/* 오른쪽 영역 */}
+        <div
+          className="flex flex-wrap justify-end items-center gap-2 md:gap-3  min-w-[200px] flex-shrink overflow-visible">
           {/* 작성자 아바타 */}
-          <div className="flex items-center gap-2">
-            <div className="flex items-center -space-x-[12px]">
-              {[...Array(3)].map((_, i) => (
-                <img
-                  key={i}
-                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT3sNaglv_WIugAApob8DnWx3ePYnc33k_vCwJ-0b6NcJF2JdWPR4Ta2-Jr5BbZxrt0-5BBbZJfhMraFULt8VemDX9DiSnTi4LC665QBIhHCg&s=10"
-                  alt="avatar"
-                  className="w-[28px] h-[28px] rounded-full border-2 border-white"
-                />
-              ))}
-              <div className="w-[28px] h-[28px] bg-gray-300 rounded-full flex items-center justify-center text-xs text-gray-700 border-2 border-white">
-                +6
+          {!hideAvatars && (
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <div className="flex items-center -space-x-[10px] md:-space-x-[12px]">
+                {[...Array(3)].map((_, i) => (
+                  <img
+                    key={i}
+                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT3sNaglv_WIugAApob8DnWx3ePYnc33k_vCwJ-0b6NcJF2JdWPR4Ta2-Jr5BbZxrt0-5BBbZJfhMraFULt8VemDX9DiSnTi4LC665QBIhHCg&s=10"
+                    alt="avatar"
+                    className="w-[26px] h-[26px] md:w-[28px] md:h-[28px] rounded-full border-2 border-white"
+                  />
+                ))}
+                <div className="w-[26px] h-[26px] md:w-[28px] md:h-[28px] bg-gray-300 rounded-full flex items-center justify-center text-xs text-gray-700 border-2 border-white">
+                  +6
+                </div>
               </div>
+              <span className="ml-2 text-[14px] md:text-[18px] whitespace-nowrap">
+                <span className="font-semibold">23명</span>이 작성했어요!
+              </span>
+              <span className="hidden md:block w-[1px] h-[28px] bg-gray-200 mx-4"></span>
             </div>
-            <span className="ml-2 text-18-regular">
-              <span className="text-18-bold">23명</span>이 작성했어요!
-            </span>
-            <span className="w-[1px] h-[28px] bg-gray-200 mx-4"></span>
-          </div>
+          )}
 
           {/* 이모지 반응 */}
           {sortedReactions.length > 0 && (
-            <div className="relative">
+            <div className="relative flex flex-wrap gap-1 justify-end items-center overflow-visible">
               <div className="flex items-center gap-1">
                 {sortedReactions.slice(0, 3).map((reaction) => (
                   <button
@@ -269,7 +249,7 @@ function MessageHeader() {
                   </button>
                 ))}
 
-                {/* 펼침 메뉴 화살표 */}
+                {/* 이모지 토글 버튼 */}
                 {sortedReactions.length > 3 && (
                   <button
                     onClick={toggleEmojiMenu}
@@ -284,9 +264,9 @@ function MessageHeader() {
                 )}
               </div>
 
-              {/* 추가 이모지 메뉴 */}
+              {/* 토글 메뉴 */}
               {showEmojiMenu && sortedReactions.length > 3 && (
-                <div className="absolute right-5 mt-2 w-80 bg-white rounded-xl shadow-lg p-[24px] grid grid-cols-4 gap-2 justify-items-center z-10">
+                <div className="absolute right-5 mt-[190px] w-80 bg-white rounded-xl shadow-lg p-[24px] grid grid-cols-4 gap-2 justify-items-center z-50 border border-gray-300">
                   {sortedReactions.slice(0, 7).map((reaction) => (
                     <button
                       key={reaction.id}
@@ -298,7 +278,6 @@ function MessageHeader() {
                       {reaction.emoji}&nbsp;{reaction.count}
                     </button>
                   ))}
-
                   {sortedReactions.length > 7 && (
                     <div className="flex items-center justify-center bg-black bg-opacity-[54%] rounded-full px-[12px] py-[6px] text-white w-full">
                       +{sortedReactions.length - 7}
@@ -309,21 +288,21 @@ function MessageHeader() {
             </div>
           )}
 
-          {/* 이모지 추가 버튼 */}
+          {/* 이모지 추가 */}
           <div className="relative z-20">
             <button onClick={toggleEmojiPicker} className={plusButtonClasses}>
               <PlusIcon />
               추가
             </button>
-
             {showEmojiPicker && (
-              <div className="absolute top-[calc(100%+8px)] left-1/2 transform -translate-x-1/2 z-30">
+              <div className="absolute top-[calc(100%+8px)] left-1/2 transform -translate-x-1/2 z-50">
                 <EmojiPicker onEmojiClick={handleEmojiSelect} />
               </div>
             )}
           </div>
 
-          <span className="w-[1px] h-[28px] bg-gray-200 mx-2"></span>
+          {/* 구분선 */}
+          <span className="hidden md:block w-[1px] h-[28px] bg-gray-200 mx-2"></span>
 
           {/* 공유 버튼 */}
           <div className="relative">
@@ -336,7 +315,7 @@ function MessageHeader() {
             </button>
 
             {showShareMenu && (
-              <div className="absolute right-0 mt-2 bg-white shadow-lg rounded-md py-[10px] w-[140px] z-10 text-gray-900 border border-gray-300 text-16-regular">
+              <div className="absolute right-0 mt-2 bg-white shadow-lg rounded-md py-[10px] w-[140px] z-50 text-gray-900 border border-gray-300 text-16-regular">
                 <button
                   onClick={handleKakaoShare}
                   className="text-left px-4 py-2 hover:bg-gray-100 w-full"
@@ -355,7 +334,7 @@ function MessageHeader() {
         </div>
       </div>
 
-      {/* 간단한 애니메이션 스타일 */}
+      {/* 애니메이션 */}
       <style>{`
         .emoji-animate {
           transform: scale(1.3) !important;
