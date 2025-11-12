@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import Header from "../Header/Header";
-import MessageHeader from "../Header/MessageHeader";
-import DeleteButton from "../Button/Delete-button";
-import Modal from "../Modal/Modal";
+import Header from "../Component/Header/Header";
+import MessageHeader from "../Component/Header/MessageHeader";
+import DeleteButton from "../Component/Button/Delete-button";
+import Modal from "../Component/Modal/Modal";
 
 // 🚨 정적인 메시지 데이터 (ID 추적 및 기타 정보 추가)
 const STATIC_MESSAGES = Array.from({ length: 9 }).map((_, index) => ({
@@ -25,8 +25,7 @@ function OwnerPage() {
   const [isPageDeleteModalOpen, setIsPageDeleteModalOpen] = useState(false);
 
   // === 메시지 삭제 확인 모달 상태 추가 (개별 메시지 삭제) ===
-  const [isMessageDeleteModalOpen, setIsMessageDeleteModalOpen] =
-    useState(false);
+  const [isMessageDeleteModalOpen, setIsMessageDeleteModalOpen] = useState(false);
   const [messageToDeleteId, setMessageToDeleteId] = useState(null); // 삭제할 메시지 ID 추적
 
   // 카드 클릭 시 모달 열기 핸들러
@@ -99,9 +98,7 @@ function OwnerPage() {
   const MessageDeleteConfirmModal = () => (
     <div className="bg-white rounded-xl shadow-2xl p-8 max-w-sm w-full mx-4">
       <h3 className="text-xl font-bold mb-4 text-center">메시지 삭제 확인</h3>
-      <p className="text-gray-700 mb-6 text-center">
-        메시지를 삭제하시겠습니까?
-      </p>
+      <p className="text-gray-700 mb-6 text-center">메시지를 삭제하시겠습니까?</p>
       <div className="flex justify-center space-x-3">
         <button
           onClick={handleConfirmMessageDelete}
@@ -186,14 +183,10 @@ function OwnerPage() {
                     </div>
 
                     {/* 메시지 내용 */}
-                    <p className="text-gray-800 line-clamp-4 flex-1">
-                      {item.content}
-                    </p>
+                    <p className="text-gray-800 line-clamp-4 flex-1">{item.content}</p>
 
                     {/* 하단: 날짜 */}
-                    <div className="mt-4 text-xs text-gray-500">
-                      {item.date}
-                    </div>
+                    <div className="mt-4 text-xs text-gray-500">{item.date}</div>
                   </div>
                 ))}
               </div>

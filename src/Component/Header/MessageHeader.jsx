@@ -4,8 +4,12 @@ import { ReactComponent as PlusIcon } from "../../img/add-24.svg";
 import { ReactComponent as ArrowIcon } from "../../img/arrow_down.svg";
 import EmojiPicker from "emoji-picker-react";
 
-function MessageHeader() {
-  const [reactions, setReactions] = useState([]);
+// ✅ 변경: props 추가로 받아옴 (서버와 연동을 위해 상위에서 상태 관리)
+// 기존: function MessageHeader()
+// 변경: function MessageHeader({ propEmojiSelect, reactions, setReactions })
+function MessageHeader({ propEmojiSelect, reactions, setReactions }) {
+  // ✅ 변경사항: 페이지에서 통합 관리하도록 useState 제거 (부모에서 전달받음)
+  // const [reactions, setReactions] = useState([]);
   const [showEmojiMenu, setShowEmojiMenu] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
@@ -14,26 +18,35 @@ function MessageHeader() {
   const sortedReactions = [...reactions].sort((a, b) => b.count - a.count);
 
   // 이모지 추가 또는 카운트 증가 처리
+  // ✅ 내부 로직 수정됨: 부모에게도 전달하도록 추가
   const handleEmojiSelect = (emojiData, event) => {
     const selectedEmoji =
-      typeof emojiData === "string"
-        ? emojiData
-        : emojiData?.emoji || emojiData?.native;
+      typeof emojiData === "string" ? emojiData : emojiData?.emoji || emojiData?.native;
 
     if (!selectedEmoji) return;
 
     let updated;
     setReactions((prev) => {
-      const existing = prev.find((r) => r.emoji === selectedEmoji);
+      const existing = prev.find((r) => r.emoji === selectedEmoji); // 같은 이모지가 있는지 확인
       if (existing) {
-        updated = prev.map((r) =>
-          r.emoji === selectedEmoji ? { ...r, count: r.count + 1 } : r
+        updated = prev.map(
+          (r) => (r.emoji === selectedEmoji ? { ...r, count: r.count + 1 } : r) // 같은 이모지가 있을때 count + 1
         );
       } else {
-        updated = [...prev, { emoji: selectedEmoji, count: 1, id: Date.now() }];
+        updated = [...prev, { emoji: selectedEmoji, count: 1, id: Date.now() }]; // 같은 이모지가 없을 때, 새로운 이모지 추가
       }
+
       return updated;
     });
+
+    // ✅ 추가됨: 서버로 전달할 객체 구성
+    const propReactions = {
+      emoji: selectedEmoji,
+      type: "increase",
+    };
+
+    // ✅ 추가됨: 부모로 데이터 전달
+    propEmojiSelect(propReactions);
 
     // 애니메이션 트리거 (1초간 강조)
     const target = reactions.find((r) => r.emoji === selectedEmoji);
@@ -67,11 +80,7 @@ function MessageHeader() {
   const plusButtonClasses = `
         flex items-center justify-center gap-1 border border-gray-300 text-gray-900 rounded-md 
         w-[88px] h-[36px] transition
-        ${
-          showEmojiPicker
-            ? "bg-gray-100 border-gray-500"
-            : "bg-white hover:bg-gray-50"
-        }
+        ${showEmojiPicker ? "bg-gray-100 border-gray-500" : "bg-white hover:bg-gray-50"}
     `;
 
   return (
@@ -107,6 +116,7 @@ function MessageHeader() {
           {sortedReactions.length > 0 && (
             <div className="relative">
               <div className="flex items-center gap-1">
+                {/* 이모지 들어가야 됨. */}
                 <div className="flex items-center gap-2">
                   {sortedReactions.slice(0, 3).map((reaction) => (
                     <button

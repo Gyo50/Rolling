@@ -1,8 +1,19 @@
 import React from "react";
-import DeleteButton from "../Button/Delete-button";
+
+// 더미 데이터를 별도 관리 파일로 뺄지 여부 고민!!!!
+export const defaultMessage = {
+  sender: "이름",
+  relationship: "관계",
+  content: "메시지 내용",
+  profileImageURL:
+    "https://fastly.picsum.photos/id/311/200/200.jpg?hmac=CHiYGYQ3Xpesshw5eYWH7U0Kyl9zMTZLQuRDU4OtyH8",
+  createdAt: "2025-11-11",
+};
 
 // 카드 컴포넌트
-function Card() {
+function UserCard({ message, onClick }) {
+  const data = message || defaultMessage;
+
   return (
     <>
       <div
@@ -14,7 +25,9 @@ function Card() {
           bg-white
           flex flex-col
           relative
+          cursor-pointer
         "
+        onClick={onClick}
       >
         <div
           className="
@@ -26,13 +39,13 @@ function Card() {
           <div className="flex flex-wrap">
             <img
               className="w-14 h-14 rounded-full"
-              src="https://entertainimg.kbsmedia.co.kr/cms/uploads/PERSON_20220112081105_4217f0cc8e5e82a908647d8e1de448a5.jpg"
+              src={data.profileImageURL}
               alt="프로필 이미지"
             />
 
             <div className="flex flex-col gap-[5px] pl-[10px]">
               <div className="text-20-regular text-black">
-                From.&nbsp;<span className="text-20-bold text-black">남주혁</span>
+                From.&nbsp;<span className="text-20-bold text-black">{data.sender}</span>
               </div>
 
               <div
@@ -44,11 +57,10 @@ function Card() {
                 flex items-center justify-center
               "
               >
-                동료
+                {data.relationship}
               </div>
             </div>
           </div>
-          <DeleteButton />
         </div>
 
         <div
@@ -59,7 +71,7 @@ function Card() {
             text-grayscale-600
           "
         >
-          소원아 생일 축하해~~~~!
+          {data.content}
         </div>
 
         <div
@@ -68,11 +80,11 @@ function Card() {
             absolute bottom-6 left-6
           "
         >
-          2023.01.29
+          {data.createdAt}
         </div>
       </div>
     </>
   );
 }
 
-export default Card;
+export default UserCard;
