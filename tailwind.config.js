@@ -1,6 +1,8 @@
+import scrollbarHide from "tailwind-scrollbar-hide";
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
+
   theme: {
     extend: {
       colors: {
@@ -37,20 +39,20 @@ module.exports = {
           500: "#2BA600",
         },
         gray: {
-          100: '#F6F6F6',
-          200: '#EEEEEE',
-          300: '#CCCCCC',
-          400: '#999999',
-          500: '#555555',
-          600: '#4A4A4A',
-          700: '#3A3A3A',
-          800: '#2B2B2B',
-          900: '#181818',
+          100: "#F6F6F6",
+          200: "#EEEEEE",
+          300: "#CCCCCC",
+          400: "#999999",
+          500: "#555555",
+          600: "#4A4A4A",
+          700: "#3A3A3A",
+          800: "#2B2B2B",
+          900: "#181818",
         },
-        white:'#ffffff',
-        black:'#000000',
-        error: '#DC3A3A',
-        surface: '#F6F8FF',
+        white: "#ffffff",
+        black: "#000000",
+        error: "#DC3A3A",
+        surface: "#F6F8FF",
       },
       fontSize: {
         "28-bold": ["28px", { lineHeight: "36px", fontWeight: "700" }],
@@ -78,7 +80,16 @@ module.exports = {
       fontFamily: {
         sans: ["Pretendard", "ui-sans-serif", "system-ui", "sans-serif"],
       },
+      keyframes: {
+        scrollX: {
+          "0%": { transform: "translateX(0)" },
+          "100%": { transform: "translateX(-100%)" },
+        },
+      },
+      animation: {
+        scrollX: "scrollX 15s linear infinite",
+      },
     },
   },
-  plugins: [],
+  plugins: [scrollbarHide],
 };
