@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import Header from "../Header/Header";
-import MessageHeader from "../Header/MessageHeader";
-import DeleteButton from "../Button/Delete-button";
-import Modal from "../Modal/Modal";
+import Header from "../Component/Header/Header";
+import MessageHeader from "../Component/Header/MessageHeader";
+import DeleteButton from "../Component/Button/Delete-button";
+import Modal from "../Component/Modal/Modal";
 
 // 🚨 정적인 메시지 데이터 (ID 추적 및 기타 정보 추가)
 const STATIC_MESSAGES = Array.from({ length: 9 }).map((_, index) => ({

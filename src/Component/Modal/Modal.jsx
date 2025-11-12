@@ -1,6 +1,6 @@
 import React from 'react'
-import Badge from '../Component/Badge/Badge'
-import Modalbtn from "../Component/Button/Modal-button"
+import Badge from '../../Component/Badge/Badge'
+import Modalbtn from "../../Component/Button/Modal-button"
 
 // TODO: 실제 API 연동 시 아래 URL을 서버에서 제공하는 Endpoint로 교체하세요.
 export const MODAL_DATA_API_URL = 'https://placeholder.example.com/api/modal'
