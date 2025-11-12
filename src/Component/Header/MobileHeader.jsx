@@ -184,7 +184,7 @@ function MobileHeader() {
 
       {/* 수신자 헤더 */}
       <div className="border-b border-gray-200">
-        <div className="flex items-center justify-between w-[360px] h-[52px] bg-white relative px-[20px] py-[12px] mx-auto">
+        <div className="flex items-center justify-between min-w-[360px] h-[52px] bg-white relative px-[24px] py-[12px] mx-auto">
           <div className="text-gray-800 text-18-bold text-left">
             To. Ashley Kim
           </div>
@@ -192,7 +192,7 @@ function MobileHeader() {
       </div>
 
       <div className="border-b border-gray-200">
-        <div className="relative w-[360px] h-[52px] bg-white flex justify-end items-center px-2 mx-auto">
+        <div className="relative min-w-[360px] h-[52px] bg-white flex justify-end items-center px-[24px] mx-auto">
           {/* 팝업 (이모지 제한 안내) */}
           {popup.visible && (
             <div className="absolute top-2 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-80 text-white text-sm px-5 py-3 rounded-lg shadow-lg z-50 animate-fadeIn">
