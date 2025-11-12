@@ -1,12 +1,6 @@
-<<<<<<< HEAD
 import React from 'react'
 import Badge from '../../Component/Badge/Badge'
 import Modalbtn from "../../Component/Button/Modal-button"
-=======
-import React from "react";
-import Badge from "../Badge/Badge";
-import Modalbtn from "../Button/Modal-button";
->>>>>>> RecipientPage
 
 // TODO: 실제 API 연동 시 아래 URL을 서버에서 제공하는 Endpoint로 교체하세요.
 export const MODAL_DATA_API_URL = "https://placeholder.example.com/api/modal";
@@ -44,13 +38,8 @@ function Modal({ isOpen = false, onClose, onButtonClick, message }) {
   // apiUrl은 현재 더미 값이며, 상위 컴포넌트에서 fetch(apiUrl)로 데이터를 받아와 props에 주입하면 됩니다.
 
   return (
-<<<<<<< HEAD
     <div 
       className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(0,0,0,0.54)]"
-=======
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[#F1F1F1]"
->>>>>>> RecipientPage
       onClick={handleBackdropClick}
     >
       <div className="relative w-[600px] h-[476px] bg-white rounded-2xl shadow-[0px_2px_12px_rgba(0,0,0,0.08)]">
@@ -113,14 +102,9 @@ function Modal({ isOpen = false, onClose, onButtonClick, message }) {
         </div>
 
         {/* 버튼 */}
-<<<<<<< HEAD
         <div className="absolute left-[240px] bottom-[40px]">
           <Modalbtn onClick={handleButtonClick} text="확인"
           className="px-[15px] py-[7px] text-16-regular text-white"/>
-=======
-        <div className="absolute left-[240px] bottom-5">
-          <Modalbtn onClick={handleButtonClick} />
->>>>>>> RecipientPage
         </div>
       </div>
     </div>

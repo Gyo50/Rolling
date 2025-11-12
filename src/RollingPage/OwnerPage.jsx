@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import React, { useEffect, useMemo, useState, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Header from "../Component/Header/Header.jsx";
@@ -18,13 +17,6 @@ import {
   normalizeReactionsResponse,
   EMOJI_TO_ALIAS
 } from "../api/recipients";
-=======
-import React, { useState } from "react";
-import Header from "../Component/Header/Header";
-import MessageHeader from "../Component/Header/MessageHeader";
-import DeleteButton from "../Component/Button/Delete-button";
-import Modal from "../Component/Modal/Modal";
->>>>>>> RecipientPage
 
 // 🚨 정적인 메시지 데이터 (API 로드 실패 시 대체용으로 유지)
 const STATIC_MESSAGES = Array.from({ length: 3 }).map((_, index) => ({
@@ -66,7 +58,6 @@ function OwnerPage({ recipientId }) {
   const [messageToDeleteId, setMessageToDeleteId] = useState(null);
   const [screenMode, setScreenMode] = useState("pc"); // 'pc' | 'tablet' | 'mobile'
 
-<<<<<<< HEAD
   // ==========================
   // 1. 반응형 화면 크기 감지 (RollingPage 강점)
   // ==========================
@@ -198,11 +189,6 @@ function OwnerPage({ recipientId }) {
   // ==========================
   // 4. 모달 관련 함수 (RollingPage 모달 구조 사용)
   // ==========================
-=======
-  // === 메시지 삭제 확인 모달 상태 추가 (개별 메시지 삭제) ===
-  const [isMessageDeleteModalOpen, setIsMessageDeleteModalOpen] = useState(false);
-  const [messageToDeleteId, setMessageToDeleteId] = useState(null); // 삭제할 메시지 ID 추적
->>>>>>> RecipientPage
 
   const handleCardClick = (message) => {
     setSelectedMessage(message);
@@ -247,30 +233,6 @@ function OwnerPage({ recipientId }) {
   const hasMessages = Array.isArray(messages) && messages.length > 0;
   const isUsingFallbackMessages = messages === STATIC_MESSAGES;
 
-<<<<<<< HEAD
-=======
-  // 메시지 삭제 확인 모달
-  const MessageDeleteConfirmModal = () => (
-    <div className="bg-white rounded-xl shadow-2xl p-8 max-w-sm w-full mx-4">
-      <h3 className="text-xl font-bold mb-4 text-center">메시지 삭제 확인</h3>
-      <p className="text-gray-700 mb-6 text-center">메시지를 삭제하시겠습니까?</p>
-      <div className="flex justify-center space-x-3">
-        <button
-          onClick={handleConfirmMessageDelete}
-          className="py-2 px-4 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition flex-1"
-        >
-          예
-        </button>
-        <button
-          onClick={handleCloseMessageDeleteModal}
-          className="py-2 px-4 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition flex-1"
-        >
-          아니요
-        </button>
-      </div>
-    </div>
-  );
->>>>>>> RecipientPage
 
   // ==========================
   // 6. 렌더링
@@ -330,7 +292,6 @@ function OwnerPage({ recipientId }) {
                 </div>
               )}
 
-<<<<<<< HEAD
               {/* 카드 목록 (Card 컴포넌트 사용) */}
               {hasMessages ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[24px] mt-[28px] relative z-10">
@@ -356,54 +317,6 @@ function OwnerPage({ recipientId }) {
                     {isUsingFallbackMessages
                       ? '샘플 데이터를 표시 중입니다. 수신인을 생성하고 메시지를 작성해 보세요.'
                       : '아직 작성된 메시지가 없습니다.'}
-=======
-              {/* 카드 목록 */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[24px] mt-[28px] relative z-10">
-                {STATIC_MESSAGES.map((item) => (
-                  <div
-                    key={item.id}
-                    onClick={() => handleCardClick(item)}
-                    className="bg-white rounded-xl shadow-md p-6 text-gray-600 flex flex-col justify-between cursor-pointer hover:shadow-lg transition h-[280px]"
-                  >
-                    {/* 🗑️ 상단: 프로필, 이름, 태그, 휴지통 */}
-                    <div className="flex justify-between items-start mb-4">
-                      <div className="flex items-center">
-                        {/* 프로필 이미지 */}
-                        <img
-                          src={item.profileImageURL}
-                          alt={item.senderName}
-                          className="w-10 h-10 rounded-full mr-3 object-cover"
-                        />
-                        {/* From. 이름 및 태그 */}
-                        <div>
-                          <div className="font-bold text-gray-900 text-lg">
-                            From. {item.senderName}
-                          </div>
-                          <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-purple-100 text-purple-700">
-                            {item.relationship}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* 개별 메시지 삭제 휴지통 아이콘 */}
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation(); // 카드 본문 클릭 방지
-                          handleOpenMessageDeleteModal(item.id); // 메시지 삭제 모달 열기
-                        }}
-                        className="p-2 text-gray-400 hover:text-gray-600 transition"
-                        aria-label="메시지 삭제"
-                      >
-                        🗑️
-                      </button>
-                    </div>
-
-                    {/* 메시지 내용 */}
-                    <p className="text-gray-800 line-clamp-4 flex-1">{item.content}</p>
-
-                    {/* 하단: 날짜 */}
-                    <div className="mt-4 text-xs text-gray-500">{item.date}</div>
->>>>>>> RecipientPage
                   </div>
                 )
               )}
