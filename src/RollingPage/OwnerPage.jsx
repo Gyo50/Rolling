@@ -10,8 +10,7 @@ import {
   fetchRecipientReactions,
   deleteRecipient,
   reactToRecipient,
-  normalizeReactionsResponse,
-  EMOJI_TO_ALIAS
+  normalizeReactionsResponse
 } from "../api/recipients"; // 대상/메시지 조회 API 함수 불러오기
 
 // 🚨 정적인 메시지 데이터 (ID 추적 및 기타 정보 추가)
@@ -43,11 +42,52 @@ function OwnerPage({ recipientId }) {
   const [reactions, setReactions] = useState([])
   const [deleting, setDeleting] = useState(false)
   const [deleteError, setDeleteError] = useState(null)
+  const [favorites, setFavorites] = useState(new Set()) // 즐겨찾기 상태 관리
 
   const currentRecipientId = useMemo(
     () => getRecipientIdFromPath(recipientId, paramsId), // 우선순위: props → useParams → URL 에서 ID 추출
     [recipientId, paramsId]
   )
+
+  // 즐겨찾기 로컬 스토리지 키 생성
+  const getFavoritesKey = (recipientId) => `favorites_${recipientId}`
+
+  // 즐겨찾기 상태 로드
+  useEffect(() => {
+    if (!currentRecipientId) return
+    try {
+      const stored = localStorage.getItem(getFavoritesKey(currentRecipientId))
+      if (stored) {
+        const favoriteIds = JSON.parse(stored)
+        setFavorites(new Set(favoriteIds))
+      }
+    } catch (err) {
+      console.error('즐겨찾기 로드 실패:', err)
+    }
+  }, [currentRecipientId])
+
+  // 즐겨찾기 토글 함수
+  const toggleFavorite = (messageId) => {
+    if (!currentRecipientId) return
+    setFavorites((prev) => {
+      const newFavorites = new Set(prev)
+      if (newFavorites.has(messageId)) {
+        newFavorites.delete(messageId)
+      } else {
+        newFavorites.add(messageId)
+      }
+      // 로컬 스토리지에 저장
+      try {
+        localStorage.setItem(
+          getFavoritesKey(currentRecipientId),
+          JSON.stringify(Array.from(newFavorites))
+        )
+      } catch (err) {
+        console.error('즐겨찾기 저장 실패:', err)
+      }
+      return newFavorites
+    })
+  }
 
   useEffect(() => {
     let active = true // 비동기 처리 중 컴포넌트가 언마운트될 경우를 대비한 플래그
@@ -257,16 +297,23 @@ function OwnerPage({ recipientId }) {
   const isUsingFallbackMessages = messages === STATIC_MESSAGES
   const hasMessages = Array.isArray(messages) && messages.length > 0
 
+  // 즐겨찾기된 메시지를 먼저 보이도록 정렬
+  const sortedMessages = useMemo(() => {
+    if (!hasMessages) return []
+    return [...messages].sort((a, b) => {
+      const aIsFavorite = favorites.has(a.id)
+      const bIsFavorite = favorites.has(b.id)
+      if (aIsFavorite && !bIsFavorite) return -1
+      if (!aIsFavorite && bIsFavorite) return 1
+      return 0 // 같은 그룹 내에서는 원래 순서 유지
+    })
+  }, [messages, favorites, hasMessages])
+
   const handleAddReaction = async (emoji) => {
     if (!currentRecipientId) return
     try {
-      const alias = EMOJI_TO_ALIAS[emoji]
-      if (!alias) {
-        alert('현재 지원하지 않는 이모지입니다.')
-        return
-      }
-      // 선택한 이모지를 별칭으로 변환 후 Rolling API에 증가 요청
-      await reactToRecipient(currentRecipientId, { emoji: alias, type: 'increase' })
+      // API가 모든 이모지를 직접 지원하므로 이모지를 그대로 전송
+      await reactToRecipient(currentRecipientId, { emoji: emoji, type: 'increase' })
       const updated = await fetchRecipientReactions(currentRecipientId)
       setReactions(normalizeReactionsResponse(updated))
     } catch (err) {
@@ -330,13 +377,15 @@ function OwnerPage({ recipientId }) {
               {/* 카드 목록 */}
               {hasMessages ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[24px] mt-[28px] relative z-10">
-                  {messages.map((item) => (
+                  {sortedMessages.map((item) => {
+                    const isFavorite = favorites.has(item.id)
+                    return (
                   <div
                     key={item.id}
                     onClick={() => handleCardClick(item)}
                     className="bg-white rounded-xl shadow-md p-6 text-gray-600 flex flex-col justify-between cursor-pointer hover:shadow-lg transition h-[280px]"
                   >
-                    {/* 🗑️ 상단: 프로필, 이름, 태그, 휴지통 */}
+                    {/* 🗑️ 상단: 프로필, 이름, 태그, 즐겨찾기, 휴지통 */}
                     <div className="flex justify-between items-start mb-4">
                       <div className="flex items-center">
                         {/* 프로필 이미지 */}
@@ -359,17 +408,35 @@ function OwnerPage({ recipientId }) {
                         </div>
                       </div>
 
-                      {/* 개별 메시지 삭제 휴지통 아이콘 */}
-                      <button
-                        onClick={(e) => {
+                      {/* 즐겨찾기 및 삭제 버튼 */}
+                      <div className="flex items-center gap-2">
+                        {/* 즐겨찾기 버튼 */}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleFavorite(item.id);
+                          }}
+                          className={`p-2 transition ${
+                            isFavorite
+                              ? 'text-yellow-500 hover:text-yellow-600'
+                              : 'text-gray-400 hover:text-gray-600'
+                          }`}
+                          aria-label={isFavorite ? '즐겨찾기 해제' : '즐겨찾기 추가'}
+                        >
+                          {isFavorite ? '⭐' : '☆'}
+                        </button>
+                        {/* 개별 메시지 삭제 휴지통 아이콘 */}
+                        <button
+                          onClick={(e) => {
                             e.stopPropagation();
                             handleOpenMessageDeleteModal();
-                        }}
-                        className="p-2 text-gray-400 hover:text-gray-600 transition"
-                        aria-label="메시지 삭제"
-                      >
-                        🗑️
-                      </button>
+                          }}
+                          className="p-2 text-gray-400 hover:text-gray-600 transition"
+                          aria-label="메시지 삭제"
+                        >
+                          🗑️
+                        </button>
+                      </div>
                     </div>
 
                     {/* 메시지 내용 */}
@@ -382,7 +449,8 @@ function OwnerPage({ recipientId }) {
                         {item.date || '날짜 정보 없음'}
                     </div>
                   </div>
-                ))}
+                    )
+                  })}
               </div>
               ) : (
                 !loading && (

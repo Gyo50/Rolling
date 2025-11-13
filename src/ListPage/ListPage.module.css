@@ -19,6 +19,7 @@
   --card-width: 275px;
   --card-height: 260px;
   --card-gap: 20px;
+  touch-action: pan-y pan-x;
 }
 
 .swiperInstance {
@@ -27,6 +28,9 @@
   padding: 0;
   box-sizing: border-box;
   padding-bottom: 0;
+  /* 터치 이벤트 성능 최적화 */
+  touch-action: pan-y pan-x;
+  will-change: transform;
 }
 
 .swiperSlide {
@@ -51,6 +55,21 @@
   position: relative;
 }
 
+.searchContainer {
+  padding: 0 20px;
+  margin-bottom: -30px;
+}
+
+.searchInput {
+  font-family: 'Pretendard', sans-serif;
+}
+
+@media (min-width: 769px) {
+  .searchContainer {
+    padding: 0;
+  }
+}
+
 @media (max-width: 360px) {
   .mainLayout {
     max-width: 360px;
@@ -63,6 +82,11 @@
     align-items: flex-start !important;
     row-gap: 74px !important;
     box-sizing: border-box;
+  }
+
+  .searchContainer {
+    padding: 0 !important;
+    margin-bottom: -25px;
   }
 
   .section {
@@ -89,6 +113,7 @@
     --card-width: min(208px, calc(100vw - 40px));
     --card-height: calc(232px + (var(--card-width) - 208px) * 0.4179104478);
     --card-gap: 12px;
+    touch-action: pan-y pan-x;
   }
 
   .swiperInstance {
@@ -122,7 +147,7 @@
     left: 50%;
     top: 0;
     transform: translateX(-50%);
-    padding: 12px 20px !important;
+    padding: 0 !important;
     background: #ffffff;
     border-bottom: 1px solid #ededed;
     box-sizing: border-box;
@@ -227,6 +252,11 @@
     box-sizing: border-box;
   }
 
+  .searchContainer {
+    padding: 0 !important;
+    margin-bottom: -25px;
+  }
+
   .headerShell {
     width: 100%;
   }
@@ -239,7 +269,7 @@
     width: 100%;
     max-width: 768px;
     margin: 0 auto;
-    padding: 11px 24px !important;
+    padding: 0 !important;
     height: 64px !important;
     box-sizing: border-box;
   }
@@ -282,6 +312,7 @@
     max-width: 768px;
     margin: 0 auto;
     overflow: hidden;
+    touch-action: pan-y pan-x;
     --card-width: clamp(208px, calc((100vw - 48px - 20px) / 2), 275px);
     --card-height: calc(232px + (var(--card-width) - 208px) * 0.4179104478);
     --card-gap: 20px;
@@ -359,6 +390,11 @@
     box-sizing: border-box;
   }
 
+  .searchContainer {
+    padding: 0 !important;
+    margin-bottom: -30px;
+  }
+
   .headerShell {
     width: 100%;
   }
@@ -371,7 +407,7 @@
     width: 100%;
     max-width: 1024px;
     margin: 0 auto;
-    padding: 12px 24px !important;
+    padding: 0 !important;
     height: 64px !important;
     box-sizing: border-box;
   }
@@ -401,6 +437,7 @@
     max-width: 1024px;
     margin: 0 auto;
     overflow: hidden;
+    touch-action: pan-y pan-x;
     --card-width: clamp(220px, calc((100vw - 48px - 40px) / 3), 275px);
     --card-height: calc(232px + (var(--card-width) - 208px) * 0.4179104478);
     --card-gap: 20px;

@@ -4,11 +4,7 @@ import { ReactComponent as PlusIcon } from "../../img/add-24.svg";
 import { ReactComponent as ArrowIcon } from "../../img/arrow_down.svg";
 import EmojiPicker from "emoji-picker-react";
 import { Link } from "react-router-dom";
-import { EMOJI_TO_ALIAS } from "../../api/recipients";
-
-// Rolling API가 허용하는 이모지를 제한적으로 노출하기 위한 셋
-const ALLOWED_EMOJIS = Object.keys(EMOJI_TO_ALIAS);
-const ALLOWED_EMOJI_SET = new Set(ALLOWED_EMOJIS);
+// 이모지 제한 제거: API가 모든 이모지를 직접 지원하므로 제한 없이 사용 가능
 
 function MessageHeader({
   recipient,
@@ -43,12 +39,6 @@ function MessageHeader({
         : emojiData?.emoji || emojiData?.native;
 
     if (!selectedEmoji) return;
-
-    if (!ALLOWED_EMOJI_SET.has(selectedEmoji)) {
-      alert('현재 지원하지 않는 이모지입니다. 준비된 이모지를 사용해 주세요.');
-      setShowEmojiPicker(false);
-      return;
-    }
 
     let updated;
     setReactions((prev) => {
@@ -249,8 +239,17 @@ function MessageHeader({
                 </button>
 
                 {showEmojiPicker && (
-                  <div className="absolute top-[calc(100%+8px)] left-1/2 transform -translate-x-1/2 z-30">
-                    <EmojiPicker onEmojiClick={handleEmojiSelect} />
+                  <div className="absolute top-[calc(100%+8px)] left-1/2 transform -translate-x-1/2 z-30 bg-white rounded-lg shadow-lg border border-gray-200 p-4">
+                    <EmojiPicker 
+                      onEmojiClick={handleEmojiSelect}
+                      searchDisabled={false}
+                      previewConfig={{
+                        showPreview: false
+                      }}
+                      skinTonesDisabled={true}
+                      width="100%"
+                      height="400px"
+                    />
                   </div>
                 )}
               </div>
