@@ -299,7 +299,6 @@ function MessageHeader({
                 <span className="text-18-regular text-gray-900 whitespace-nowrap">
                   <span className="text-18-bold">{totalWriters}</span>명이 작성했어요!
                 </span>
-                <span className="w-px h-[28px] bg-[#EEEEEE]"></span>
               </div>
             )}
             

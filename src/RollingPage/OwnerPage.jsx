@@ -1,12 +1,12 @@
 import React, { useEffect, useMemo, useState, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import Header from "../Component/Header/Header.jsx";
-import MobileHeader from "../Component/Header/MobileHeader.jsx"; // MobileHeader 임포트
-import MessageHeader from "../Component/Header/MessageHeader.jsx";
-import DeleteButton from "../Component/Button/Delete-button.jsx";
-import Modal from "../Component/Modal/Modal.jsx";
-import Card from "../Component/Card/Card.jsx"; // Card 컴포넌트 임포트
-import DeleteModal from "../Component/Modal/DeleteModal.jsx"; // 추상화된 DeleteModal 임포트 (가정)
+import HeaderNobutton from "../Component/Header/HeaderNobutton";
+import MobileHeader from "../Component/Header/MobileHeader"; // MobileHeader 임포트
+import MessageHeader from "../Component/Header/MessageHeader";
+import DeleteButton from "../Component/Button/Delete-button";
+import Modal from "../Component/Modal/Modal";
+import Card from "../Component/Card/Card"; // Card 컴포넌트 임포트
+import DeleteModal from "../Component/Modal/DeleteModal"; 
 // API 함수들 임포트
 import {
   fetchRecipient,
@@ -247,7 +247,7 @@ function OwnerPage({ recipientId }) {
             {screenMode === "mobile" ? (
               <MobileHeader hideCreateButton />
             ) : (
-              <Header />
+              <HeaderNobutton />
             )}
             
             <div className="mx-auto">
