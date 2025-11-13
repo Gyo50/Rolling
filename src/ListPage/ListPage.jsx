@@ -14,7 +14,16 @@ const CARDS_PER_VIEW = 4
 const CARDS_PER_GROUP = 2
 const CARD_GAP = 20
 
-function NavigableCard({ card }) {
+// 최근 3시간 내 생성된 롤링페이퍼인지 확인하는 함수
+function isWithin3Hours(createdAt) {
+  if (!createdAt) return false
+  const createdTime = new Date(createdAt).getTime()
+  const now = Date.now()
+  const threeHoursInMs = 3 * 60 * 60 * 1000
+  return (now - createdTime) < threeHoursInMs
+}
+
+function NavigableCard({ card, rank, isRecent }) {
   const navigate = useNavigate()
 
   const handleNavigate = useCallback(() => {
@@ -28,7 +37,7 @@ function NavigableCard({ card }) {
       onClick={handleNavigate}
       className="cursor-pointer"
     >
-      <CardList recipient={card} />
+      <CardList recipient={card} rank={rank} isRecent={isRecent} />
     </div>
   )
 }
@@ -80,22 +89,26 @@ function RollingSwiper({ cards, sliderKey, viewportWidth }) {
     }
   }, [displayCards])
 
-  const handleSlideChange = (swiper) => {
-    // Swiper의 실제 activeIndex를 사용하되, 최대 인덱스를 초과하지 않도록 제한
-    const currentIndex = swiper.activeIndex
-    const maxAllowed = isDesktop ? maxStartIndexWithEmpty : maxStartIndexForLastCard
-    const clamped = Math.min(currentIndex, maxAllowed)
-    
-    // 터치 스크롤로 인한 이동인 경우, 최대 인덱스를 초과하면 제한
-    if (clamped !== currentIndex && currentIndex > maxAllowed) {
-      // 최대 인덱스를 초과했으면 최대 인덱스로 이동
-      swiper.slideTo(maxAllowed, 300) // 300ms 애니메이션
-      setActiveIndex(maxAllowed)
-    } else {
-      // activeIndex를 항상 Swiper의 실제 인덱스와 동기화
-      setActiveIndex(clamped)
-    }
-  }
+  const handleSlideChange = useCallback((swiper) => {
+    // requestAnimationFrame을 사용하여 성능 최적화
+    requestAnimationFrame(() => {
+      // Swiper의 실제 activeIndex를 사용하되, 최대 인덱스를 초과하지 않도록 제한
+      const currentIndex = swiper.activeIndex
+      // 데스크탑: 빈칸까지 이동 가능, 모바일/태블릿: 마지막 카드까지만 이동 가능
+      const maxAllowed = isDesktop ? maxStartIndexWithEmpty : maxStartIndexForLastCard
+      const clamped = Math.min(currentIndex, maxAllowed)
+      
+      // 터치 스크롤로 인한 이동인 경우, 최대 인덱스를 초과하면 제한
+      if (clamped !== currentIndex && currentIndex > maxAllowed) {
+        // 최대 인덱스를 초과했으면 최대 인덱스로 이동
+        swiper.slideTo(maxAllowed, 300) // 300ms 애니메이션
+        setActiveIndex(maxAllowed)
+      } else {
+        // activeIndex를 항상 Swiper의 실제 인덱스와 동기화
+        setActiveIndex(clamped)
+      }
+    })
+  }, [isDesktop, maxStartIndexForLastCard, maxStartIndexWithEmpty])
 
   const slideBy = useCallback(
     (delta) => {
@@ -161,7 +174,8 @@ function RollingSwiper({ cards, sliderKey, viewportWidth }) {
 
   const handleWheel = useCallback(
     (event) => {
-      if (isDesktop) return
+      // 데스크탑에서만 휠 이벤트 처리 (모바일/태블릿에서는 터치 이벤트가 우선)
+      if (!isDesktop) return
       const delta = event.deltaY > 0 ? 1 : -1
       slideBy(delta)
     },
@@ -195,20 +209,33 @@ function RollingSwiper({ cards, sliderKey, viewportWidth }) {
         loop={false}
         touchEventsTarget="container"
         touchStartPreventDefault={false}
+        touchRatio={1}
+        touchAngle={45}
+        threshold={5}
         onSwiper={(swiper) => {
           swiperRef.current = swiper
         }}
         onSlideChange={handleSlideChange}
         className={`w-full ${styles.swiperInstance}`}
       >
-        {displayCards.map((card, index) => (
-          <SwiperSlide
-            key={`${sliderKey}-${card.id ?? index}`}
-            className={`flex justify-center ${styles.swiperSlide}`}
-          >
-            {card.placeholder ? <PlaceholderCard index={index} /> : <NavigableCard card={card} />}
-          </SwiperSlide>
-        ))}
+        {displayCards.map((card, index) => {
+          // 인기 탑 8의 경우 rank 전달 (1,2,3등만 배지 표시)
+          const rank = sliderKey === 'popular' && !card.placeholder ? index + 1 : null
+          // 최근 섹션의 경우 3시간 내 생성 여부 확인
+          const isRecent = sliderKey === 'recent' && !card.placeholder ? isWithin3Hours(card?.createdAt) : false
+          return (
+            <SwiperSlide
+              key={`${sliderKey}-${card.id ?? index}`}
+              className={`flex justify-center ${styles.swiperSlide}`}
+            >
+              {card.placeholder ? (
+                <PlaceholderCard index={index} />
+              ) : (
+                <NavigableCard card={card} rank={rank} isRecent={isRecent} />
+              )}
+            </SwiperSlide>
+          )
+        })}
       </Swiper>
 
       {showNavigation && (() => {
@@ -237,6 +264,7 @@ function RollingSwiper({ cards, sliderKey, viewportWidth }) {
 }
 
 function ListPage() {
+  const navigate = useNavigate()
   const [viewportWidth, setViewportWidth] = useState(() => {
     if (typeof window === 'undefined') return 1920
     const measured = window.innerWidth || document.documentElement.clientWidth || 1920
@@ -369,6 +397,7 @@ function ListPage() {
     }
   }, [])
 
+
   return (
     <div className="min-h-screen bg-white">
       <header className="flex justify-center shadow-[0_1px_0_rgba(237,237,237,1)] bg-white">
@@ -377,16 +406,11 @@ function ListPage() {
         </div>
       </header>
 
-      <main className={`flex flex-col items-center gap-[74px] pt-[54px] pb-6 min-[769px]:pb-[172px] overflow-hidden min-[769px]:overflow-visible ${styles.mainLayout}`}>
+      <main className={`flex flex-col items-center gap-[50px] pt-[30px] pb-6 min-[769px]:pb-[172px] overflow-hidden min-[769px]:overflow-visible ${styles.mainLayout}`}>
         <section className={`w-full max-w-[1160px] flex flex-col gap-4 ${styles.section}`}>
           <div className={`flex items-center justify-between ${styles.sectionHeader}`}>
             <h2 className={`text-24-bold text-gray-900 ${styles.sectionTitle}`}>
-              인기 롤링 페이퍼 🔥
-              {!loading && !error && popularCards.length > 0 && (
-                <span className="text-16-regular text-gray-500 ml-2">
-                  ({popularCards.length}개)
-                </span>
-              )}
+              인기 TOP 8 🔥
             </h2>
             </div>
           {loading ? (
@@ -403,9 +427,12 @@ function ListPage() {
 
         <section className={`w-full max-w-[1160px] flex flex-col gap-4 ${styles.section}`}>
           <div className={`flex items-center justify-between ${styles.sectionHeader}`}>
-            <h2 className={`text-24-bold text-gray-900 ${styles.sectionTitle}`}>
+            <h2 
+              onClick={() => navigate('/recent')}
+              className={`text-24-bold text-gray-900 ${styles.sectionTitle} cursor-pointer hover:text-purple-600 transition-colors`}
+            >
               최근에 만든 롤링 페이퍼 ⭐️️
-              {!loading && !error && recentCards.length > 0 && (
+              {!loading && !error && (
                 <span className="text-16-regular text-gray-500 ml-2">
                   ({recentCards.length}개)
                 </span>

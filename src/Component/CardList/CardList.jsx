@@ -18,7 +18,7 @@ const COLOR_STYLE_MAP = {
 const DEFAULT_BACKGROUND =
   "https://mblogthumb-phinf.pstatic.net/MjAyMTAzMDVfOTYg/MDAxNjE0OTU1MTgyMzYz.ozwJXDtUw0V_Gniz6i7qgDOkNs09MX-rJdCcaw6AAeAg.DZivXhGnQDUUx7kgkRXNOEI0DEltAo6p9Jk9SDBbxRcg.JPEG.sosohan_n/IMG_3725.JPG?type=w800"
 
-function CardList({ recipient }) {
+function CardList({ recipient, isRecent }) {
   // API에서 내려온 수신인 정보(name, messageCount 등)를 카드 UI에 반영
   const name = recipient?.name || 'To.Sowon'
   // messageCount는 API가 문자열을 줄 수도 있어 Number 변환 후 기본값 처리
@@ -112,6 +112,13 @@ function CardList({ recipient }) {
           aria-hidden="true"
           className="absolute right-0 bottom-[-10px] pointer-events-none z-0 select-none"
         />
+      )}
+      {isRecent && (
+        <div className="absolute top-2 right-2 z-20 flex items-center justify-center">
+          <span className="text-14-bold min-[361px]:text-16-bold font-bold text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
+            NEW!
+          </span>
+        </div>
       )}
       <div
         className={`flex flex-col gap-3 relative z-[1] ${isImageCard ? 'text-white' : 'text-gray-900'}`}
