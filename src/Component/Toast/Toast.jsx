@@ -23,7 +23,7 @@ function Toast({
     setVisible(false);
     setTimeout(() => {
       onClose?.();
-    }, 300); // 애니메이션 시간
+    }, 500); // 애니메이션 시간
   }, [onClose]);
 
   useEffect(() => {

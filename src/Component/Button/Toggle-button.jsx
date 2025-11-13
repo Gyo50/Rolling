@@ -1,8 +1,11 @@
-import React, { useState } from "react";
+import React from "react";
 
-
-function ToggleButton() {
-  const [active, setActive] = useState("color");
+function ToggleButton({ active = 'color', onChange }) {
+  const handleChange = (value) => {
+    if (typeof onChange === 'function') {
+      onChange(value) // 외부에서 상태를 제어할 수 있도록 선택값 전달
+    }
+  }
 
   return (
     <div className="relative w-[244px] h-[40px] flex bg-gray-100 rounded-md overflow-hidden">
@@ -13,14 +16,16 @@ function ToggleButton() {
       <button
         className={`relative w-1/2 h-full text-16-bold z-10 transition-colors duration-300
           ${active === "color" ? "text-purple-700" : "text-gray-500"}`}
-        onClick={() => setActive("color")}
+        onClick={() => handleChange("color")}
+        type="button"
       >
         컬러
       </button>
       <button
         className={`relative w-1/2 h-full text-16-bold z-10 transition-colors duration-300
           ${active === "image" ? "text-purple-700" : "text-gray-500"}`}
-        onClick={() => setActive("image")}
+        onClick={() => handleChange("image")}
+        type="button"
       >
         이미지
       </button>

@@ -40,8 +40,6 @@ function Send() {
       // 추가적으로 Input, Froala 등에서 값을 모아 함께 보냄
     };
 
-    console.log("보낼 payload:", payload);
-
     try {
       const res = await fetch("/api/create-resource", {
         method: "POST",
@@ -49,8 +47,7 @@ function Send() {
         body: JSON.stringify(payload),
       });
       if (!res.ok) throw new Error("서버 에러");
-      const data = await res.json();
-      console.log("서버 응답:", data);
+      await res.json();
       alert("생성 완료!");
     } catch (err) {
       console.error(err);
