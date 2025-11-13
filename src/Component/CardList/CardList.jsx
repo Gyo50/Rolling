@@ -225,4 +225,3 @@ function CardList({ recipient, isRecent }) {
 }
 
 export default CardList
-
