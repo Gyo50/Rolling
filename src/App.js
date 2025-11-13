@@ -4,7 +4,6 @@ import MainPage from './MainPage/MainPage'
 import ListPage from './ListPage/ListPage'
 import CreatePostPage from './CreatePostPage/CreatePostPage'
 import OwnerPage from './RollingPage/OwnerPage'
-import RecipientPage from './RollingPage/RecipientPage'
 
 function App() {
   return (
