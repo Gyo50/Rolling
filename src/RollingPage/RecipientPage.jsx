@@ -3,8 +3,9 @@ import Header from "../Component/Header/Header";
 import MessageHeader from "../Component/Header/MessageHeader";
 import Modal from "../Component/Modal/Modal";
 import UserCard, { defaultMessage } from "../Component/Card/UserCard";
+import AddCard from "../Component/Card/AddCard";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 function RecipientPage() {
   const { id } = useParams(); // URL에 있는 id 값 가져오기
@@ -13,20 +14,20 @@ function RecipientPage() {
   const defaultMessages = Array(6).fill(defaultMessage);
 
   // 카드데이터 뿌리기: UserCard.jsx: 추후 확인 필요(현재 defaultMessages)
-  // useEffect(() => {
-  //   const dataMessages = async () => {
-  //     try {
-  //       const res = await axios.get(
-  //         `https://rolling-api.vercel.app/20-4/recipients/${id}/messages`
-  //       );
-  //       setMessages(res.data.results || []);
-  //     } catch (error) {
-  //       alert(`실패입니다. 에러코드: ${error}`);
-  //     }
-  //   };
+  useEffect(() => {
+    const dataMessages = async () => {
+      try {
+        const res = await axios.get(
+          `https://rolling-api.vercel.app/20-4/recipients/14995/messages/?limit=8&offset=0`
+        );
+        setMessages(res.data.results || []);
+      } catch (error) {
+        alert(`실패입니다. 에러코드: ${error}`);
+      }
+    };
 
-  //   dataMessages();
-  // }, []);
+    dataMessages();
+  }, []);
 
   // 랜더링 데이터 선택: 없으면 defaultMessages데이터 표시
   const messegesToRender = messages && messages.length > 0 ? messages : defaultMessages;
@@ -95,6 +96,13 @@ function RecipientPage() {
     }
   };
 
+  const navigate = useNavigate();
+
+  const handleAddCardClick = () => {
+    // alert(`/post/${id}/message`);
+    navigate(`/post/${id}/message`);
+  };
+
   return (
     <>
       <div className="overflow-y-scroll owner-page-scrollbar-hide">
@@ -117,6 +125,9 @@ function RecipientPage() {
           <div className="flex-1 w-full pt-[180px] pb-10 relative">
             <div className="mx-auto px-6 relative max-w-7xl">
               {/* 카드 목록 */}
+              <div onClick={handleAddCardClick} className="cursor-pointer">
+                <AddCard />
+              </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[24px] mt-[28px] relative z-10">
                 {messegesToRender.map((message, idx) => (
                   <UserCard
