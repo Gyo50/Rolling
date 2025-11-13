@@ -1,7 +1,7 @@
 import React from "react";
 import Header from "../Component/Header/Header";
 import introImg01 from "../img/img_intro01.svg";
-import introImg02 from "../img/img_intro02.png";
+import introImg02 from "../img/img_intro02.jpg";
 import PrimaryMain from "../Component/Button/Primary-main";
 
 export default function MainPage() {

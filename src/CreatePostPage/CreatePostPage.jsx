@@ -172,7 +172,9 @@ function CreatePostPage() {
 
   return (
     <>
-      <HeaderNobutton />
+      <div className="max-[360px]:hidden">
+        <HeaderNobutton />
+      </div>
       <div className="
              w-full max-w-[768px] min-h-[646px] mx-auto mt-[57px]
              p-[45px_24px] mb-[120px] text-left
