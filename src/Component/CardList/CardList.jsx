@@ -2,11 +2,12 @@ import React, { useMemo } from 'react'
 import profile01 from './assets/profile01.svg'
 import profile02 from './assets/profile02.svg'
 import profile03 from './assets/profile03.svg'
-import pattern01 from '../Card_list/assets/pattern01.svg'
-import pattern02 from '../Card_list/assets/pattern02.svg'
-import pattern03 from '../Card_list/assets/pattern03.svg'
-import pattern04 from '../Card_list/assets/pattern04.svg'
+import pattern01 from './assets/pattern01.svg'
+import pattern02 from './assets/pattern02.svg'
+import pattern03 from './assets/pattern03.svg'
+import pattern04 from './assets/pattern04.svg'
 import { REACTION_ALIAS_TO_EMOJI } from '../../api/recipients'
+import styles from './CardList.module.css'
 
 const COLOR_STYLE_MAP = {
   beige: { hex: '#FFE2AD', pattern: pattern02 },
@@ -191,28 +192,11 @@ function CardList({ recipient, isRecent }) {
       />
       {/* 반응 아이콘들 - 있을 때만 표시, 선 위에 배치 */}
       {topReactions.length > 0 && (
-          <div
-            className="
-            flex items-end gap-1
-            max-[360px]:gap-[4px]
-            min-[361px]:gap-2
-            mt-[17px] pt-[18px]
-            max-[360px]:mt-4 max-[360px]:pt-[14px]
-            absolute z-[1]
-            left-5 right-5
-            min-[361px]:left-6 min-[361px]:right-6
-          "
-        >
+          <div className={styles.reactionContainer}>
           {topReactions.map((reaction) => (
             <div
               key={reaction.id}
-              className={`
-                flex justify-center items-center
-                rounded-[32px] gap-1
-                max-[360px]:min-w-[50px] max-[360px]:h-7 max-[360px]:px-2 max-[360px]:py-1 max-[360px]:text-12-regular
-                min-[361px]:min-w-[66px] min-[361px]:h-9 min-[361px]:px-3 min-[361px]:py-2 min-[361px]:text-16-regular
-                ${reactionBadgeClass}
-              `}
+              className={`${styles.reactionBadge} ${reactionBadgeClass}`}
             >
               <span>{reaction.emoji}</span>
               <span>{reaction.count}</span>

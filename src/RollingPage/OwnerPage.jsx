@@ -18,15 +18,9 @@ import {
   EMOJI_TO_ALIAS,
 } from "../api/recipients";
 
-const STATIC_MESSAGES = Array.from({ length: 3 }).map((_, index) => ({
-  id: index + 1,
-  senderName: `보낸 이 #${index + 1}`,
-  content: `API 로드 실패 시의 샘플 메시지 ${index + 1}입니다.`,
-  profileImageURL: `https://placehold.co/40x40?text=${index + 1}`,
-  date: "",
-  relationship: ["동료", "친구", "가족"][index % 3],
-}));
+const STATIC_MESSAGES = [];
 
+// URL 경로에서 recipientId 추출
 const getRecipientIdFromPath = (explicitId, paramsId) => {
   if (explicitId != null) return explicitId;
   if (paramsId != null) return paramsId;
@@ -39,25 +33,26 @@ function OwnerPage({ recipientId }) {
   const navigate = useNavigate();
   const { id: paramsId } = useParams();
 
-  const [recipient, setRecipient] = useState(null);
-  const [messages, setMessages] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [reactions, setReactions] = useState([]);
-  const [deleting, setDeleting] = useState(false);
-  const [deleteError, setDeleteError] = useState(null);
+  // ====== 상태 관리 ======
+  const [recipient, setRecipient] = useState(null); // 페이지 정보
+  const [messages, setMessages] = useState([]); // 메시지 리스트
+  const [loading, setLoading] = useState(false); // 로딩 상태
+  const [error, setError] = useState(null); // 에러 상태
+  const [reactions, setReactions] = useState([]); // 반응 목록
 
-  // ⭐ 이미지 or 색상 통합 값
-  const [backgroundValue, setBackgroundValue] = useState("");
+  const [deleting, setDeleting] = useState(false); // 페이지 삭제 중인지 여부
+  const [deleteError, setDeleteError] = useState(null); // 페이지 삭제 에러
 
-  const [isOpen, setIsOpen] = useState(false);
-  const [selectedMessage, setSelectedMessage] = useState(null);
-  const [isPageDeleteModalOpen, setIsPageDeleteModalOpen] = useState(false);
+  const [backgroundValue, setBackgroundValue] = useState(""); // 배경 이미지/색상 값
+  const [isOpen, setIsOpen] = useState(false); // 메시지 상세 모달 열림 여부
+  const [selectedMessage, setSelectedMessage] = useState(null); // 선택된 메시지
+  const [isPageDeleteModalOpen, setIsPageDeleteModalOpen] = useState(false); // 페이지 삭제 모달 열림
   const [isMessageDeleteModalOpen, setIsMessageDeleteModalOpen] =
-    useState(false);
-  const [messageToDeleteId, setMessageToDeleteId] = useState(null);
-  const [screenMode, setScreenMode] = useState("pc");
+    useState(false); // 메시지 삭제 모달 열림
+  const [messageToDeleteId, setMessageToDeleteId] = useState(null); // 삭제할 메시지 ID 저장
+  const [screenMode, setScreenMode] = useState("pc"); // 반응형 모드 (pc / tablet / mobile)
 
+  // ====== 반응형 화면 체크 ======
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 768) setScreenMode("mobile");
@@ -69,11 +64,13 @@ function OwnerPage({ recipientId }) {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // URL 또는 props로 받은 recipientId 결정
   const currentRecipientId = useMemo(
     () => getRecipientIdFromPath(recipientId, paramsId),
     [recipientId, paramsId]
   );
 
+  // ====== 데이터 로드 (페이지 정보 / 메시지 / 반응) ======
   const loadData = useCallback(async () => {
     if (!currentRecipientId) {
       setRecipient(null);
@@ -93,7 +90,7 @@ function OwnerPage({ recipientId }) {
 
       setRecipient(recipientData || null);
 
-      // ⭐ 배경 (이미지 우선 → 없으면 색상)
+      // 배경
       if (recipientData) {
         if (recipientData.backgroundImageURL || recipientData.backgroundImage) {
           setBackgroundValue(
@@ -106,17 +103,19 @@ function OwnerPage({ recipientId }) {
         }
       }
 
-      const normalizedMessages = (
+      // 메시지
+      const rawMessages =
         messageData?.results ||
+        messageData?.messages ||
+        messageData?.data ||
         messageData ||
-        []
-      ).map((item, index) => ({
-        id: item.id ?? index,
+        [];
+
+      const normalizedMessages = rawMessages.map((item) => ({
+        id: item.id,
         senderName: item.sender || "익명",
         content: item.content || "",
-        profileImageURL:
-          item.profileImageURL ||
-          `https://placehold.co/40x40?text=${(item.sender || "U")[0]}`,
+        profileImageURL: item.profileImageURL,
         date: item.createdAt
           ? new Date(item.createdAt).toLocaleDateString()
           : "",
@@ -125,6 +124,7 @@ function OwnerPage({ recipientId }) {
 
       setMessages(normalizedMessages);
 
+      // 반응 정리
       const normalizedReactions = normalizeReactionsResponse(reactionData);
       setReactions(normalizedReactions);
     } catch (err) {
@@ -142,6 +142,7 @@ function OwnerPage({ recipientId }) {
     loadData();
   }, [loadData]);
 
+  // ====== 반응(이모지) 추가 ======
   const handleAddReaction = async (emoji) => {
     if (!currentRecipientId) return;
     try {
@@ -157,6 +158,7 @@ function OwnerPage({ recipientId }) {
     }
   };
 
+  // ====== 페이지 삭제 ======
   const handleConfirmPageDelete = async () => {
     if (!currentRecipientId || deleting) return;
 
@@ -174,21 +176,35 @@ function OwnerPage({ recipientId }) {
     }
   };
 
-  const handleConfirmMessageDelete = () => {
-    setMessages((prev) => prev.filter((msg) => msg.id !== messageToDeleteId));
+  // ====== 메시지 삭제 ======
+  const handleConfirmMessageDelete = async () => {
+    await fetch(
+      `https://rolling-api.vercel.app/20-4/messages/${messageToDeleteId}/`,
+      {
+        method: "DELETE",
+      }
+    );
+
+    setMessages((prev) =>
+      prev.filter((msg) => Number(msg.id) !== Number(messageToDeleteId))
+    );
+
     handleCloseMessageDeleteModal();
   };
 
+  // ====== 메시지 카드 클릭 (내용 보기) ======
   const handleCardClick = (message) => {
     setSelectedMessage(message);
     setIsOpen(true);
   };
 
+  // 모달 닫기
   const handleCloseModal = () => {
     setIsOpen(false);
     setSelectedMessage(null);
   };
 
+  // ====== 모달 열기/닫기 ======
   const handleOpenPageDeleteModal = () => setIsPageDeleteModalOpen(true);
   const handleClosePageDeleteModal = () => setIsPageDeleteModalOpen(false);
 
@@ -201,6 +217,7 @@ function OwnerPage({ recipientId }) {
     setMessageToDeleteId(null);
   };
 
+  // 작성자 프로필 아바타
   const topAvatars = useMemo(() => {
     const unique = [];
     const seen = new Set();
@@ -214,7 +231,7 @@ function OwnerPage({ recipientId }) {
         });
       }
     });
-    return unique.slice(0, 3);
+    return unique.slice(0, 3); // 최대 3개만 표시
   }, [messages]);
 
   const totalMessageCount = recipient?.messageCount ?? messages.length ?? 0;
@@ -223,67 +240,57 @@ function OwnerPage({ recipientId }) {
 
   return (
     <>
-      {/* 색상 or 이미지 자동 적용 */}
+      {/* 전체 배경 처리 */}
       <div
         className="owner-page-scrollbar-hide"
         style={{
-          background: backgroundValue
-            ? backgroundValue.startsWith("http") ||
-              backgroundValue.startsWith("/")
-              ? `url(${backgroundValue})`
-              : backgroundValue // 색상
-            : undefined,
-
-          // 이미지일 때 = contain (확대 안 됨)
-          backgroundSize:
-            backgroundValue?.startsWith("http") ||
-            backgroundValue?.startsWith("/")
-              ? "contain"
-              : "cover",
-
-          backgroundRepeat:
-            backgroundValue?.startsWith("http") ||
-            backgroundValue?.startsWith("/")
-              ? "no-repeat"
-              : undefined,
-
-          backgroundPosition: "center",
+          ...(backgroundValue?.startsWith("http") ||
+          backgroundValue?.startsWith("/")
+            ? {
+                backgroundImage: `url(${backgroundValue})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center top",
+                backgroundRepeat: "no-repeat",
+              }
+            : {
+                backgroundColor: backgroundValue,
+              }),
         }}
       >
-        
-        <div className="flex flex-col min-h-screen">
-          {/* 헤더 */}
-          <div className="fixed top-0 left-0 w-full bg-white shadow-sm z-30">
+        {/* 헤더 */}
+        <div className="fixed top-0 left-0 w-full shadow-sm z-30 bg-white">
+          <div className="max-w-[1200px] mx-auto">
             {screenMode === "mobile" ? (
               <MobileHeader hideCreateButton />
             ) : (
               <HeaderNobutton />
             )}
 
-            <div className="mx-auto">
-              <MessageHeader
-                recipient={recipient}
-                messageCount={totalMessageCount}
-                topAvatars={topAvatars}
-                reactions={reactions}
-                onAddReaction={handleAddReaction}
-                hideAvatars={screenMode === "tablet"}
-              />
-            </div>
+            {screenMode !== "mobile" && (
+              <div className="mx-auto">
+                <MessageHeader
+                  recipient={recipient}
+                  messageCount={totalMessageCount}
+                  topAvatars={topAvatars}
+                  reactions={reactions}
+                  onAddReaction={handleAddReaction}
+                  hideAvatars={screenMode === "tablet"}
+                />
+              </div>
+            )}
           </div>
+        </div>
 
+        <div className="flex flex-col min-h-screen">
           {/* 카드 영역 */}
           <div className="flex-1 w-full pt-[102px] sm:pt-[147px] lg:pt-[171px] pb-10 relative">
-            <div className="mx-auto max-w-[1200px] px-[24px] relative">
+            <div className="mx-auto max-w-[1200px] relative">
               {/* PC 삭제 버튼 */}
               {screenMode === "pc" && (
-                <div className="mx-auto max-w-[1200px] w-full flex justify-end mb-[16px]">
-                  <button
-                    onClick={handleOpenPageDeleteModal}
-                    disabled={deleting}
-                  >
+                <div className="w-full max-w-[1200px] mx-auto flex justify-end px-[24px] mb-[16px]">
+                  <div onClick={handleOpenPageDeleteModal} disabled={deleting}>
                     <DeleteButton text={deleting ? "삭제 중..." : "삭제하기"} />
-                  </button>
+                  </div>
                 </div>
               )}
 
@@ -305,8 +312,9 @@ function OwnerPage({ recipientId }) {
                 </div>
               )}
 
+              {/* 카드 리스트 */}
               {hasMessages ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[24px] mt-[28px] relative z-10">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[24px] mt-[28px] relative z-10 px-[24px]">
                   {messages.map((item) => (
                     <Card
                       key={item.id}
@@ -334,17 +342,18 @@ function OwnerPage({ recipientId }) {
               )}
             </div>
           </div>
+
           {/* 모바일 삭제 버튼 */}
           {screenMode !== "pc" && (
-            <div className="fixed bottom-0 left-0 right-0 z-40 p-4 pt-0">
+            <div className="fixed bottom-0 left-0 right-0 z-40 px-[24px] pt-0">
               <div className="mx-auto max-w-[1200px] px-0">
-                <button
+                <div
                   onClick={handleOpenPageDeleteModal}
                   disabled={deleting}
-                  className="w-full bg-purple-600 hover:bg-purple-700 text-white py-4 rounded-[12px] text-18-bold shadow-lg disabled:bg-gray-400"
+                  className="w-full bg-purple-600 hover:bg-purple-700 text-white py-4 rounded-[12px] text-18-bold shadow-lg disabled:bg-gray-400 flex items-center justify-center text-center"
                 >
                   {deleting ? "삭제 중..." : "삭제하기"}
-                </button>
+                </div>
               </div>
             </div>
           )}
@@ -357,16 +366,19 @@ function OwnerPage({ recipientId }) {
           className="fixed inset-0 bg-black/70 z-[100] flex items-center justify-center"
           onClick={handleCloseModal}
         >
-          <Modal
-            onClick={(e) => e.stopPropagation()}
-            isOpen={isOpen}
-            onClose={handleCloseModal}
-            senderName={selectedMessage.senderName}
-            content={selectedMessage.content}
-            profileImage={selectedMessage.profileImageURL}
-            relationship={selectedMessage.relationship}
-            date={selectedMessage.date}
-          />
+          <div onClick={(e) => e.stopPropagation()}>
+            <Modal
+              isOpen={isOpen}
+              onClose={handleCloseModal}
+              message={{
+                sender: selectedMessage.senderName,
+                profileImageURL: selectedMessage.profileImageURL,
+                relationship: selectedMessage.relationship,
+                createdAt: selectedMessage.date,
+                content: selectedMessage.content,
+              }}
+            />
+          </div>
         </div>
       )}
 

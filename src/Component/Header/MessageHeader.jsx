@@ -344,8 +344,6 @@ function MessageHeader({
               )}
             </div>
 
-            <span className="w-px h-[28px] bg-[#EEEEEE]"></span>
-
             {/* 이모지 추가 & 공유 버튼 */}
             <div className="flex items-center gap-[13px] min-w-[171px] justify-end">
               {/* 이모지 추가 버튼 */}
@@ -362,6 +360,8 @@ function MessageHeader({
                   </div>
                 )}
               </div>
+
+              <span className="w-px h-[28px] bg-[#EEEEEE]"></span>
 
               {/* 공유 버튼 */}
               <div className="relative">

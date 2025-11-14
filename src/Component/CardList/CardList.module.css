@@ -1,0 +1,51 @@
+/* 이모지 배지 컨테이너 - 모바일 기본값 (≤360px) */
+/* 카드: w-[208px] h-[232px], pt-6(24px) pr-5(20px) pb-5(20px) pl-5(20px) */
+.reactionContainer {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  position: absolute;
+  z-index: 1;
+  left: 20px; /* pr-5 = 20px */
+  right: 20px; /* pl-5 = 20px */
+  /* 원래 위치 유지: mt-4(16px) + pt-[14px](14px) = 30px from top */
+  margin-top: 16px;
+  padding-top: 14px;
+}
+
+/* 이모지 배지 - 모바일 기본값 (≤360px) */
+.reactionBadge {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 32px;
+  gap: 4px;
+  min-width: 50px;
+  height: 28px;
+  padding: 4px 8px;
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: 400;
+}
+
+/* 태블릿 이상 (361px 이상) - 카드 크기 변경과 동기화 */
+/* 카드: w-[275px] h-[260px], pt-[30px] pr-6(24px) pb-5(20px) pl-6(24px) */
+@media (min-width: 361px) {
+  .reactionContainer {
+    gap: 8px;
+    left: 24px; /* pr-6 = 24px */
+    right: 24px; /* pl-6 = 24px */
+    /* 원래 위치 유지: mt-[17px](17px) + pt-[18px](18px) = 35px from top */
+    margin-top: 17px;
+    padding-top: 18px;
+  }
+
+  .reactionBadge {
+    min-width: 66px;
+    height: 36px;
+    padding: 8px 12px;
+    font-size: 16px;
+    line-height: 24px;
+  }
+}
+
