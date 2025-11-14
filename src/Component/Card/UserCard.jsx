@@ -18,15 +18,17 @@ function UserCard({ message, onClick }) {
     <>
       <div
         className="
-          w-[384px] h-[280px]
-          rounded-[16px]
-          p-[28px_24px_24px_24px]
-          shadow-[0_2px_13px_rgba(0,0,0,0.08)]
-          bg-white
-          flex flex-col
-          relative
-          cursor-pointer
-        "
+        w-full
+        h-[230px] sm:h-[280px]
+        rounded-[16px]
+        p-[20px_18px_18px_18px] sm:p-[28px_24px_24px_24px]
+        shadow-[0_2px_13px_rgba(0,0,0,0.08)]
+        bg-white
+        flex flex-col
+        relative
+        cursor-pointer
+        hover:shadow-lg transition
+      "
         onClick={onClick}
       >
         <div
