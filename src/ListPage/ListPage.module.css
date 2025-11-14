@@ -101,11 +101,6 @@
   position: relative;
 }
 
-.headerShell :global(> div > header > div) {
-  padding-left: 0 !important;
-  padding-right: 0 !important;
-}
-
 .searchContainer {
   padding: 0 20px;
   margin-bottom: -30px;
@@ -306,10 +301,10 @@
 }
 
 @media (min-width: 361px) and (max-width: 768px) {
-  .sectionHeaderRow {
+  /*.sectionHeaderRow {
     padding-left: 20px;
     padding-right: 20px;
-  }
+  }*/
   .headerShell {
     width: 100%;
   }
@@ -368,6 +363,7 @@
     --card-width: clamp(208px, calc((100vw - 48px - 20px) / 2), 275px);
     --card-height: calc(232px + (var(--card-width) - 208px) * 0.4179104478);
     --card-gap: 20px;
+    transform: translate3d(-20px, 0px, 0px);
   }
 
   .swiperInstance {
@@ -439,7 +435,6 @@
     width: 100%;
     max-width: 1024px;
     margin: 0 auto;
-    padding: 0 !important;
     height: 64px !important;
     box-sizing: border-box;
   }
