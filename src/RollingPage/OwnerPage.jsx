@@ -20,6 +20,14 @@ import {
 
 const STATIC_MESSAGES = [];
 
+const COLOR_MAP = {
+  beige: "#FFE2AD", 
+  purple: "#ECD9FF", 
+  green: "#D0F5C3",
+  blue: "#B1E4FF",
+};
+
+
 // URL 경로에서 recipientId 추출
 const getRecipientIdFromPath = (explicitId, paramsId) => {
   if (explicitId != null) return explicitId;
@@ -97,11 +105,14 @@ function OwnerPage({ recipientId }) {
             recipientData.backgroundImageURL || recipientData.backgroundImage
           );
         } else if (recipientData.backgroundColor) {
-          setBackgroundValue(recipientData.backgroundColor);
+          const lowerCaseColor = recipientData.backgroundColor.toLowerCase();
+          const mappedColor = COLOR_MAP[lowerCaseColor] || recipientData.backgroundColor;
+          setBackgroundValue(mappedColor);
         } else {
           setBackgroundValue("");
         }
       }
+      console.log(recipientData.backgroundColor)
 
       // 메시지
       const rawMessages =
@@ -242,7 +253,7 @@ function OwnerPage({ recipientId }) {
     <>
       {/* 전체 배경 처리 */}
       <div
-        className="owner-page-scrollbar-hide"
+        className="owner-page-scrollbar-hide relative"
         style={{
           ...(backgroundValue?.startsWith("http") ||
           backgroundValue?.startsWith("/")
@@ -257,9 +268,17 @@ function OwnerPage({ recipientId }) {
               }),
         }}
       >
+        <div 
+          className="absolute inset-0 z-0" 
+          style={{ 
+            backgroundColor: '#0000',
+            opacity: 0.2 
+          }}
+        />
+        
         {/* 헤더 */}
         <div className="fixed top-0 left-0 w-full shadow-sm z-30 bg-white">
-          <div className="max-w-[1200px] mx-auto">
+          <div className="mx-auto">
             {screenMode === "mobile" ? (
               <MobileHeader hideCreateButton />
             ) : (
@@ -281,7 +300,7 @@ function OwnerPage({ recipientId }) {
           </div>
         </div>
 
-        <div className="flex flex-col min-h-screen">
+        <div className="flex flex-col min-h-screen relative z-10">
           {/* 카드 영역 */}
           <div className="flex-1 w-full pt-[102px] sm:pt-[147px] lg:pt-[171px] pb-10 relative">
             <div className="mx-auto max-w-[1200px] relative">
