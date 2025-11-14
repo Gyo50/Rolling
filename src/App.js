@@ -5,6 +5,7 @@ import ListPage from './ListPage/ListPage'
 import RecentPage from './ListPage/RecentPage'
 import CreatePostPage from './CreatePostPage/CreatePostPage'
 import OwnerPage from './RollingPage/OwnerPage'
+import Messagepage from './MessagePage/MessagePage'
 
 function App() {
   return (
@@ -13,7 +14,7 @@ function App() {
       <Route path="/list" element={<ListPage />} />
       <Route path="/recent" element={<RecentPage />} />
       <Route path="/post" element={<CreatePostPage />} />
-      <Route path="/post/:id" element={<OwnerPage />} />
+      <Route path="/post/:id" element={<Messagepage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )
