@@ -20,10 +20,10 @@ import FroalaEditorComponent from "react-froala-wysiwyg";
     - model (string) : 에디터 내용 (html)
     - onModelChange (fn) : 에디터 내용 변경 콜백
 */
-export default function Froala({ font = "Noto Sans", model, onModelChange }) {
+export default function Froala({ font = "Noto Sans", model, onModelChange, width="720px" }) {
   // Froala 설정
   const config = {
-    width: 720,
+    width: width,
     height: 200,
     placeholderText: "내용을 입력하세요...",
     quickInsertTags: [],
@@ -36,24 +36,24 @@ export default function Froala({ font = "Noto Sans", model, onModelChange }) {
           "bold",
           "italic",
           "underline",
-          "fontFamily", // 폰트 버튼
-          "fontSize",
-          "textColor",
-          "backgroundColor",
         ],
-        buttonsVisible: 7,
+        buttonsVisible: 3,
       },
       moreParagraph: {
         buttons: [
-          "alignLeft",
           "alignCenter",
           "alignRight",
           "alignJustify",
+        ],
+        buttonsVisible: 3,
+      },
+        moreCustom:{
+          buttons:[
           "formatOL",
           "formatUL",
-        ],
-        buttonsVisible: 6,
-      },
+          "backgroundColor"
+          ]
+        }
     },
   };
 

@@ -6,10 +6,12 @@ import User from "../Component/Option/User";
 import Select from "../Component/Text_Field/SelectBox";
 import Froala from "../Component/Text_Field/Froala";
 import PrimaryPc from "../Component/Button/Primary-pc";
-import axios from "axios";
 import apiClient from "../api/client";
+import { useParams } from "react-router-dom";
 
 function Send() {
+   const { id } = useParams();
+
   // 관계 선택 상태
   const [selectedRelation, setSelectedRelation] = useState(null);
   // 폰트 선택 상태
@@ -25,12 +27,14 @@ function Send() {
   // Froala 내용
   const [messageContent, setMessageContent] = useState("");
 
+
   const relationOptions = [
-    { label: "친구", value: "friend" },
-    { label: "연인", value: "partner" },
-    { label: "가족", value: "family" },
-    { label: "직장동료", value: "colleague" },
+    { label: "친구", value: "친구" },
+    { label: "지인", value: "지인" },
+    { label: "동료", value: "동료" },
+    { label: "가족", value: "가족" },
   ];
+
 
   const fontOptions = [
     { label: "Noto Sans", value: "Noto Sans" },
@@ -59,6 +63,8 @@ function Send() {
   useEffect(() => {
     fetchProfileImages();
   }, []);
+  
+
 
   const handleCreate = async () => {
     if (!selectedRelation || !selectedFont) {
@@ -66,21 +72,17 @@ function Send() {
       return;
     }
 
-    const RECIPIENT_ID = 123;
-
     const payload = {
-      sender: sender || "보내는 사람 이름 (입력 없음)", // 기본값 처리
-      content: messageContent || "", // Froala 내용
-      profileImageURL: selectedProfileImage,
-      relation: selectedRelation.value,
-      font: selectedFont.value,
-    };
+            team: "20-4",
+            sender: sender.trim(), 
+            content: messageContent.trim() || "내용 없음", 
+            profileImageURL: selectedProfileImage,
+            relationship: selectedRelation?.value, 
+            font: selectedFont?.value, 
+        };
 
     try {
-      const res = await axios.post(
-        `https://api.rolling.com/recipients/${RECIPIENT_ID}/messages/`,
-        payload
-      );
+      const res = await apiClient.post(`/recipients/${id}/messages/`, payload);
 
       console.log("서버 응답:", res.data);
       alert("생성 완료!");
@@ -94,12 +96,13 @@ function Send() {
       );
     }
   };
+    console.log(messageContent.trim());
 
   return (
     <>
       <Header />
-      <div className="w-[768px] mx-auto mt-[47px]">
-        <div className="max-w-[720px] p-6">
+      <div className="max-w-[768px] mx-auto mt-[47px] px-6 ">
+        <div className="w-full">
           <div>
             <p className="text-24-bold mb-3">From.</p>
             {/* 기존 Input 컴포넌트 대신 간단한 controlled input으로 교체(필요 시 원래 컴포넌트와 연동) */}
@@ -111,16 +114,16 @@ function Send() {
             />
           </div>
 
-          <div className="mt-[50px]">
+          <div className="mt-[50px] w-full">
             <p className="text-24-bold mb-3">프로필 이미지</p>
-            <div className="flex items-center gap-8 w-[80px] h-[80px]">
+            <div className="w-[80px] h-[80px] flex items-center gap-8">
               <User selectedImageUrl={selectedProfileImage} />
               <div>
                 <p className="text-16-regular text-gray-500 inline-block w-[200px]">
                   프로필 이미지를 선택해주세요!
                 </p>
 
-                <div className="flex gap-2 mt-2 max-w-[500px]">
+                <div className="flex gap-1 mt-2 max-w-[500px]">
                   {profileImages.map((imageUrl, index) => (
                     <img
                       key={index}
@@ -128,7 +131,7 @@ function Send() {
                       alt={`프로필 이미지 ${index + 1}`}
                       className={`w-[56px] h-[56px] rounded-full object-cover cursor-pointer transition-all ${
                         selectedProfileImage === imageUrl
-                          ? "border-[3px] border-purple-600 p-0.5"
+                          ? "border-[3px] border-purple-600 p-1"
                           : "opacity-70 hover:opacity-100"
                       }`}
                       onClick={() => setSelectedProfileImage(imageUrl)}
@@ -143,7 +146,7 @@ function Send() {
             </div>
           </div>
 
-          <div className="mt-[50px]">
+          <div className="mt-[50px] w-full">
             <p className="text-24-bold mb-3">상대와의 관계</p>
             <Select
               options={relationOptions}
@@ -154,7 +157,7 @@ function Send() {
             />
           </div>
 
-          <div className="mt-[50px]">
+          <div className="mt-[50px] w-full">
             <p className="text-24-bold mb-3">내용을 입력해주세요.</p>
             {/* selectedFont?.value 를 전달. Froala는 model/onModelChange로 내용 제어 */}
             <Froala
@@ -164,7 +167,7 @@ function Send() {
             />
           </div>
 
-          <div className="mt-[50px] mb-[62px]">
+          <div className="mt-[50px] mb-[62px] w-full">
             <p className="text-24-bold mb-3">폰트 선택</p>
             <Select
               options={fontOptions}
@@ -177,12 +180,13 @@ function Send() {
 
           <div>
             <div
-              className="mb-[60px] inline-block"
-              onClick={handleCreate}
-              style={{ cursor: "pointer" }}
-            >
-              <PrimaryPc text="생성하기" />
-            </div>
+        className="mb-[60px] inline-block w-full max-w-md mx-auto"
+        onClick={handleCreate}
+        style={{ cursor: "pointer" }}
+    >
+        {/* PrimaryPc는 w-full이므로 부모 div의 max-w-md 크기로 맞춰집니다. */}
+        <PrimaryPc text="생성하기" to="" />
+    </div>
           </div>
         </div>
       </div>
