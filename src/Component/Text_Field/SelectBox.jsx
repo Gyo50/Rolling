@@ -8,7 +8,7 @@ import dropDownOpenIcon from "../../img/arrow_top.svg";
  * selected, setSelected: optional (if 전달하면 controlled 모드)
  * placeholder: string
  */
-export default function SelectBox({ options = [], selected, setSelected, placeholder = "선택하세요" }) {
+export default function SelectBox({ options = [], selected, setSelected, placeholder = "선택하세요", errorText="옵션 선택" }) {
   const [isOpen, setIsOpen] = useState(false);
   const [internalSelected, setInternalSelected] = useState(null); // uncontrolled fallback
   const [error, setError] = useState(false);
@@ -88,7 +88,7 @@ export default function SelectBox({ options = [], selected, setSelected, placeho
         </ul>
       )}
 
-      {error && <p className="mt-[4px] text-12-regular text-error">옵션을 선택해주세요</p>}
+      {error && <p className="mt-[4px] text-12-regular text-error">{errorText}</p>}
     </div>
   );
 }
