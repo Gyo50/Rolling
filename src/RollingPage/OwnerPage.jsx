@@ -18,15 +18,9 @@ import {
   EMOJI_TO_ALIAS,
 } from "../api/recipients";
 
-const STATIC_MESSAGES = Array.from({ length: 3 }).map((_, index) => ({
-  id: index + 1,
-  senderName: `보낸 이 #${index + 1}`,
-  content: `API 로드 실패 시의 샘플 메시지 ${index + 1}입니다.`,
-  profileImageURL: `https://placehold.co/40x40?text=${index + 1}`,
-  date: "",
-  relationship: ["동료", "친구", "가족"][index % 3],
-}));
+const STATIC_MESSAGES = [];
 
+// URL 경로에서 recipientId 추출
 const getRecipientIdFromPath = (explicitId, paramsId) => {
   if (explicitId != null) return explicitId;
   if (paramsId != null) return paramsId;
@@ -39,25 +33,26 @@ function OwnerPage({ recipientId }) {
   const navigate = useNavigate();
   const { id: paramsId } = useParams();
 
-  const [recipient, setRecipient] = useState(null);
-  const [messages, setMessages] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [reactions, setReactions] = useState([]);
-  const [deleting, setDeleting] = useState(false);
-  const [deleteError, setDeleteError] = useState(null);
+  // ====== 상태 관리 ======
+  const [recipient, setRecipient] = useState(null); // 페이지 정보
+  const [messages, setMessages] = useState([]); // 메시지 리스트
+  const [loading, setLoading] = useState(false); // 로딩 상태
+  const [error, setError] = useState(null); // 에러 상태
+  const [reactions, setReactions] = useState([]); // 반응 목록
 
-  // 이미지 or 색상 통합 값
-  const [backgroundValue, setBackgroundValue] = useState("");
+  const [deleting, setDeleting] = useState(false); // 페이지 삭제 중인지 여부
+  const [deleteError, setDeleteError] = useState(null); // 페이지 삭제 에러
 
-  const [isOpen, setIsOpen] = useState(false);
-  const [selectedMessage, setSelectedMessage] = useState(null);
-  const [isPageDeleteModalOpen, setIsPageDeleteModalOpen] = useState(false);
+  const [backgroundValue, setBackgroundValue] = useState(""); // 배경 이미지/색상 값
+  const [isOpen, setIsOpen] = useState(false); // 메시지 상세 모달 열림 여부
+  const [selectedMessage, setSelectedMessage] = useState(null); // 선택된 메시지
+  const [isPageDeleteModalOpen, setIsPageDeleteModalOpen] = useState(false); // 페이지 삭제 모달 열림
   const [isMessageDeleteModalOpen, setIsMessageDeleteModalOpen] =
-    useState(false);
-  const [messageToDeleteId, setMessageToDeleteId] = useState(null);
-  const [screenMode, setScreenMode] = useState("pc");
+    useState(false); // 메시지 삭제 모달 열림
+  const [messageToDeleteId, setMessageToDeleteId] = useState(null); // 삭제할 메시지 ID 저장
+  const [screenMode, setScreenMode] = useState("pc"); // 반응형 모드 (pc / tablet / mobile)
 
+  // ====== 반응형 화면 체크 ======
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 768) setScreenMode("mobile");
@@ -69,11 +64,13 @@ function OwnerPage({ recipientId }) {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // URL 또는 props로 받은 recipientId 결정
   const currentRecipientId = useMemo(
     () => getRecipientIdFromPath(recipientId, paramsId),
     [recipientId, paramsId]
   );
 
+  // ====== 데이터 로드 (페이지 정보 / 메시지 / 반응) ======
   const loadData = useCallback(async () => {
     if (!currentRecipientId) {
       setRecipient(null);
@@ -93,7 +90,7 @@ function OwnerPage({ recipientId }) {
 
       setRecipient(recipientData || null);
 
-      // 배경 (이미지 우선 → 없으면 색상)
+      // 배경
       if (recipientData) {
         if (recipientData.backgroundImageURL || recipientData.backgroundImage) {
           setBackgroundValue(
@@ -106,16 +103,13 @@ function OwnerPage({ recipientId }) {
         }
       }
 
+      // 메시지
       const rawMessages =
         messageData?.results ||
         messageData?.messages ||
         messageData?.data ||
         messageData ||
         [];
-
-      console.log("🔥 RAW 메시지 원본:", rawMessages);
-      console.log("🔥 RAW 메시지 원본:", rawMessages);
-      console.log("🔥 RAW(JSON):", JSON.stringify(rawMessages, null, 2));
 
       const normalizedMessages = rawMessages.map((item) => ({
         id: item.id,
@@ -130,6 +124,7 @@ function OwnerPage({ recipientId }) {
 
       setMessages(normalizedMessages);
 
+      // 반응 정리
       const normalizedReactions = normalizeReactionsResponse(reactionData);
       setReactions(normalizedReactions);
     } catch (err) {
@@ -147,6 +142,7 @@ function OwnerPage({ recipientId }) {
     loadData();
   }, [loadData]);
 
+  // ====== 반응(이모지) 추가 ======
   const handleAddReaction = async (emoji) => {
     if (!currentRecipientId) return;
     try {
@@ -162,6 +158,7 @@ function OwnerPage({ recipientId }) {
     }
   };
 
+  // ====== 페이지 삭제 ======
   const handleConfirmPageDelete = async () => {
     if (!currentRecipientId || deleting) return;
 
@@ -179,9 +176,8 @@ function OwnerPage({ recipientId }) {
     }
   };
 
+  // ====== 메시지 삭제 ======
   const handleConfirmMessageDelete = async () => {
-    console.log("🟦 실제 삭제될 ID:", messageToDeleteId);
-
     await fetch(
       `https://rolling-api.vercel.app/20-4/messages/${messageToDeleteId}/`,
       {
@@ -196,16 +192,19 @@ function OwnerPage({ recipientId }) {
     handleCloseMessageDeleteModal();
   };
 
+  // ====== 메시지 카드 클릭 (내용 보기) ======
   const handleCardClick = (message) => {
     setSelectedMessage(message);
     setIsOpen(true);
   };
 
+  // 모달 닫기
   const handleCloseModal = () => {
     setIsOpen(false);
     setSelectedMessage(null);
   };
 
+  // ====== 모달 열기/닫기 ======
   const handleOpenPageDeleteModal = () => setIsPageDeleteModalOpen(true);
   const handleClosePageDeleteModal = () => setIsPageDeleteModalOpen(false);
 
@@ -218,6 +217,7 @@ function OwnerPage({ recipientId }) {
     setMessageToDeleteId(null);
   };
 
+  // 작성자 프로필 아바타
   const topAvatars = useMemo(() => {
     const unique = [];
     const seen = new Set();
@@ -231,7 +231,7 @@ function OwnerPage({ recipientId }) {
         });
       }
     });
-    return unique.slice(0, 3);
+    return unique.slice(0, 3); // 최대 3개만 표시
   }, [messages]);
 
   const totalMessageCount = recipient?.messageCount ?? messages.length ?? 0;
@@ -240,7 +240,7 @@ function OwnerPage({ recipientId }) {
 
   return (
     <>
-      {/* 색상 or 이미지 자동 적용 */}
+      {/* 전체 배경 처리 */}
       <div
         className="owner-page-scrollbar-hide"
         style={{
@@ -326,7 +326,6 @@ function OwnerPage({ recipientId }) {
                       onClick={() => handleCardClick(item)}
                       onDeleteClick={(e) => {
                         e.stopPropagation();
-                        console.log("🟥 카드에서 전달된 ID:", item.id);
                         handleOpenMessageDeleteModal(item.id);
                       }}
                     />
@@ -351,7 +350,7 @@ function OwnerPage({ recipientId }) {
                 <div
                   onClick={handleOpenPageDeleteModal}
                   disabled={deleting}
-                  className="w-full bg-purple-600 hover:bg-purple-700 text-white py-4 rounded-[12px] text-18-bold shadow-lg disabled:bg-gray-400"
+                  className="w-full bg-purple-600 hover:bg-purple-700 text-white py-4 rounded-[12px] text-18-bold shadow-lg disabled:bg-gray-400 flex items-center justify-center text-center"
                 >
                   {deleting ? "삭제 중..." : "삭제하기"}
                 </div>
