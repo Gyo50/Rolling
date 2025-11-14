@@ -53,21 +53,16 @@ function RollingSwiper({ cards, sliderKey, viewportWidth }) {
 
   const safeCards = useMemo(() => (Array.isArray(cards) ? cards : []), [cards]);
 
-  const isMobile = viewportWidth <= 360;
-  const isTablet = viewportWidth > 360 && viewportWidth <= 768;
-  const isTabletLarge = viewportWidth > 768 && viewportWidth <= 1024;
-  const isDesktop = viewportWidth > 1024;
+  const isMobile = viewportWidth <= 360
+  const isDesktop = viewportWidth > 1024
+  const useAutoSlides = !isDesktop
   // 화면 크기에 따라 보이는 카드 수
-  const visibleCount = isDesktop ? CARDS_PER_VIEW : isTablet || isTabletLarge ? 3 : 1;
-  const totalSlides = safeCards.length;
-  // maxStartIndex: 마지막 카드가 완전히 보이도록 하는 최대 시작 인덱스
-  // 예: 13개 카드, 4개씩 보이면 index 9에서 카드 10-13이 완전히 보임
-  // 그 다음 index 10으로 이동하면 카드 11-13 + 빈칸이 보이도록 하기 위해 +1 추가
-  // 하지만 사용자가 마지막 카드가 안 보인다고 하므로, 먼저 마지막 카드가 완전히 보이는 위치까지 이동 가능하도록 설정
-  const maxStartIndexForLastCard = Math.max(totalSlides - visibleCount, 0); // 마지막 카드가 완전히 보이는 위치
-  const maxStartIndexWithEmpty = Math.max(totalSlides - visibleCount + 1, 0); // 빈칸까지 보이는 위치
-  const showNavigation = isDesktop && totalSlides > CARDS_PER_VIEW;
-  const cardGap = isMobile ? 12 : CARD_GAP;
+  const visibleCount = isDesktop ? CARDS_PER_VIEW : 1
+  const totalSlides = safeCards.length
+  // 마지막 카드가 완전히 보이는 최대 시작 인덱스
+  const maxStartIndexForLastCard = Math.max(totalSlides - visibleCount, 0)
+  const showNavigation = isDesktop && totalSlides > CARDS_PER_VIEW
+  const cardGap = isMobile ? 12 : CARD_GAP
 
   const displayCards = useMemo(() => {
     if (!showNavigation) return safeCards;
@@ -87,29 +82,25 @@ function RollingSwiper({ cards, sliderKey, viewportWidth }) {
     }
   }, [displayCards]);
 
-  const handleSlideChange = useCallback(
-    (swiper) => {
-      // requestAnimationFrame을 사용하여 성능 최적화
-      requestAnimationFrame(() => {
-        // Swiper의 실제 activeIndex를 사용하되, 최대 인덱스를 초과하지 않도록 제한
-        const currentIndex = swiper.activeIndex;
-        // 데스크탑: 빈칸까지 이동 가능, 모바일/태블릿: 마지막 카드까지만 이동 가능
-        const maxAllowed = isDesktop ? maxStartIndexWithEmpty : maxStartIndexForLastCard;
-        const clamped = Math.min(currentIndex, maxAllowed);
-
-        // 터치 스크롤로 인한 이동인 경우, 최대 인덱스를 초과하면 제한
-        if (clamped !== currentIndex && currentIndex > maxAllowed) {
-          // 최대 인덱스를 초과했으면 최대 인덱스로 이동
-          swiper.slideTo(maxAllowed, 300); // 300ms 애니메이션
-          setActiveIndex(maxAllowed);
-        } else {
-          // activeIndex를 항상 Swiper의 실제 인덱스와 동기화
-          setActiveIndex(clamped);
-        }
-      });
-    },
-    [isDesktop, maxStartIndexForLastCard, maxStartIndexWithEmpty]
-  );
+  const handleSlideChange = useCallback((swiper) => {
+    // requestAnimationFrame을 사용하여 성능 최적화
+    requestAnimationFrame(() => {
+      // Swiper의 실제 activeIndex를 사용하되, 최대 인덱스를 초과하지 않도록 제한
+      const currentIndex = swiper.activeIndex
+      // 모든 화면에서 마지막 카드가 완전히 보이는 위치까지만 허용
+      const clamped = Math.min(currentIndex, maxStartIndexForLastCard)
+      
+      // 터치 스크롤로 인한 이동인 경우, 최대 인덱스를 초과하면 제한
+      if (clamped !== currentIndex && currentIndex > maxStartIndexForLastCard) {
+        // 최대 인덱스를 초과했으면 최대 인덱스로 이동
+        swiper.slideTo(maxStartIndexForLastCard, 300) // 300ms 애니메이션
+        setActiveIndex(maxStartIndexForLastCard)
+      } else {
+        // activeIndex를 항상 Swiper의 실제 인덱스와 동기화
+        setActiveIndex(clamped)
+      }
+    })
+  }, [isDesktop, maxStartIndexForLastCard])
 
   const slideBy = useCallback(
     (delta) => {
@@ -117,93 +108,44 @@ function RollingSwiper({ cards, sliderKey, viewportWidth }) {
       if (!swiper) return;
 
       // activeIndex를 우선 사용 (swiper.activeIndex와 동기화되어 있음)
-      const currentIndex = activeIndex;
-      let step = isDesktop ? CARDS_PER_GROUP : isTablet || isTabletLarge ? 3 : 1;
-
+      const currentIndex = activeIndex
+      let step = CARDS_PER_GROUP
+      
       // 오른쪽으로 이동할 때 마지막 처리
       if (delta > 0 && totalSlides > visibleCount) {
-        // 데스크탑: 먼저 마지막 카드가 완전히 보이는 위치까지, 그 다음 빈칸까지 이동 가능
-        if (isDesktop) {
-          // 마지막 카드가 완전히 보이는 위치에 도달하지 않았다면
-          if (currentIndex < maxStartIndexForLastCard) {
-            const remainingToLastCard = maxStartIndexForLastCard - currentIndex;
-            // 남은 거리가 step보다 작으면 남은 거리만큼만 이동
-            if (remainingToLastCard < step) {
-              step = remainingToLastCard;
-            }
+        if (currentIndex < maxStartIndexForLastCard) {
+          const remainingToLastCard = maxStartIndexForLastCard - currentIndex
+          if (remainingToLastCard < step) {
+            step = remainingToLastCard
           }
-          // 마지막 카드가 완전히 보이는 위치에 도달했지만 빈칸까지는 아직 안 갔다면
-          else if (currentIndex < maxStartIndexWithEmpty) {
-            const remainingToEmpty = maxStartIndexWithEmpty - currentIndex;
-            // 남은 거리가 step보다 작으면 남은 거리만큼만 이동 (1칸만 이동)
-            if (remainingToEmpty < step) {
-              step = remainingToEmpty;
-            }
-          } else {
-            // 이미 빈칸까지 도달했으면 이동하지 않음
-            return;
-          }
-        }
-        // 모바일/태블릿: 마지막 카드가 완전히 보이는 위치까지만 이동 가능
-        else {
-          if (currentIndex < maxStartIndexForLastCard) {
-            const remainingToLastCard = maxStartIndexForLastCard - currentIndex;
-            // 남은 거리가 step보다 작으면 남은 거리만큼만 이동
-            if (remainingToLastCard < step) {
-              step = remainingToLastCard;
-            }
-          } else {
-            // 이미 마지막 위치에 도달했으면 이동하지 않음
-            return;
-          }
+        } else {
+          return
         }
       }
 
       // 목표 인덱스 계산
-      const proposedTarget = currentIndex + delta * step;
-      let target = Math.max(proposedTarget, 0);
-
-      // 데스크탑: 빈칸까지 이동 가능, 모바일/태블릿: 마지막 카드까지만 이동 가능
-      if (isDesktop) {
-        target = Math.min(target, maxStartIndexWithEmpty);
-      } else {
-        target = Math.min(target, maxStartIndexForLastCard);
-      }
-
+      const proposedTarget = currentIndex + delta * step
+      let target = Math.max(proposedTarget, 0)
+      
+      // 마지막 카드가 완전히 보이는 위치까지만 이동 허용
+      target = Math.min(target, maxStartIndexForLastCard)
+      
       // 실제로 이동할 수 있는지 확인
       if (target !== currentIndex) {
-        // 마지막 부분에서는 slidesPerGroup을 무시하고 정확한 인덱스로 이동
-        // Swiper의 slideTo는 slidesPerGroup을 고려하지 않고 정확한 인덱스로 이동합니다
-        const originalSlidesPerGroup = swiper.params.slidesPerGroup;
-        // 마지막 부분에서는 slidesPerGroup을 1로 임시 변경하여 정확한 이동 보장
-        if (
-          isDesktop &&
-          (target >= maxStartIndexForLastCard || currentIndex >= maxStartIndexForLastCard)
-        ) {
-          swiper.params.slidesPerGroup = 1;
+        const originalSlidesPerGroup = swiper.params.slidesPerGroup
+        if (target >= maxStartIndexForLastCard || currentIndex >= maxStartIndexForLastCard) {
+          swiper.params.slidesPerGroup = 1
         }
         swiper.slideTo(target, 300); // 300ms 애니메이션
         // 원래 설정 복원
-        if (
-          isDesktop &&
-          (target >= maxStartIndexForLastCard || currentIndex >= maxStartIndexForLastCard)
-        ) {
-          swiper.params.slidesPerGroup = originalSlidesPerGroup;
+        if (target >= maxStartIndexForLastCard || currentIndex >= maxStartIndexForLastCard) {
+          swiper.params.slidesPerGroup = originalSlidesPerGroup
         }
         setActiveIndex(target); // activeIndex 즉시 업데이트
       }
     },
-    [
-      activeIndex,
-      maxStartIndexForLastCard,
-      maxStartIndexWithEmpty,
-      isDesktop,
-      isTablet,
-      isTabletLarge,
-      totalSlides,
-      visibleCount,
-    ]
-  );
+    [activeIndex, maxStartIndexForLastCard, isDesktop, totalSlides, visibleCount]
+  )
 
   const handleWheel = useCallback(
     (event) => {
@@ -214,6 +156,13 @@ function RollingSwiper({ cards, sliderKey, viewportWidth }) {
     },
     [isDesktop, slideBy]
   );
+
+  const slidesOffset = useMemo(() => {
+    if (isDesktop) return 0
+    if (isMobile) return 16
+    if (viewportWidth <= 768) return 20
+    return 24
+  }, [isDesktop, isMobile, viewportWidth])
 
   return (
     <div className={`relative flex items-center ${styles.swiperShell}`} onWheel={handleWheel}>
@@ -236,8 +185,10 @@ function RollingSwiper({ cards, sliderKey, viewportWidth }) {
 
       <Swiper
         spaceBetween={cardGap}
-        slidesPerView={isDesktop ? CARDS_PER_VIEW : isTablet || isTabletLarge ? 3 : "auto"}
-        slidesPerGroup={isDesktop ? CARDS_PER_GROUP : isTablet || isTabletLarge ? 3 : 1}
+        slidesPerView={useAutoSlides ? 'auto' : CARDS_PER_VIEW}
+        slidesPerGroup={useAutoSlides ? 1 : CARDS_PER_GROUP}
+        slidesOffsetBefore={slidesOffset}
+        slidesOffsetAfter={slidesOffset}
         allowTouchMove={!isDesktop}
         loop={false}
         touchEventsTarget="container"
@@ -272,31 +223,25 @@ function RollingSwiper({ cards, sliderKey, viewportWidth }) {
         })}
       </Swiper>
 
-      {showNavigation &&
-        (() => {
-          // 오른쪽 화살표 표시 조건
-          // 데스크탑: 마지막 카드가 완전히 보이는 위치에 도달하지 않았거나, 빈칸까지 이동할 수 있을 때
-          // 모바일/태블릿: 마지막 카드가 완전히 보이는 위치에 도달하지 않았을 때
-          const canMoveRight = isDesktop
-            ? activeIndex < maxStartIndexWithEmpty
-            : activeIndex < maxStartIndexForLastCard;
-          return canMoveRight;
-        })() && (
-          <div
-            className="absolute right-0 top-1/2 translate-x-1/2 -translate-y-1/2 z-10 cursor-pointer"
-            onClick={() => slideBy(1)}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                slideBy(1);
-              }
-            }}
-          >
-            <RightArrow />
-          </div>
-        )}
+      {showNavigation && (() => {
+        // 오른쪽 화살표 표시 조건
+        return activeIndex < maxStartIndexForLastCard
+      })() && (
+        <div
+          className="absolute right-0 top-1/2 translate-x-1/2 -translate-y-1/2 z-10 cursor-pointer"
+          onClick={() => slideBy(1)}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault()
+              slideBy(1)
+            }
+          }}
+        >
+          <RightArrow />
+        </div>
+      )}
     </div>
   );
 }
@@ -472,16 +417,18 @@ function ListPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <header className="flex justify-center shadow-[0_1px_0_rgba(237,237,237,1)] bg-white">
+      <header className="flex justify-center shadow-[0_1px_0_rgba(237,237,237,1)] bg-white px-[5%] py-4 max-ta:px-4 max-xt:px-6 max-xs:px-4 max-xs:py-3">
         <div className={`w-full max-w-[1199px] ${styles.headerShell}`}>
           <Header />
         </div>
       </header>
 
-      <main className={`flex flex-col items-center ${styles.mainLayout}`}>
-        <section className={`w-full flex flex-col gap-4 ${styles.section}`}>
-          <div className={`flex items-center justify-between ${styles.sectionHeader}`}>
-            <h2 className={`text-24-bold text-gray-900 ${styles.sectionTitle}`}>인기 TOP 8 🔥</h2>
+      <main className="flex flex-col items-center w-full pt-[50px] pb-6 gap-[50px] px-[5%] overflow-visible max-ta:px-0 max-ta:overflow-hidden max-ta:pb-[172px] max-xt:w-full max-xt:pt-[50px] max-xt:items-start max-xt:gap-[74px] max-xs:pt-[50px] max-xs:gap-[74px] max-xs:items-start">
+        <section className="w-full flex flex-col gap-4 max-w-[1160px] max-ta:max-w-full max-xt:px-6 max-xs:px-5">
+          <div className={`flex items-center justify-between max-xt:flex-col max-xt:items-start gap-4 ${styles.sectionHeaderRow}`}>
+            <h2 className="text-24-bold text-gray-900 max-xt:text-24-bold max-xs:text-[20px] max-xs:leading-[30px]">
+              인기 TOP 8 🔥
+            </h2>
           </div>
           {loading ? (
             <p className="text-14-regular text-gray-500">데이터를 불러오는 중입니다...</p>
@@ -495,11 +442,11 @@ function ListPage() {
           )}
         </section>
 
-        <section className={`w-full flex flex-col gap-4 ${styles.section}`}>
-          <div className={`flex items-center justify-between ${styles.sectionHeader}`}>
-            <h2
-              onClick={() => navigate("/recent")}
-              className={`text-24-bold text-gray-900 ${styles.sectionTitle} cursor-pointer hover:text-purple-600 transition-colors`}
+        <section className="w-full flex flex-col gap-4 max-w-[1160px] max-ta:max-w-full max-xt:px-6 max-xs:px-5">
+          <div className={`flex items-center justify-between max-xt:flex-col max-xt:items-start gap-4 ${styles.sectionHeaderRow}`}>
+            <h2 
+              onClick={() => navigate('/recent')}
+              className="text-24-bold text-gray-900 cursor-pointer hover:text-purple-600 transition-colors max-xt:text-24-bold max-xs:text-[20px] max-xs:leading-[30px]"
             >
               최근에 만든 롤링 페이퍼 ⭐️️
               {!loading && !error && (
@@ -519,7 +466,7 @@ function ListPage() {
           )}
         </section>
 
-        <div className={`w-full flex flex-col items-center ${styles.bottomShell}`}>
+        <div className="w-full flex flex-col items-center max-w-[1160px] mt-12 mb-12 max-ta:max-w-full max-xt:px-6 max-xs:px-5">
           <PrimaryMain text="나도 만들어보기" to="/post" />
         </div>
       </main>
