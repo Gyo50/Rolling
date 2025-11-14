@@ -191,15 +191,15 @@ function RecentPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <header className="flex justify-center shadow-[0_1px_0_rgba(237,237,237,1)] bg-white">
+      <header className="flex justify-center shadow-[0_1px_0_rgba(237,237,237,1)] bg-white px-[5%]">
         <div className={`w-full max-w-[1199px] ${styles.headerShell}`}>
           <Header />
         </div>
       </header>
 
-      <main className={`flex flex-col items-center gap-[50px] pt-[30px] pb-6 min-[769px]:pb-[172px] overflow-hidden min-[769px]:overflow-visible ${styles.mainLayout}`}>
+      <main className={`flex flex-col items-center w-full gap-[50px] pt-[50px] pb-[172px] px-[5%] overflow-visible max-ta:px-0 max-ta:overflow-hidden max-ta:pb-6 max-xt:w-full max-xt:items-start max-xs:pt-[50px] max-xs:gap-[74px] max-xs:items-start ${styles.mainLayout}`}>
         {/* 검색창 */}
-        <div className={`w-full max-w-[1160px] ${styles.searchContainer}`}>
+        <div className={`w-full max-w-[1160px] ${styles.searchContainer} max-ta:max-w-full max-xt:px-6 max-xs:px-5`}>
           <div className="relative">
             <input
               type="text"
@@ -235,8 +235,8 @@ function RecentPage() {
           </div>
         </div>
 
-        <section className={`w-full max-w-[1160px] flex flex-col gap-4 ${styles.section}`}>
-          <div className={`flex items-center justify-between ${styles.sectionHeader}`}>
+        <section className={`w-full max-w-[1160px] flex flex-col gap-4 max-ta:max-w-full max-xt:px-6 max-xs:px-5 ${styles.section}`}>
+          <div className={`flex items-center justify-between ${styles.sectionHeader} ${styles.sectionHeaderRow}`}>
             <h2 
               onClick={() => navigate('/list')}
               className={`text-24-bold text-gray-900 ${styles.sectionTitle} cursor-pointer hover:text-purple-600 transition-colors`}
@@ -267,15 +267,17 @@ function RecentPage() {
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 mt-4 w-full">
-                {currentPageCards.map((card) => {
-                  const isRecent = isWithin3Hours(card?.createdAt)
-                  return (
-                    <div key={card.id} className="flex justify-center items-start">
-                      <NavigableCard card={card} isRecent={isRecent} />
-                    </div>
-                  )
-                })}
+              <div className={styles.recentGridWrapper}>
+                <div className={styles.recentGrid}>
+                  {currentPageCards.map((card) => {
+                    const isRecent = isWithin3Hours(card?.createdAt)
+                    return (
+                      <div key={card.id} className={styles.recentGridItem}>
+                        <NavigableCard card={card} isRecent={isRecent} />
+                      </div>
+                    )
+                  })}
+                </div>
               </div>
               
               {/* 페이지네이션 */}
@@ -357,7 +359,7 @@ function RecentPage() {
           )}
         </section>
 
-        <div className={`w-full max-w-[1201px] flex flex-col items-center mt-[-8px] ${styles.bottomShell}`}>
+        <div className={`w-full max-w-[1201px] flex flex-col items-center mt-[-8px] max-ta:max-w-full max-xt:px-6 max-xs:px-5 ${styles.bottomShell}`}>
           <div
             className={`relative flex justify-center [&>button]:w-[280px] [&>button]:h-[56px] [&>button]:bg-[#9935FF] [&>button]:rounded-[12px] [&>button]:px-6 [&>button]:py-[14px] [&>button]:gap-[10px] [&>button]:font-[700] [&>button]:text-[18px] [&>button]:leading-[28px] [&>button]:tracking-[-0.01em] [&>button]:shadow-[0_4px_10px_rgba(153,53,255,0.2)] ${styles.bottomButtonWrap}`}
           >

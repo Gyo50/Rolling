@@ -87,17 +87,18 @@ function CardList({ recipient, isRecent }) {
   return (
       <div
         data-cardlist
-        className="
+        className={`
+          ${styles.card}
           relative overflow-hidden flex-shrink-0
-        w-[208px] h-[232px] rounded-[16px] box-border
-        pt-6 pr-5 pb-5 pl-5
-        min-[361px]:w-[275px] min-[361px]:h-[260px]
-        min-[361px]:pt-[30px] min-[361px]:pr-6 min-[361px]:pb-5 min-[361px]:pl-6
+          h-[232px] rounded-[16px] box-border
+          pt-6 pr-5 pb-5 pl-5
+          min-[361px]:h-[260px]
+          min-[361px]:pt-[30px] min-[361px]:pr-6 min-[361px]:pb-5 min-[361px]:pl-6
           border border-grayscale-500/20
           shadow-[0_2px_13px_rgba(0,0,0,0.08)]
           bg-cover bg-center
-        transition-colors duration-200
-        "
+          transition-colors duration-200
+        `}
         style={{
         ...backgroundStyle,
         color: isImageCard ? '#FFFFFF' : '#2B2B2B'
