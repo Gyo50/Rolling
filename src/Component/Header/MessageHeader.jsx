@@ -347,7 +347,7 @@ function MessageHeader({
                     ))}
                   </div>
                   {hiddenCount > 0 && (
-                    <div className="ml-2 w-[28px] h-[28px] bg-white border border-[#E3E3E3] rounded-full flex items-center justify-center text-xs text-[#484848]">
+                    <div className="ml-[-12px] w-[28px] h-[28px] bg-white border border-[#E3E3E3] rounded-full flex items-center justify-center text-xs text-[#484848]">
                       +{hiddenCount}
                     </div>
                   )}
