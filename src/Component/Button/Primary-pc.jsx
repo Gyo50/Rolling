@@ -15,7 +15,7 @@ function PrimaryPc({ text = "버튼", to = "/", disabled = false }) {
       <button
         onClick={handleClick}
         disabled={disabled}
-        className="w-[720px] h-[56px] bg-purple-500 rounded-xl text-18-bold text-white 
+        className="w-[100%] h-[56px] bg-purple-500 rounded-xl text-18-bold text-white 
         hover:bg-purple-700 
         disabled:bg-gray-300 
         active:bg-purple-800 

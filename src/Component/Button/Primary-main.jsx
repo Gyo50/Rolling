@@ -21,7 +21,7 @@ function PrimaryMain({ text = "생성하기", onClick, to = "/", disabled = fals
       <button
         onClick={handleClick}
         disabled={disabled}
-        className="w-full h-[56px] bg-purple-500 rounded-xl text-18-bold text-white
+        className="w-[320px] md:w-[720px] h-[56px] bg-purple-500 rounded-xl text-18-bold text-white
         hover:bg-purple-700 
         disabled:bg-gray-300 
         active:bg-purple-800 

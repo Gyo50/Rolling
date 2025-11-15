@@ -15,7 +15,7 @@ function User({ selectedImageUrl }) {
         // ⭐️ props로 받은 URL을 src로 사용합니다.
         src={imageUrlToDisplay} 
         alt="사용자 아바타" 
-        className={` object-cover rounded-full ${
+        className={` object-cover rounded-full w-[80px] h-[80px] ${
             selectedImageUrl ? '' : 'w-[80px] h-[80px]' // 기본 SVG일 경우 크기 유지
         }`}
       />

@@ -26,7 +26,7 @@ function Option({ activeColor = 'beige', onChange }) {
 
   return (
     // 전체 컨테이너
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full justify-center items-center">
+    <div className="grid grid-cols-2 gap-[4%] md:grid-cols-4 md:gap-4 w-full justify-center items-center">
       {COLOR_ITEMS.map((item) => (
         <div 
           key={item.id}

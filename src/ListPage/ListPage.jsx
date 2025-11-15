@@ -49,6 +49,7 @@ function PlaceholderCard({ index }) {
 
 function RollingSwiper({ cards, sliderKey, viewportWidth }) {
   const swiperRef = useRef(null);
+  const swiperShellRef = useRef(null); // Swiper 래퍼 DOM 요소를 위한 Ref
   const [activeIndex, setActiveIndex] = useState(0);
 
   const safeCards = useMemo(() => (Array.isArray(cards) ? cards : []), [cards]);
@@ -149,13 +150,49 @@ function RollingSwiper({ cards, sliderKey, viewportWidth }) {
 
   const handleWheel = useCallback(
     (event) => {
-      // 데스크탑에서만 휠 이벤트 처리 (모바일/태블릿에서는 터치 이벤트가 우선)
       if (!isDesktop) return;
+
+      const swiper = swiperRef.current;
+      if (!swiper) return;
+
       const delta = event.deltaY > 0 ? 1 : -1;
-      slideBy(delta);
+      const goingRight = delta > 0;
+      const goingLeft = delta < 0;
+
+      // Swiper 6부터는 isEnd, isBeginning이 제공됨.
+      const reachedEnd = swiper.isEnd || swiper.activeIndex >= maxStartIndexForLastCard; 
+      const reachedBeginning = swiper.isBeginning || swiper.activeIndex === 0;
+
+      let shouldPreventDefault = true;
+
+      if (goingRight && reachedEnd) {
+        shouldPreventDefault = false;
+      } 
+      else if (goingLeft && reachedBeginning) {
+        shouldPreventDefault = false;
+      }
+  
+      if (shouldPreventDefault) {
+        event.preventDefault(); 
+        event.stopPropagation();
+        slideBy(delta);
+      }
+      
     },
-    [isDesktop, slideBy]
+    [isDesktop, slideBy, maxStartIndexForLastCard]
   );
+  
+  useEffect(() => {
+    const element = swiperShellRef.current;
+    if (!element || !isDesktop) return undefined;
+
+    // passive: false를 사용하여 preventDefault()가 정상 작동하도록 보장
+    element.addEventListener('wheel', handleWheel, { passive: false });
+
+    return () => {
+      element.removeEventListener('wheel', handleWheel);
+    };
+  }, [handleWheel, isDesktop]);
 
   const slidesOffset = useMemo(() => {
     if (isDesktop) return 0
@@ -165,7 +202,10 @@ function RollingSwiper({ cards, sliderKey, viewportWidth }) {
   }, [isDesktop, isMobile, viewportWidth])
 
   return (
-    <div className={`relative flex items-center ${styles.swiperShell}`} onWheel={handleWheel}>
+    <div 
+      ref={swiperShellRef} 
+      className={`relative flex items-center ${styles.swiperShell}`} 
+    >
       {showNavigation && activeIndex > 0 && (
         <div
           className="absolute left-0 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 cursor-pointer"
@@ -272,8 +312,7 @@ function ListPage() {
         timeoutId = null;
       }, 150);
     };
-    window.addEventListener("resize", handleResize, { passive: true }); // passive: true로 터치/스크롤 성능 개선
-
+    window.addEventListener("resize", handleResize, { passive: true });
     return () => {
       if (timeoutId) clearTimeout(timeoutId); // 컴포넌트 언마운트 시 타이머 정리
       window.removeEventListener("resize", handleResize);
@@ -416,54 +455,62 @@ function ListPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white">
-      <header className="flex justify-center shadow-[0_1px_0_rgba(237,237,237,1)] bg-white px-[5%] py-4 max-ta:px-4 max-xt:px-6 max-xs:px-4 max-xs:py-3">
-        <div className={`w-full max-w-[1199px] ${styles.headerShell}`}>
+    <div className="bg-white">
+      <header className=" mx-auto bg-white ">
+        <div className={`${styles.headerShell}`}>
           <Header />
         </div>
       </header>
 
-      <main className="flex flex-col items-center w-full pt-[50px] pb-6 gap-[50px] px-[5%] overflow-visible max-ta:px-0 max-ta:overflow-hidden max-ta:pb-[172px] max-xt:w-full max-xt:pt-[50px] max-xt:items-start max-xt:gap-[74px] max-xs:pt-[50px] max-xs:gap-[74px] max-xs:items-start">
-        <section className="w-full flex flex-col gap-4 max-w-[1160px] max-ta:max-w-full max-xt:px-6 max-xs:px-5">
-          <div className={`flex items-center justify-between max-xt:flex-col max-xt:items-start gap-4 ${styles.sectionHeaderRow}`}>
-            <h2 className="text-24-bold text-gray-900 max-xt:text-24-bold max-xs:text-[20px] max-xs:leading-[30px]">
-              인기 TOP 8 🔥
-            </h2>
-          </div>
-          {loading ? (
-            <p className="text-14-regular text-gray-500">데이터를 불러오는 중입니다...</p>
-          ) : error ? (
-            <div className="text-14-regular text-red-500">
-              <p>데이터를 불러오지 못했습니다.</p>
-              {error.message && <p className="text-xs mt-1">{error.message}</p>}
+      <main className="flex flex-col items-center w-full pt-[50px] pb-6 gap-[50px] px-[5%] overflow-visible max-ta:px-0 max-ta:overflow-hidden max-xt:w-full max-xt:pt-[50px] max-xt:items-start max-xt:gap-[74px] max-xs:pt-[50px] max-xs:gap-[74px] max-xs:items-start">
+        {/* **[참고]** max-w 컨테이너와 패딩을 분리하기 위한 구조 변경 */}
+        <section className="w-full flex flex-col gap-4 max-w-[1160px] max-ta:max-w-full"> 
+          <div className="max-xt:px-6 max-xs:px-5"> {/* 제목용 패딩 래퍼 */}
+            <div className={`flex items-center justify-between max-xt:flex-col max-xt:items-start gap-4 ${styles.sectionHeaderRow}`}>
+              <h2 className="mb-4 text-24-bold text-gray-900 max-xt:text-24-bold max-xs:text-[20px] max-xs:leading-[30px] max-xs:mb-3">
+                인기 TOP 8 🔥
+              </h2>
             </div>
-          ) : (
-            <RollingSwiper cards={popularCards} sliderKey="popular" viewportWidth={viewportWidth} />
-          )}
+            {loading ? (
+              <p className="text-14-regular text-gray-500 translate-x-6 max-ta:translate-x-0 text-center">데이터를 불러오는 중입니다...</p>
+            ) : error ? (
+              <div className="text-14-regular text-red-500">
+                <p>데이터를 불러오지 못했습니다.</p>
+                {error.message && <p className="text-xs mt-1">{error.message}</p>}
+              </div>
+            ) : (
+              // Swiper는 내부 slidesOffset으로 모바일 패딩을 처리함
+              <RollingSwiper cards={popularCards} sliderKey="popular" viewportWidth={viewportWidth} />
+            )}
+          </div>
         </section>
 
-        <section className="w-full flex flex-col gap-4 max-w-[1160px] max-ta:max-w-full max-xt:px-6 max-xs:px-5">
-          <div className={`flex items-center justify-between max-xt:flex-col max-xt:items-start gap-4 ${styles.sectionHeaderRow}`}>
-            <h2 
-              onClick={() => navigate('/recent')}
-              className="text-24-bold text-gray-900 cursor-pointer hover:text-purple-600 transition-colors max-xt:text-24-bold max-xs:text-[20px] max-xs:leading-[30px]"
-            >
-              최근에 만든 롤링 페이퍼 ⭐️️
-              {!loading && !error && (
-                <span className="text-16-regular text-gray-500 ml-2">({recentCards.length}개)</span>
-              )}
-            </h2>
-          </div>
-          {loading ? (
-            <p className="text-14-regular text-gray-500">데이터를 불러오는 중입니다...</p>
-          ) : error ? (
-            <div className="text-14-regular text-red-500">
-              <p>데이터를 불러오지 못했습니다.</p>
-              {error.message && <p className="text-xs mt-1">{error.message}</p>}
+        {/* **[참고]** max-w 컨테이너와 패딩을 분리하기 위한 구조 변경 */}
+        <section className="w-full flex flex-col gap-4 max-w-[1160px] max-ta:max-w-full">
+          <div className="max-xt:px-6 max-xs:px-5"> {/* 제목용 패딩 래퍼 */}
+            <div className={`flex items-center justify-between max-xt:flex-col max-xt:items-start gap-4 ${styles.sectionHeaderRow}`}>
+              <h2 
+                onClick={() => navigate('/recent')}
+                className="mb-4 text-24-bold text-gray-900 cursor-pointer hover:text-purple-600 transition-colors max-xt:text-24-bold max-xs:text-[20px] max-xs:leading-[30px] max-xs:mb-3"
+              >
+                최근에 만든 롤링 페이퍼 ⭐️️
+                {!loading && !error && (
+                  <span className="text-16-regular text-gray-500 ml-2">({recentCards.length}개)</span>
+                )}
+              </h2>
             </div>
-          ) : (
-            <RollingSwiper cards={recentCards} sliderKey="recent" viewportWidth={viewportWidth} />
-          )}
+            {loading ? (
+              <p className="text-14-regular text-gray-500 translate-x-6 max-ta:translate-x-0 text-center">데이터를 불러오는 중입니다...</p>
+            ) : error ? (
+              <div className="text-14-regular text-red-500">
+                <p>데이터를 불러오지 못했습니다.</p>
+                {error.message && <p className="text-xs mt-1">{error.message}</p>}
+              </div>
+            ) : (
+              // Swiper는 내부 slidesOffset으로 모바일 패딩을 처리함
+              <RollingSwiper cards={recentCards} sliderKey="recent" viewportWidth={viewportWidth} />
+            )}
+          </div>
         </section>
 
         <div className="w-full flex flex-col items-center max-w-[1160px] mt-12 mb-12 max-ta:max-w-full max-xt:px-6 max-xs:px-5">

@@ -4,7 +4,7 @@ import HeaderNobutton from "../Component/Header/HeaderNobutton";
 import Input from "../Component/Text_Field/Input";
 import ToggleButton from "../Component/Button/Toggle-button";
 import Option from "../Component/Option/Option";
-import PrimaryMain from "../Component/Button/Primary-main";
+import Primarypc from "../Component/Button/Primary-pc";
 import apiClient from "../api/client";
 import { createRecipient } from "../api/recipients"; // 수신인 생성 API 함수 사용
 
@@ -213,7 +213,7 @@ function CreatePostPage() {
           w-full max-w-[768px] mt-[57px]
           mx-auto px-[24px] text-left
           flex flex-col items-start
-          max-ta:mt-[57px] max-xt:mt-[49px] max-xs:mt-[50px]
+          max-ta:mt-[49px] max-xt:mt-[49px] max-xs:mt-[50px]
         "
       >
         {/* ✅ 상단 입력 영역: 예전 구조 */}
@@ -224,8 +224,8 @@ function CreatePostPage() {
         </div>
 
         {/* ✅ 설명 타이틀 영역 */}
-        <div className="mb-[24px] mt-[50px] max-ta:mt-[50px] max-xt:mt-[52px] max-xs:mt-[48px]">
-          <div className="text-gray-900 text-24-bold">
+        <div className="mb-[24px] mt-[50px] max-ta:mt-[54px] max-xt:mt-[52px] max-xs:mt-[48px]">
+          <div className="text-gray-900 text-24-bold mb-1">
             배경화면을 선택해 주세요.
           </div>
           <div className="text-gray-500 text-16-regular">
@@ -234,12 +234,12 @@ function CreatePostPage() {
         </div>
 
         {/* ✅ 토글 버튼 영역 */}
-        <div className="w-[244px] mb-[45px] max-ta:mb-[45px] max-xt:mb-[40px] max-xs:mb-[28px]">
+        <div className="w-[244px] mb-[45px] max-ta:mb-[40px] max-xt:mb-[40px] max-xs:mb-[28px]">
           <ToggleButton active={mode} onChange={handleToggleChange} />
         </div>
 
         {/* ✅ 옵션/이미지 선택 영역 */}
-        <div className="w-full mb-[48px]">
+        <div className="w-full">
           {mode === 'color' ? (
             <Option activeColor={selectedColor} onChange={handleColorChange} />
           ) : (
@@ -262,8 +262,8 @@ function CreatePostPage() {
         </div>
 
         {/* ✅ 생성 버튼 영역: 예전 마진 로직 복원 */}
-        <div className={`w-full h-full py-[24px] mt-[316px] flex justify-center items-center max-ta:mt-[45px] max-xt:mt-[316px] max-xs:mt-[58px]`}>
-          <PrimaryMain
+        <div className={`w-full h-full max-xt:w-full py-[24px] mt-[69px] flex justify-center items-center max-ta:mt-[340px] max-xt:mt-[316px] max-xs:mt-[83px]`}>
+          <Primarypc
             text={submitting ? "생성 중..." : "생성하기"}
             to={null}
             disabled={!isValid || submitting}
