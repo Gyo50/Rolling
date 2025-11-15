@@ -1,7 +1,8 @@
 import React from "react";
 import Header from "../Component/Header/Header";
 import introImg01 from "../img/img_intro01.svg";
-import introImg02 from "../img/img_intro02.png";
+import introImg02 from "../img/Group 37.jpg"
+import introImg03 from "../img/Frame 2433.png";
 import PrimaryMain from "../Component/Button/Primary-main";
 
 export default function MainPage() {
@@ -33,7 +34,7 @@ export default function MainPage() {
         </div>
 
         <div className="flex flex-row-reverse items-center justify-between mt-[30px] p-[0] rounded-[16px] bg-surface flex-shrink-0 overflow-hidden h-[324px] max-xt:flex-col max-xt:h-auto max-xt:p-[24px]">
-          <div className="flex flex-col w-auto pr-[10%] max-xt:pr-[0] max-xt:w-full max-xt:mb-[24px]">
+          <div className="flex flex-col w-auto max-xt:w-full max-xt:mb-[24px] mx-auto">
             <span className="bg-purple-600 text-white text-16-bold h-[32px] px-[14px] rounded-[32px] self-start inline-flex items-center max-xt:text-14-bold max-xt:h-[28px]">
               Point. 02
             </span>
@@ -47,8 +48,15 @@ export default function MainPage() {
             </p>
           </div>
 
-          <div className="pl-[10%] w-auto max-xt:pl-[0] max-xt:w-[420px">
+          <div className="max-w-[470px] max-xt:max-w-[470px] max-xs:max-w-[260px] mx-auto px-4">
+            {/* 상단 반응 버튼 바 */}
             <img src={introImg02} alt="" className="w-full" />
+          
+
+            {/* 팝오버 카드 */}
+            <div className="max-w-[293px] ml-[30px] mr-[67px] max-xs:ml-[2px] mt-[-12px] max-xt:mt-[-12px]">
+                <img src={introImg03} alt="" className="w-full"/>
+            </div>
           </div>
         </div>
       </div>

@@ -192,7 +192,7 @@ function MobileHeader() {
       </div>
 
       <div className="border-b border-gray-200">
-        <div className="relative min-w-[360px] h-[52px] bg-white flex justify-end items-center px-[24px] mx-auto">
+        <div className="relative h-[52px] bg-white flex justify-end items-center px-[24px] mx-auto">
           {/* 팝업 (이모지 제한 안내) */}
           {popup.visible && (
             <div className="absolute top-2 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-80 text-white text-sm px-5 py-3 rounded-lg shadow-lg z-50 animate-fadeIn">
@@ -201,7 +201,7 @@ function MobileHeader() {
           )}
 
           {/* Top3 이모지 */}
-          {sortedReactions.slice(0, 3).map((reaction) => (
+          {sortedReactions.slice(0, 3).map((reaction, index) => (
             <button
               key={reaction.id}
               onClick={() => handleEmojiSelect(reaction.emoji)}

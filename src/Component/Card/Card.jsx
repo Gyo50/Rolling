@@ -1,5 +1,30 @@
 import React from "react";
-import Trashbutton from "../../Component/Button/Trash-button";
+import Trashbutton from "../../Component/Button/Trash-button"; 
+
+// 관계에 따른 색상 매핑 정의
+const RELATIONSHIP_COLORS = {
+  친구: {
+    bgColor: "bg-blue-100",
+    textColor: "text-blue-500",
+  },
+  지인: {
+    bgColor: "bg-beige-100",
+    textColor: "text-beige-500",
+  },
+  동료: {
+    bgColor: "bg-purple-100",
+    textColor: "text-purple-600",
+  },
+  가족: {
+    bgColor: "bg-green-100",
+    textColor: "text-green-500",
+  },
+  default: {
+    bgColor: "bg-gray-100",
+    textColor: "text-gray-600",
+  }
+};
+
 
 function Card({
   senderName,
@@ -10,6 +35,9 @@ function Card({
   onClick,
   onDeleteClick,
 }) {
+  
+  const relationshipStyle = RELATIONSHIP_COLORS[relationship] || RELATIONSHIP_COLORS.default;
+  
   return (
     <div
       onClick={onClick}
@@ -50,15 +78,16 @@ function Card({
             </div>
 
             <div
-              className="
+              className={`
                 w-[41px] h-[20px]
                 px-[4px]
                 text-[12px] sm:text-[14px]
-                text-purple-600
                 rounded-[4px] sm:rounded-[5px]
-                bg-purple-100
                 flex items-center justify-center
-              "
+              
+                ${relationshipStyle.textColor}
+                ${relationshipStyle.bgColor}
+              `}
             >
               {relationship}
             </div>

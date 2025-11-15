@@ -5,6 +5,15 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter } from 'react-router-dom'
 
+function initKakao() {
+  if (!window.Kakao) return
+  if (!window.Kakao.isInitialized()) {
+    window.Kakao.init('2afbc104b2bff5e31cce3e9f33759d23')
+  }
+}
+
+initKakao()
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <BrowserRouter>

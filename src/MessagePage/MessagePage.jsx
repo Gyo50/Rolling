@@ -5,12 +5,13 @@ import Header from "../Component/Header/HeaderNobutton";
 import User from "../Component/Option/User";
 import Select from "../Component/Text_Field/SelectBox";
 import Froala from "../Component/Text_Field/Froala";
-import PrimaryPc from "../Component/Button/Primary-pc";
+import Primarypc from "../Component/Button/Primary-pc";
 import apiClient from "../api/client";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 function Send() {
-   const { id } = useParams();
+  const { id } = useParams();
+  const navigate = useNavigate();
 
   // 관계 선택 상태
   const [selectedRelation, setSelectedRelation] = useState(null);
@@ -27,7 +28,6 @@ function Send() {
   // Froala 내용
   const [messageContent, setMessageContent] = useState("");
 
-
   const relationOptions = [
     { label: "친구", value: "친구" },
     { label: "지인", value: "지인" },
@@ -35,36 +35,44 @@ function Send() {
     { label: "가족", value: "가족" },
   ];
 
-
   const fontOptions = [
     { label: "Noto Sans", value: "Noto Sans" },
     { label: "Pretendard", value: "Pretendard" },
+    { label: "나눔명조", value: "나눔명조" },
+    { label: "나눔손글씨 손편지체", value: "나눔손글씨 손편지체" },
   ];
-  const ROOT_API_URL = 'https://rolling-api.vercel.app';
+  const ROOT_API_URL = "https://rolling-api.vercel.app";
+  
   const fetchProfileImages = async () => {
     try {
       const response = await apiClient.get(`${ROOT_API_URL}/profile-images/`);
       const data = response.data;
+      let images = [];
 
       if (Array.isArray(data)) {
-        setProfileImages(data);
+        images = data;
       } else if (data && Array.isArray(data.imageUrls)) {
-        setProfileImages(data.imageUrls);
+        images = data.imageUrls;
       } else {
-        setProfileImages([]);
         console.error("API 응답이 올바른 이미지 배열 형태가 아닙니다:", data);
       }
+      
+      setProfileImages(images);
+      
+      // ⭐️ 2. 첫 번째 이미지 자동 선택 로직
+      if (images.length > 0) {
+        setSelectedProfileImage(images[0]);
+      }
+
     } catch (error) {
       console.error("프로필 이미지 로딩 실패:", error);
+      setProfileImages([]);
     }
   };
-  
 
   useEffect(() => {
     fetchProfileImages();
   }, []);
-  
-
 
   const handleCreate = async () => {
     if (!selectedRelation || !selectedFont) {
@@ -72,32 +80,43 @@ function Send() {
       return;
     }
 
+let finalContent = messageContent.trim();
+const pTagRegex = /^<p[^>]*>(.*?)<\/p>$/si;
+const match = finalContent.match(pTagRegex);
+
+ if (match && match[1] !== undefined) {
+// 캡처 그룹 1 (태그 안의 실제 내용)을 사용
+finalContent = match[1].trim(); 
+ }
+  
+    const contentToSend = finalContent.trim() || "내용 없음";
+    
     const payload = {
-            team: "20-4",
-            sender: sender.trim(), 
-            content: messageContent.trim() || "내용 없음", 
-            profileImageURL: selectedProfileImage,
-            relationship: selectedRelation?.value, 
-            font: selectedFont?.value, 
-        };
+      team: "20-4",
+      sender: sender.trim(),
+      content: contentToSend, 
+      profileImageURL: selectedProfileImage,
+      relationship: selectedRelation?.value,
+      font: selectedFont?.value,
+    };
+
+    console.log("보낼 payload:", payload);
 
     try {
       const res = await apiClient.post(`/recipients/${id}/messages/`, payload);
 
       console.log("서버 응답:", res.data);
       alert("생성 완료!");
+      navigate(`/post/${id}`);
     } catch (err) {
-      console.error(
-        "생성 실패:",
-        err.response ? err.response.data : err.message
-      );
-      alert(
-        "생성 실패: " + (err.response ? err.response.data.message : err.message)
-      );
+      console.error("생성 실패:", err.response ? err.response.data : err.message);
+      alert("생성 실패: " + (err.response ? err.response.data.message : err.message));
     }
   };
-    console.log(messageContent.trim());
 
+  console.log(navigate);
+  const firstFive = profileImages.slice(0, 5);
+  const secondFive = profileImages.slice(5, 10);
   return (
     <>
       <Header />
@@ -116,31 +135,51 @@ function Send() {
 
           <div className="mt-[50px] w-full">
             <p className="text-24-bold mb-3">프로필 이미지</p>
-            <div className="w-[80px] h-[80px] flex items-center gap-8">
-              <User selectedImageUrl={selectedProfileImage} />
+
+            <div className="flex justify-start items-center gap-8">
+              <User
+                className="w-[80px] h-[80px]"
+                selectedImageUrl={selectedProfileImage}
+              />
+
               <div>
-                <p className="text-16-regular text-gray-500 inline-block w-[200px]">
+                <p className="text-16-regular text-gray-500 mb-4">
                   프로필 이미지를 선택해주세요!
                 </p>
 
-                <div className="flex gap-1 mt-2 max-w-[500px]">
-                  {profileImages.map((imageUrl, index) => (
-                    <img
-                      key={index}
-                      src={imageUrl}
-                      alt={`프로필 이미지 ${index + 1}`}
-                      className={`w-[56px] h-[56px] rounded-full object-cover cursor-pointer transition-all ${
-                        selectedProfileImage === imageUrl
-                          ? "border-[3px] border-purple-600 p-1"
-                          : "opacity-70 hover:opacity-100"
-                      }`}
-                      onClick={() => setSelectedProfileImage(imageUrl)}
-                    />
-                  ))}
+                {/* ⭐ 여기서 그룹 2개를 flex로 배치 */}
+                <div className="flex flex-row gap-1 max-xs:flex-col max-xt:flex-col">
+                  {/* 첫 번째 5개 그룹 */}
+                  <div className="grid grid-cols-5 gap-1">
+                    {firstFive.map((imageUrl, index) => (
+                      <img
+                        key={index}
+                        src={imageUrl}
+                        className={`w-[56px] rounded-full object-cover cursor-pointer ${
+                          selectedProfileImage === imageUrl
+                            ? "border-[3px] border-purple-600 p-1"
+                            : "opacity-70 hover:opacity-100"
+                        }`}
+                        onClick={() => setSelectedProfileImage(imageUrl)}
+                      />
+                    ))}
+                  </div>
 
-                  {profileImages.length === 0 && (
-                    <p className="text-gray-400">이미지를 불러오는 중입니다...</p>
-                  )}
+                  {/* 두 번째 5개 그룹 */}
+                  <div className="grid grid-cols-5 gap-1">
+                    {secondFive.map((imageUrl, index) => (
+                      <img
+                        key={index}
+                        src={imageUrl}
+                        className={`w-[56px] rounded-full object-cover cursor-pointer ${
+                          selectedProfileImage === imageUrl
+                            ? "border-[3px] border-purple-600 p-1"
+                            : "opacity-70 hover:opacity-100"
+                        }`}
+                        onClick={() => setSelectedProfileImage(imageUrl)}
+                      />
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
@@ -178,16 +217,16 @@ function Send() {
             />
           </div>
 
-          <div>
+          
             <div
-        className="mb-[60px] inline-block w-full max-w-md mx-auto"
-        onClick={handleCreate}
-        style={{ cursor: "pointer" }}
-    >
-        {/* PrimaryPc는 w-full이므로 부모 div의 max-w-md 크기로 맞춰집니다. */}
-        <PrimaryPc text="생성하기" to="" />
-    </div>
-          </div>
+              className="w-[100%] mb-[60px] inline-block mx-auto text-center"
+              onClick={handleCreate}
+              style={{ cursor: "pointer" }}
+            >
+              {/* PrimaryPc는 w-full이므로 부모 div의 max-w-md 크기로 맞춰집니다. */}
+              <Primarypc text="생성하기" to="" />
+            </div>
+          
         </div>
       </div>
     </>

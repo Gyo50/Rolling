@@ -10,22 +10,49 @@ export const defaultMessage = {
   createdAt: "2025-11-11",
 };
 
+const RELATIONSHIP_COLORS = {
+  친구: {
+    bgColor: "bg-blue-100",
+    textColor: "text-blue-500",
+  },
+  지인: {
+    bgColor: "bg-beige-100",
+    textColor: "text-beige-500",
+  },
+  동료: {
+    bgColor: "bg-purple-100",
+    textColor: "text-purple-600",
+  },
+  가족: {
+    bgColor: "bg-green-100",
+    textColor: "text-green-500",
+  },
+  default: {
+    bgColor: "bg-gray-100",
+    textColor: "text-gray-600",
+  }
+};
+
+
 // 카드 컴포넌트
 function UserCard({ message, onClick }) {
   const data = message || defaultMessage;
+  const relationshipStyle = RELATIONSHIP_COLORS[data.relationship] || RELATIONSHIP_COLORS.default;
 
   return (
     <>
       <div
         className="
-          w-[384px] h-[280px]
-          rounded-[16px]
-          p-[28px_24px_24px_24px]
-          shadow-[0_2px_13px_rgba(0,0,0,0.08)]
-          bg-white
-          flex flex-col
-          relative
-          cursor-pointer
+        w-full
+        h-[230px] sm:h-[280px]
+        rounded-[16px]
+        p-[20px_18px_18px_18px] sm:p-[28px_24px_24px_24px]
+        shadow-[0_2px_13px_rgba(0,0,0,0.08)]
+        bg-white
+        flex flex-col
+        relative
+        cursor-pointer
+        hover:shadow-lg transition
         "
         onClick={onClick}
       >
@@ -49,13 +76,16 @@ function UserCard({ message, onClick }) {
               </div>
 
               <div
-                className="
-                w-[41px] h-5
-                text-[14px] text-purple-600
-                rounded-[5px] bg-purple-100
-                px-[5px]
-                flex items-center justify-center
-              "
+                className={`
+                  w-[41px] h-5
+                  text-[14px]
+                  rounded-[5px] 
+                  px-[5px]
+                  flex items-center justify-center
+                  /* ⭐️ 동적 스타일 적용 */
+                  ${relationshipStyle.textColor}
+                  ${relationshipStyle.bgColor}
+                `}
               >
                 {data.relationship}
               </div>
