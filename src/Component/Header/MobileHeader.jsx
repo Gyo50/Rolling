@@ -5,9 +5,9 @@ import { ReactComponent as ArrowIcon } from "../../img/arrow_down.svg";
 import Toast from "../Toast/Toast.jsx";
 import EmojiPicker from "emoji-picker-react";
 
-function MobileHeader() {
+// props로 reactions(배열)와 onAddReaction(함수)을 받도록 수정
+function MobileHeader({ reactions = [], onAddReaction }) {
   // 상태 관리
-  const [reactions, setReactions] = useState([]);
   const [showEmojiMenu, setShowEmojiMenu] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
@@ -19,7 +19,7 @@ function MobileHeader() {
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState("success");
 
-  // 사용자 식별 ID (localStorage에 저장되어 새로고침해도 유지)
+  // 사용자 식별 ID (5회 제한 로직 유지를 위해 남겨둠)
   const [userId] = useState(() => {
     const saved = localStorage.getItem("userId");
     if (saved) return saved;
@@ -28,33 +28,23 @@ function MobileHeader() {
     return newId;
   });
 
-  // 리셋 관련 상수 (개발용)
-  const AUTO_RESET_ON_LOAD = false; // true로 바꾸면 새로고침 시 자동 초기화됨
+  // 리셋 관련 상수 (유지)
+  const AUTO_RESET_ON_LOAD = false;
 
-  // 로컬 스토리지 초기화 함수
+  // 로컬 스토리지 초기화 함수 (정의 유지)
   const resetReactions = useCallback(() => {
     localStorage.removeItem("reactions");
-    setReactions([]);
-    console.log("🧹 reactions가 초기화되었습니다!");
+    console.log("🧹 reactions가 초기화되었습니다! (로컬 스토리지만)");
   }, []);
 
-  // 페이지 로드시 저장된 이모지 불러오기 or 리셋
+  // 초기 로딩 시 로직 (API 연동은 OwnerPage에서 담당)
   useEffect(() => {
     if (AUTO_RESET_ON_LOAD) {
       resetReactions();
-    } else {
-      const saved = localStorage.getItem("reactions");
-      if (saved) setReactions(JSON.parse(saved));
     }
-
-    // 콘솔에서 수동 실행 가능하도록 등록
     window.resetReactions = resetReactions;
   }, [AUTO_RESET_ON_LOAD, resetReactions]);
 
-  // 이모지 변경 시 localStorage에 저장
-  useEffect(() => {
-    localStorage.setItem("reactions", JSON.stringify(reactions));
-  }, [reactions]);
 
   // 팝업 (이모지 5회 제한 알림)
   const showPopup = (msg) => {
@@ -69,10 +59,10 @@ function MobileHeader() {
     setToastOpen(true);
   };
 
-  // 이모지 정렬 (Top 순)
+  // props로 받은 reactions 사용 및 정렬
   const sortedReactions = [...reactions].sort((a, b) => b.count - a.count);
 
-  // 이모지 클릭 / 추가
+  // 이모지 클릭 / 추가 (props.onAddReaction 사용하도록 수정)
   const handleEmojiSelect = (emojiData) => {
     const selectedEmoji =
       typeof emojiData === "string"
@@ -81,47 +71,31 @@ function MobileHeader() {
 
     if (!selectedEmoji) return;
 
-    setReactions((prev) => {
-      const existing = prev.find((r) => r.emoji === selectedEmoji);
+    // 5회 제한 체크 로직 (유지)
+    const existing = reactions.find((r) => r.emoji === selectedEmoji);
+    if (existing) {
+      const userClickedCount =
+        existing.users?.[userId] !== undefined ? existing.users[userId] : 0;
 
-      if (existing) {
-        const userClickedCount =
-          existing.users[userId] !== undefined ? existing.users[userId] : 0;
-
-        if (userClickedCount >= 5) {
-          showPopup("이 이모지는 최대 5번까지만 누를 수 있어요 😅");
-          return prev;
-        }
-
-        return prev.map((r) =>
-          r.emoji === selectedEmoji
-            ? {
-                ...r,
-                count: r.count + 1,
-                users: { ...r.users, [userId]: userClickedCount + 1 },
-              }
-            : r
-        );
-      } else {
-        return [
-          ...prev,
-          {
-            emoji: selectedEmoji,
-            count: 1,
-            users: { [userId]: 1 },
-            id: Date.now(),
-          },
-        ];
+      if (userClickedCount >= 5) {
+        showPopup("이 이모지는 최대 5번까지만 누를 수 있어요 😅");
+        setShowEmojiPicker(false);
+        return;
       }
-    });
+    }
 
-    const target = reactions.find((r) => r.emoji === selectedEmoji);
-    setAnimatedId(target ? target.id : Date.now());
+    // 상위 컴포넌트로 반응 추가 요청 전달
+    if (onAddReaction) {
+      onAddReaction(selectedEmoji);
+    }
+
+    // 애니메이션 처리
+    setAnimatedId(Date.now()); // 클릭 시 애니메이션 실행
     setTimeout(() => setAnimatedId(null), 250);
     setShowEmojiPicker(false);
   };
 
-  // 토글 함수들 (다른 토글 열리면 기존 닫기)
+  // 토글 함수들
   const toggleEmojiMenu = () => {
     setShowEmojiMenu((prev) => {
       const newState = !prev;
@@ -167,7 +141,7 @@ function MobileHeader() {
     setShowShareMenu(false);
   };
 
-  // 공통 버튼 스타일
+  // 공통 버튼 스타일 (JSX/CSS는 변경 없음)
   const buttonClasses = `flex items-center justify-center rounded-full pl-[10px] pr-[8px] py-[4px] bg-[rgba(0,0,0,0.54)] text-white text-14-regular gap-2`;
 
   // 렌더링
@@ -205,9 +179,8 @@ function MobileHeader() {
             <button
               key={reaction.id}
               onClick={() => handleEmojiSelect(reaction.emoji)}
-              className={`${buttonClasses} ${
-                animatedId === reaction.id ? "emoji-animate" : ""
-              } mx-1`}
+              className={`${buttonClasses} ${animatedId === reaction.id ? "emoji-animate" : ""
+                } mx-1`}
             >
               <span style={{ fontSize: "14px", lineHeight: "20px" }}>
                 {reaction.emoji}
@@ -221,9 +194,8 @@ function MobileHeader() {
             <>
               <button onClick={toggleEmojiMenu} className="mx-[14px] w-[12px]">
                 <ArrowIcon
-                  className={`transition-transform duration-100 ${
-                    showEmojiMenu ? "rotate-180" : "rotate-0"
-                  }`}
+                  className={`transition-transform duration-100 ${showEmojiMenu ? "rotate-180" : "rotate-0"
+                    }`}
                 />
               </button>
 
@@ -233,9 +205,8 @@ function MobileHeader() {
                     <button
                       key={reaction.id}
                       onClick={() => handleEmojiSelect(reaction.emoji)}
-                      className={`${buttonClasses} ${
-                        animatedId === reaction.id ? "emoji-animate" : ""
-                      } w-full`}
+                      className={`${buttonClasses} ${animatedId === reaction.id ? "emoji-animate" : ""
+                        } w-full`}
                     >
                       <span style={{ fontSize: "14px", lineHeight: "20px" }}>
                         {reaction.emoji}
@@ -300,21 +271,7 @@ function MobileHeader() {
             )}
           </div>
 
-          <style>{`
-            .emoji-animate {
-              transform: scale(1.3) !important;
-              transition: transform 0.15s ease-in-out !important;
-            }
-
-            @keyframes fadeIn {
-              from { opacity: 0; transform: translateY(-5px); }
-              to { opacity: 1; transform: translateY(0); }
-            }
-
-            .animate-fadeIn {
-              animation: fadeIn 0.3s ease-out;
-            }
-          `}</style>
+          <style>{`.emoji-animate {transform: scale(1.3) !important; transition: transform 0.15s ease-in-out !important;}@keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0);}}.animate-fadeIn {animation: fadeIn 0.3s ease-out;} `}</style>
         </div>
       </div>
     </>

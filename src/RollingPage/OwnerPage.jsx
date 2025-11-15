@@ -21,8 +21,8 @@ import {
 const STATIC_MESSAGES = [];
 
 const COLOR_MAP = {
-  beige: "#FFE2AD", 
-  purple: "#ECD9FF", 
+  beige: "#FFE2AD",
+  purple: "#ECD9FF",
   green: "#D0F5C3",
   blue: "#B1E4FF",
 };
@@ -162,6 +162,7 @@ function OwnerPage({ recipientId }) {
         emoji: alias,
         type: "increase",
       });
+      // 반응 업데이트 후 다시 불러오기
       const updated = await fetchRecipientReactions(currentRecipientId);
       setReactions(normalizeReactionsResponse(updated));
     } catch (err) {
@@ -256,47 +257,52 @@ function OwnerPage({ recipientId }) {
         className="owner-page-scrollbar-hide relative"
         style={{
           ...(backgroundValue?.startsWith("http") ||
-          backgroundValue?.startsWith("/")
+            backgroundValue?.startsWith("/")
             ? {
-                backgroundImage: `url(${backgroundValue})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center top",
-                backgroundRepeat: "no-repeat",
-              }
+              backgroundImage: `url(${backgroundValue})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center top",
+              backgroundRepeat: "no-repeat",
+            }
             : {
-                backgroundColor: backgroundValue,
-              }),
+              backgroundColor: backgroundValue,
+            }),
         }}
       >
-        <div 
-          className="absolute inset-0 z-0" 
-          style={{ 
+        <div
+          className="absolute inset-0 z-0"
+          style={{
             backgroundColor: '#0000',
-            opacity: 0.2 
+            opacity: 0.2
           }}
         />
-        
+
         {/* 헤더 */}
+        
         <div className="fixed top-0 left-0 w-full shadow-sm z-30 bg-white">
           <div className="mx-auto">
             {screenMode === "mobile" ? (
-              <MobileHeader hideCreateButton />
+              <MobileHeader
+                hideCreateButton
+                reactions={reactions}
+                onAddReaction={handleAddReaction}
+              />
             ) : (
               <HeaderNobutton />
             )}
 
-            {screenMode !== "mobile" && (
-              <div className="mx-auto">
-                <MessageHeader
-                  recipient={recipient}
-                  messageCount={totalMessageCount}
-                  topAvatars={topAvatars}
-                  reactions={reactions}
-                  onAddReaction={handleAddReaction}
-                  hideAvatars={screenMode === "tablet"}
-                />
-              </div>
-            )}
+            {screenMode !== "mobile" &&
+            <div className="mx-auto">
+              <MessageHeader
+                recipient={recipient}
+                messageCount={totalMessageCount}
+                topAvatars={topAvatars}
+                reactions={reactions}
+                onAddReaction={handleAddReaction}
+                hideAvatars={screenMode === "tablet"}
+              />
+            </div>
+            }
           </div>
         </div>
 
@@ -360,6 +366,7 @@ function OwnerPage({ recipientId }) {
                 )
               )}
             </div>
+
           </div>
 
           {/* 모바일 삭제 버튼 */}
