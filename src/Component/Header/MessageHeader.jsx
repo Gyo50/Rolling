@@ -100,7 +100,9 @@ function MessageHeader({
 
   const handleEmojiSelect = (emojiData) => {
     const selectedEmoji =
-      typeof emojiData === "string" ? emojiData : emojiData?.emoji || emojiData?.native;
+      typeof emojiData === "string"
+        ? emojiData
+        : emojiData?.emoji || emojiData?.native;
 
     if (!selectedEmoji) return;
 
@@ -131,7 +133,9 @@ function MessageHeader({
       const existing = prev.find((r) => r.emoji === selectedEmoji);
       if (existing) {
         // prop으로 받은 reactions를 업데이트하는 대신, 임시로 로컬 count를 증가시켜 애니메이션 트리거
-        return prev.map((r) => (r.emoji === selectedEmoji ? { ...r, count: r.count + 1 } : r));
+        return prev.map((r) =>
+          r.emoji === selectedEmoji ? { ...r, count: r.count + 1 } : r
+        );
       } else {
         // 새 이모지인 경우 임시로 추가
         return [...prev, { emoji: selectedEmoji, count: 1, id: Date.now() }];
@@ -264,16 +268,26 @@ function MessageHeader({
   const shareButtonClasses = `
     flex items-center justify-center 
     border border-gray-300 w-[56px] h-[36px] rounded-[6px] transition
-    ${showShareMenu ? "border-gray-500 bg-gray-50" : "bg-white hover:bg-gray-100"}
+    ${
+      showShareMenu
+        ? "border-gray-500 bg-gray-50"
+        : "bg-white hover:bg-gray-100"
+    }
   `;
 
   const plusButtonClasses = `
     flex items-center justify-center gap-1 border border-gray-300 text-gray-900 rounded-[6px]
     w-[88px] h-[36px] transition
-    ${showEmojiPicker ? "bg-gray-100 border-gray-500" : "bg-white hover:bg-gray-50"}
+    ${
+      showEmojiPicker
+        ? "bg-gray-100 border-gray-500"
+        : "bg-white hover:bg-gray-50"
+    }
   `;
 
-  const displayName = recipient?.name ? `To. ${recipient.name}` : "To. 이름 없는 대상";
+  const displayName = recipient?.name
+    ? `To. ${recipient.name}`
+    : "To. 이름 없는 대상";
   const totalWriters = messageCount ?? 0;
 
   // 아바타 렌더링을 위한 데이터 준비
@@ -293,13 +307,13 @@ function MessageHeader({
       )}
 
       {/* 토스트 (URL 복사 알림) */}
-      {/*<Toast
+      <Toast
         isOpen={toastOpen}
         onClose={() => setToastOpen(false)}
         message={toastMessage}
         type={toastType}
         duration={2000}
-      />*/}
+      />
 
       <div className="flex items-center justify-center w-full bg-white">
         <div className="flex items-center justify-between w-full max-w-[1200px] px-6 h-[68px]">
@@ -339,7 +353,8 @@ function MessageHeader({
                   )}
                 </div>
                 <span className="text-18-regular text-gray-900 whitespace-nowrap">
-                  <span className="text-18-bold">{totalWriters}</span>명이 작성했어요!
+                  <span className="text-18-bold">{totalWriters}</span>명이
+                  작성했어요!
                 </span>
               </div>
             )}
@@ -355,7 +370,9 @@ function MessageHeader({
                         key={reaction.id || reaction.emoji}
                         onClick={() => handleEmojiSelect(reaction.emoji)}
                         className={`flex items-center justify-center gap-1 bg-black bg-opacity-[54%] text-white rounded-full px-[12px] py-[6px] transition-transform duration-150 ${
-                          animatedId === (reaction.id || reaction.emoji) ? "emoji-animate" : ""
+                          animatedId === (reaction.id || reaction.emoji)
+                            ? "emoji-animate"
+                            : ""
                         }`}
                       >
                         {reaction.emoji}&nbsp;{reaction.count}
@@ -385,7 +402,9 @@ function MessageHeader({
                           key={reaction.id || reaction.emoji}
                           onClick={() => handleEmojiSelect(reaction.emoji)}
                           className={`flex flex-row items-center justify-center bg-black bg-opacity-[54%] text-white rounded-full px-[12px] py-[6px] text-16-regular w-full transition-transform duration-150 ${
-                            animatedId === (reaction.id || reaction.emoji) ? "emoji-animate" : ""
+                            animatedId === (reaction.id || reaction.emoji)
+                              ? "emoji-animate"
+                              : ""
                           }`}
                         >
                           {reaction.emoji}&nbsp;{reaction.count}
@@ -397,11 +416,16 @@ function MessageHeader({
               )}
             </div>
 
+            
+
             {/* 이모지 추가 & 공유 버튼 */}
             <div className="flex items-center gap-[13px] min-w-[171px] justify-end">
               {/* 이모지 추가 버튼 */}
               <div className="relative z-20">
-                <button onClick={toggleEmojiPicker} className={plusButtonClasses}>
+                <button
+                  onClick={toggleEmojiPicker}
+                  className={plusButtonClasses}
+                >
                   <PlusIcon />
                   추가
                 </button>

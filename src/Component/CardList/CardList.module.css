@@ -23,7 +23,7 @@
   align-items: center;
   border-radius: 32px;
   gap: clamp(4px, 1.5vw, 6px);
-  min-width: clamp(44px, 18vw, 66px);
+  width: clamp(44px, 18vw, 66px);
   height: clamp(26px, 4vw, 36px);
   padding: clamp(3px, 1vw, 6px) clamp(6px, 1.5vw, 12px);
   font-size: clamp(11px, 1.4vw, 15px);

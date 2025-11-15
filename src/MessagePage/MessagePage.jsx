@@ -5,12 +5,13 @@ import Header from "../Component/Header/HeaderNobutton";
 import User from "../Component/Option/User";
 import Select from "../Component/Text_Field/SelectBox";
 import Froala from "../Component/Text_Field/Froala";
-import PrimaryPc from "../Component/Button/Primary-pc";
+import PrimaryMain from "../Component/Button/Primary-main";
 import apiClient from "../api/client";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 function Send() {
   const { id } = useParams();
+  const navigate = useNavigate();
 
   // 관계 선택 상태
   const [selectedRelation, setSelectedRelation] = useState(null);
@@ -37,23 +38,35 @@ function Send() {
   const fontOptions = [
     { label: "Noto Sans", value: "Noto Sans" },
     { label: "Pretendard", value: "Pretendard" },
+    { label: "나눔명조", value: "나눔명조" },
+    { label: "나눔손글씨 손편지체", value: "나눔손글씨 손편지체" },
   ];
   const ROOT_API_URL = "https://rolling-api.vercel.app";
+  
   const fetchProfileImages = async () => {
     try {
       const response = await apiClient.get(`${ROOT_API_URL}/profile-images/`);
       const data = response.data;
+      let images = [];
 
       if (Array.isArray(data)) {
-        setProfileImages(data);
+        images = data;
       } else if (data && Array.isArray(data.imageUrls)) {
-        setProfileImages(data.imageUrls);
+        images = data.imageUrls;
       } else {
-        setProfileImages([]);
         console.error("API 응답이 올바른 이미지 배열 형태가 아닙니다:", data);
       }
+      
+      setProfileImages(images);
+      
+      // ⭐️ 2. 첫 번째 이미지 자동 선택 로직
+      if (images.length > 0) {
+        setSelectedProfileImage(images[0]);
+      }
+
     } catch (error) {
       console.error("프로필 이미지 로딩 실패:", error);
+      setProfileImages([]);
     }
   };
 
@@ -67,10 +80,22 @@ function Send() {
       return;
     }
 
+    let finalContent = messageContent.trim();
+   
+    const pTagRegex = /^<p[^>]*>(.*?)<\/p>$/si;
+    const match = finalContent.match(pTagRegex);
+
+    if (match && match[1] !== undefined) {
+      // 캡처 그룹 1 (태그 안의 실제 내용)을 사용
+      finalContent = match[1].trim(); 
+    }
+    
+    const contentToSend = finalContent.trim() || "내용 없음";
+    
     const payload = {
       team: "20-4",
       sender: sender.trim(),
-      content: messageContent.trim() || "내용 없음",
+      content: contentToSend, 
       profileImageURL: selectedProfileImage,
       relationship: selectedRelation?.value,
       font: selectedFont?.value,
@@ -83,13 +108,14 @@ function Send() {
 
       console.log("서버 응답:", res.data);
       alert("생성 완료!");
+      navigate(`/post/${id}`);
     } catch (err) {
       console.error("생성 실패:", err.response ? err.response.data : err.message);
       alert("생성 실패: " + (err.response ? err.response.data.message : err.message));
     }
   };
-  console.log(messageContent.trim());
 
+  console.log(navigate);
   return (
     <>
       <Header />
@@ -115,7 +141,7 @@ function Send() {
                   프로필 이미지를 선택해주세요!
                 </p>
 
-                <div className="flex gap-1 mt-2 max-w-[500px]">
+                <div className="flex gap-1 mt-2 max-w-[500px]"> 
                   {profileImages.map((imageUrl, index) => (
                     <img
                       key={index}
@@ -170,16 +196,16 @@ function Send() {
             />
           </div>
 
-          <div>
+          
             <div
-              className="mb-[60px] inline-block w-full max-w-md mx-auto"
+              className="mb-[60px] inline-block mx-auto max-xt:max-w-[320px] text-center"
               onClick={handleCreate}
               style={{ cursor: "pointer" }}
             >
               {/* PrimaryPc는 w-full이므로 부모 div의 max-w-md 크기로 맞춰집니다. */}
-              <PrimaryPc text="생성하기" to="" />
+              <PrimaryMain text="생성하기" to="" />
             </div>
-          </div>
+          
         </div>
       </div>
     </>
