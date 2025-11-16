@@ -1,5 +1,5 @@
 // src/pages/Send.jsx
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Header from "../Component/Header/HeaderNobutton";
 import Input from "../Component/Text_Field/Input"; 
 import User from "../Component/Option/User";
@@ -12,24 +12,19 @@ import { useNavigate, useParams } from "react-router-dom";
 function Send() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [submitting, setSubmitting] = useState(false);
 
-  // 프로필 이미지 상태
   const [profileImages, setProfileImages] = useState([]);
   const [selectedProfileImage, setSelectedProfileImage] = useState(null);
 
-  // sender (From) 관리
-  const [sender, setSender] = useState("");
-
-  // Froala 내용
-  const [messageContent, setMessageContent] = useState("");
-
+  const [sender, setSender] = useState("");                  // 이름
+  const [messageContent, setMessageContent] = useState("");  // 내용(HTML)
   const relationOptions = [
     { label: "친구", value: "친구" },
     { label: "지인", value: "지인" },
     { label: "동료", value: "동료" },
     { label: "가족", value: "가족" },
   ];
-  // 관계 선택 상태 기본값 지인
   const [selectedRelation, setSelectedRelation] = useState(relationOptions[1]);
 
   const fontOptions = [
@@ -38,33 +33,38 @@ function Send() {
     { label: "나눔명조", value: "나눔명조" },
     { label: "나눔손글씨 손편지체", value: "나눔손글씨 손편지체" },
   ];
-
-  // 폰트 선택 상태
-  const [selectedFont, setSelectedFont] = useState(fontOptions[0]);
+  const [selectedFont, setSelectedFont] = useState(fontOptions[0]);  // 폰트
 
   const ROOT_API_URL = "https://rolling-api.vercel.app";
-  
+
+  // HTML → 순수 텍스트 추출(공백/nbsp 제거)
+  const contentText = useMemo(() => {
+    const withoutTags = messageContent
+      .replace(/<br\s*\/?>/gi, "\n")
+      .replace(/<\/?p[^>]*>/gi, "\n")
+      .replace(/<\/?[^>]+>/g, ""); // 모든 태그 제거
+    return withoutTags.replace(/&nbsp;|\s|\u00A0/g, "").trim();
+  }, [messageContent]);
+
+  // 세 가지 모두 채워져야 활성화
+  const canSubmit = useMemo(() => {
+    const hasName = sender.trim().length > 0;
+    const hasFont = !!selectedFont?.value?.trim();
+    const hasContent = contentText.length > 0; // 실제 텍스트가 있나
+    return hasName && hasFont && hasContent;
+  }, [sender, selectedFont, contentText]);
+
   const fetchProfileImages = async () => {
     try {
       const response = await apiClient.get(`${ROOT_API_URL}/profile-images/`);
       const data = response.data;
       let images = [];
 
-      if (Array.isArray(data)) {
-        images = data;
-      } else if (data && Array.isArray(data.imageUrls)) {
-        images = data.imageUrls;
-      } else {
-        console.error("API 응답이 올바른 이미지 배열 형태가 아닙니다:", data);
-      }
-      
-      setProfileImages(images);
-      
-      // ⭐️ 2. 첫 번째 이미지 자동 선택 로직
-      if (images.length > 0) {
-        setSelectedProfileImage(images[0]);
-      }
+      if (Array.isArray(data)) images = data;
+      else if (data && Array.isArray(data.imageUrls)) images = data.imageUrls;
 
+      setProfileImages(images);
+      if (images.length > 0) setSelectedProfileImage(images[0]);
     } catch (error) {
       console.error("프로필 이미지 로딩 실패:", error);
       setProfileImages([]);
@@ -76,47 +76,41 @@ function Send() {
   }, []);
 
   const handleCreate = async () => {
-    if (!selectedRelation || !selectedFont) {
-      alert("관계와 폰트를 모두 선택해주세요.");
-      return;
-    }
+    // 가드: 혹시나 disabled 무시하고 들어오는 경우 대비
+    if (!canSubmit || submitting) return;
 
-let finalContent = messageContent.trim();
-const pTagRegex = /^<p[^>]*>(.*?)<\/p>$/si;
-const match = finalContent.match(pTagRegex);
+    // 내용 정리 (비어있을 때 '내용 없음' 처리는 그대로)
+    let finalContent = messageContent.trim();
+    const pTagRegex = /^<p[^>]*>(.*?)<\/p>$/si;
+    const match = finalContent.match(pTagRegex);
+    if (match && match[1] !== undefined) finalContent = match[1].trim();
 
- if (match && match[1] !== undefined) {
-// 캡처 그룹 1 (태그 안의 실제 내용)을 사용
-finalContent = match[1].trim(); 
- }
-  
-    const contentToSend = finalContent.trim() || "내용 없음";
-    
+    const contentToSend = contentText.length > 0 ? finalContent : "내용 없음";
+
     const payload = {
       team: "20-4",
       sender: sender.trim(),
-      content: contentToSend, 
+      content: contentToSend,
       profileImageURL: selectedProfileImage,
-      relationship: selectedRelation?.value,
+      relationship: selectedRelation?.value, // 관계는 기존대로 유지
       font: selectedFont?.value,
     };
 
-    console.log("보낼 payload:", payload);
-
     try {
+      setSubmitting(true);
       const res = await apiClient.post(`/recipients/${id}/messages/`, payload);
-
-      console.log("서버 응답:", res.data);
       alert("생성 완료!");
       navigate(`/post/${id}`);
     } catch (err) {
       console.error("생성 실패:", err.response ? err.response.data : err.message);
       alert("생성 실패: " + (err.response ? err.response.data.message : err.message));
+    } finally {
+      setSubmitting(false);
     }
   };
 
-  console.log(navigate);
   const imagesToDisplay = profileImages.slice(0, 10);
+
   return (
     <>
       <Header />
@@ -124,7 +118,6 @@ finalContent = match[1].trim();
         <div className="w-full">
           <div>
             <p className="text-24-bold mb-3">From.</p>
-            {/* 기존 Input 컴포넌트 대신 간단한 controlled input으로 교체(필요 시 원래 컴포넌트와 연동) */}
             <Input
               value={sender}
               onChange={(value) => setSender(value)}
@@ -136,17 +129,13 @@ finalContent = match[1].trim();
             <p className="text-24-bold mb-3">프로필 이미지</p>
 
             <div className="flex justify-start items-center gap-8">
-              <User
-                className="w-[80px] h-[80px]"
-                selectedImageUrl={selectedProfileImage}
-              />
+              <User className="w-[80px] h-[80px]" selectedImageUrl={selectedProfileImage} />
 
               <div>
                 <p className="text-16-regular text-gray-500 mb-4">
                   프로필 이미지를 선택해주세요!
                 </p>
 
-                {/* ⭐ 여기서 그룹 2개를 flex로 배치 */}
                 <div className="flex flex-wrap gap-1 max-xs:gap-0.5">
                   {imagesToDisplay.map((imageUrl, index) => (
                     <img
@@ -157,7 +146,7 @@ finalContent = match[1].trim();
                         selectedProfileImage === imageUrl
                           ? "border-[3px] border-purple-600 p-1"
                           : "opacity-70 hover:opacity-100"
-                        }`}
+                      }`}
                       onClick={() => setSelectedProfileImage(imageUrl)}
                     />
                   ))}
@@ -179,7 +168,6 @@ finalContent = match[1].trim();
 
           <div className="mt-[50px] w-full">
             <p className="text-24-bold mb-3">내용을 입력해주세요.</p>
-            {/* selectedFont?.value 를 전달. Froala는 model/onModelChange로 내용 제어 */}
             <Froala
               font={selectedFont ? selectedFont.value : "Noto Sans"}
               model={messageContent}
@@ -198,16 +186,15 @@ finalContent = match[1].trim();
             />
           </div>
 
-          
-            <div
-              className="w-[100%] mb-[60px] inline-block mx-auto text-center"
+          {/* 버튼: disabled를 Primarypc에 직접 전달 (포인터 제거/회색 처리 컴포넌트에서 수행) */}
+          <div className="w-full mb-[60px] inline-block mx-auto text-center">
+            <Primarypc
+              text={submitting ? "생성 중..." : "생성하기"}
+              to=""
               onClick={handleCreate}
-              style={{ cursor: "pointer" }}
-            >
-              {/* PrimaryPc는 w-full이므로 부모 div의 max-w-md 크기로 맞춰집니다. */}
-              <Primarypc text="생성하기" to="" />
-            </div>
-          
+              disabled={!canSubmit || submitting} 
+            />
+          </div>
         </div>
       </div>
     </>

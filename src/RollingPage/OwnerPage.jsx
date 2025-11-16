@@ -319,18 +319,18 @@ function OwnerPage({ recipientId }) {
             }
           </div>
         </div>
-
+       
         <div className="flex flex-col min-h-screen relative z-10">
           {/* 카드 영역 */}
-          <div className="flex-1 w-full pt-[102px] sm:pt-[147px] lg:pt-[171px] pb-10 relative">
-            <div className="mx-auto max-w-[1200px] relative">
+          <div className={`flex-1 w-full pt-[102px] sm:pt-[147px] lg:pt-[171px] pb-10 relative`}>
+            <div className="mx-auto max-w-[1200px] relative mb-[70px]">
               {/* PC 삭제 버튼 */}
               {screenMode === "pc" && (
                 <div className="w-full max-w-[1200px] mx-auto flex justify-end px-[24px] mb-[16px]">
                   <div onClick={handleOpenPageDeleteModal} disabled={deleting}>
                     <DeleteButton text={deleting ? "삭제 중..." : "삭제하기"} />
                   </div>
-                </div>
+                </div> 
               )}
 
               {loading && <p className="text-center mt-10">로딩 중...</p>}
@@ -386,7 +386,7 @@ function OwnerPage({ recipientId }) {
           {/* 모바일 삭제 버튼 */}
           {screenMode !== "pc" && (
             <div className="fixed bottom-0 left-0 right-0 z-40 px-[24px] pt-0">
-              <div className="mx-auto max-w-[1200px] px-0">
+              <div className="mx-auto max-w-[1200px] py-[24px] px-0">
                 <div
                   onClick={handleOpenPageDeleteModal}
                   disabled={deleting}

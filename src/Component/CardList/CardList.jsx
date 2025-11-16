@@ -72,6 +72,7 @@ function CardList({ recipient, isRecent }) {
           count: typeof item.count === 'number' ? item.count : Number(item.count) || 0
         }
       })
+
       .filter((item) => item.count > 0)
       .sort((a, b) => b.count - a.count)
       .slice(0, 3)
@@ -153,7 +154,7 @@ function CardList({ recipient, isRecent }) {
         />
       )}
       {isRecent && (
-        <div className="absolute top-2 right-2 z-20 flex items-center justify-center">
+        <div className="absolute top-2 right-3 z-20 flex items-center justify-center">
           <span className="text-14-bold min-[361px]:text-16-bold font-bold text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
             NEW!
           </span>
