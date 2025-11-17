@@ -118,6 +118,7 @@ function Send() {
       if (link.parentNode) {
         link.parentNode.remove();
       }
+      console.log(link.parentNode);
     }, 0);
   }, []);
 
