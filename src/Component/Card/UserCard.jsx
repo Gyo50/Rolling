@@ -40,10 +40,7 @@ function UserCard({ message, onClick }) {
 
   // 2) 허용 태그만 남기고 나머지 태그 제거(스크립트/스타일 차단)
   const contentHtml = useMemo(() => {
-    return decodedHtml.replace(
-      /<(?!\/?(b|strong|i|em|u|p|br|span)\b)[^>]*>/gi,
-      ""
-    );
+    return decodedHtml.replace(/<(?!\/?(b|strong|i|em|u|p|br|span)\b)[^>]*>/gi, "");
   }, [decodedHtml]);
 
   return (
@@ -100,7 +97,6 @@ function UserCard({ message, onClick }) {
           </div>
         </div>
         <div
-<<<<<<< HEAD
           className="h-[106px] break-all overflow-hidden text-ellipsis line-clamp-4
             text-[18px] leading-[1.5]
             mt-4
@@ -109,11 +105,6 @@ function UserCard({ message, onClick }) {
         >
           {data.content}
         </div>
-=======
-          className="w-[336px] h-[106px] text-[18px] leading-[1.5] mt-4 text-grayscale-600 overflow-hidden"
-          dangerouslySetInnerHTML={{ __html: contentHtml }}
-        />
->>>>>>> e9f5b0f7959a5707f735c415cc1a23c09154a990
 
         <div
           className="
