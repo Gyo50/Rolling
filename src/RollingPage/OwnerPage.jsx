@@ -267,7 +267,7 @@ function OwnerPage({ recipientId }) {
             )}
 
             {screenMode !== "mobile" && (
-              <div className="mx-auto">
+            <div className="mx-auto">
                 <MessageHeader
                   recipient={recipient}
                   messageCount={totalMessageCount}
@@ -278,8 +278,8 @@ function OwnerPage({ recipientId }) {
                 />
               </div>
             )}
+            </div>
           </div>
-        </div>
 
         <div className="flex flex-col min-h-screen">
           {/* 카드 영역 */}
@@ -309,7 +309,7 @@ function OwnerPage({ recipientId }) {
                   페이지 삭제 실패:
                   <br />
                   {deleteError.message}
-                </div>
+              </div>
               )}
 
               {/* 카드 리스트 */}
@@ -317,13 +317,13 @@ function OwnerPage({ recipientId }) {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[24px] mt-[28px] relative z-10 px-[24px]">
                   {messages.map((item) => (
                     <Card
-                      key={item.id}
+                    key={item.id}
                       senderName={item.senderName}
                       profileImageURL={item.profileImageURL}
                       relationship={item.relationship}
                       content={item.content}
                       date={item.date}
-                      onClick={() => handleCardClick(item)}
+                    onClick={() => handleCardClick(item)}
                       onDeleteClick={(e) => {
                         e.stopPropagation();
                         handleOpenMessageDeleteModal(item.id);
@@ -337,11 +337,11 @@ function OwnerPage({ recipientId }) {
                     {isUsingFallbackMessages
                       ? "샘플 데이터를 표시합니다."
                       : "아직 메시지가 없습니다."}
-                  </div>
+                          </div>
                 )
               )}
-            </div>
-          </div>
+                        </div>
+                      </div>
 
           {/* 모바일 삭제 버튼 */}
           {screenMode !== "pc" && (
@@ -353,9 +353,9 @@ function OwnerPage({ recipientId }) {
                   className="w-full bg-purple-600 hover:bg-purple-700 text-white py-4 rounded-[12px] text-18-bold shadow-lg disabled:bg-gray-400 flex items-center justify-center text-center"
                 >
                   {deleting ? "삭제 중..." : "삭제하기"}
-                </div>
               </div>
             </div>
+          </div>
           )}
         </div>
       </div>
@@ -367,9 +367,9 @@ function OwnerPage({ recipientId }) {
           onClick={handleCloseModal}
         >
           <div onClick={(e) => e.stopPropagation()}>
-            <Modal
-              isOpen={isOpen}
-              onClose={handleCloseModal}
+          <Modal
+            isOpen={isOpen}
+            onClose={handleCloseModal}
               message={{
                 sender: selectedMessage.senderName,
                 profileImageURL: selectedMessage.profileImageURL,

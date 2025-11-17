@@ -112,7 +112,7 @@ function CardList({ recipient, isRecent }) {
           src={colorStyle.pattern}
           alt=""
           aria-hidden="true"
-          className="absolute right-0 bottom-[-10px] pointer-events-none z-0 select-none"
+          className="absolute right-0 bottom-0 pointer-events-none z-0 select-none"
         />
       )}
       {isRecent && (
@@ -125,7 +125,7 @@ function CardList({ recipient, isRecent }) {
       <div
         className={`flex flex-col gap-3 relative z-[1] ${isImageCard ? 'text-white' : 'text-gray-900'}`}
       >
-        <div className={titleClass}>{name}</div>
+        <div className={`${titleClass} ${styles.titleText}`}>{name}</div>
 
           <div className="flex items-center min-h-[28px]">
             {/* 0명일 때: "00님이 기다리고 있어요!" 문구 표시 */}
@@ -199,8 +199,8 @@ function CardList({ recipient, isRecent }) {
               key={reaction.id}
               className={`${styles.reactionBadge} ${reactionBadgeClass}`}
             >
-              <span>{reaction.emoji}</span>
-              <span>{reaction.count}</span>
+              <span className={styles.reactionEmoji}>{reaction.emoji}</span>
+              <span className={styles.reactionCount}>{reaction.count}</span>
           </div>
           ))}
           </div>
