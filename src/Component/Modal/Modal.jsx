@@ -1,11 +1,11 @@
-import React from "react";
+import React, { useMemo } from "react";
 import Badge from "../../Component/Badge/Badge";
 import Modalbtn from "../../Component/Button/Modal-button";
 
 export const MODAL_DATA_API_URL = "https://placeholder.example.com/api/modal";
 
+
 function Modal({ isOpen = false, onClose, onButtonClick, message }) {
-  if (!isOpen) return null;
 
   const handleBackdropClick = (e) => {
     if (e.target === e.currentTarget) {
@@ -17,6 +17,20 @@ function Modal({ isOpen = false, onClose, onButtonClick, message }) {
     onButtonClick?.() || onClose?.();
   };
 
+  const decodedHtml = useMemo(() => {
+    const raw = message?.content || "";
+    if (!/[&][lg]t;|&amp;|&#/.test(raw)) return raw;
+    const doc = new DOMParser().parseFromString(raw, "text/html");
+    return doc.documentElement.textContent || raw;
+  }, [message?.content]);
+  // 2) 허용 태그만 남기기 (스크립트 차단)
+  const contentHtml = useMemo(() => {
+    const html = decodedHtml || "";
+    return html.replace(/<(?!\/?(b|strong|i|em|u|p|br|span)\b)[^>]*>/gi, "");
+  }, [decodedHtml]);
+
+  if (!isOpen) return null;
+  
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(0,0,0,0.54)]"
@@ -95,8 +109,7 @@ function Modal({ isOpen = false, onClose, onButtonClick, message }) {
                 w-full max-w-[500px] pt-4
               "
             >
-              {message.content ||
-                "코로나가 또다시 기승을 부리는 요즘이네요. 건강, 체력 모두 조심 또 하세요!"}
+              <span dangerouslySetInnerHTML={{ __html: contentHtml }} />
             </p>
           </div>
         </div>

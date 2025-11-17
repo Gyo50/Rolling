@@ -366,6 +366,7 @@ function OwnerPage({ recipientId }) {
                       profileImageURL={item.profileImageURL}
                       relationship={item.relationship}
                       content={item.content}
+                      isHtml
                       date={item.date}
                       onClick={() => handleCardClick(item)}
                       onDeleteClick={(e) => {
