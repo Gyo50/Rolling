@@ -15,7 +15,7 @@ function App() {
       <Route path="/list" element={<ListPage />} />
       <Route path="/recent" element={<RecentPage />} />
       <Route path="/post" element={<CreatePostPage />} />
-      <Route path="/post/:id/owner" element={<RecipientPage />} />
+      <Route path="/post/:id/owner" element={<OwnerPage />} />
       <Route path="/post/:id/message" element={<Messagepage />} />
       <Route path="/post/:id" element={<RecipientPage />} /> 
       <Route path="*" element={<Navigate to="/" replace />} />
