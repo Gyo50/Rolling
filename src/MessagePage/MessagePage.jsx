@@ -112,11 +112,19 @@ function Send() {
   const imagesToDisplay = profileImages.slice(0, 10);
 
   // 폴로라 라이센스 삭제 함수
-  useEffect(() => {
-    setTimeout(() => {
+useEffect(() => {
+    // 500밀리초(0.5초) 간격으로 반복 실행
+    const intervalId = setInterval(() => {
       const link = document.querySelector('a[href*="froala.com/wysiwyg_editor-download/"]');
-      link?.parentNode?.remove();
-    }, 0);
+
+      if (link) { 
+        // 💡 link가 존재하면 (null이 아니면)
+        link.parentNode?.remove(); // 옵셔널 체이닝으로 안전하게 제거 
+      }
+    }, 100); // 간격 설정 (예: 500ms)
+
+    // 🧹 컴포넌트가 언마운트될 때 (사라질 때) 인터벌도 정리
+    return () => clearInterval(intervalId);
   }, []);
 
   return (
