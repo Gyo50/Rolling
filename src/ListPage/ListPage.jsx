@@ -462,7 +462,7 @@ function ListPage() {
         </div>
       </header>
 
-      <main className="flex flex-col items-center w-full pt-[50px] pb-6 gap-[50px] px-[5%] overflow-visible max-ta:px-0 max-ta:overflow-hidden max-xt:w-full max-xt:pt-[50px] max-xt:items-start max-xt:gap-[74px] max-xs:pt-[50px] max-xs:gap-[74px] max-xs:items-start">
+      <main className="flex flex-col items-center w-full pt-[50px] pb-6 gap-[50px] overflow-visible px-6 max-ta:px-0 max-ta:overflow-hidden max-xt:w-full max-xt:pt-[50px] max-xt:items-start max-xt:gap-[74px] max-xs:pt-[50px] max-xs:gap-[74px] max-xs:items-start">
         {/* **[참고]** max-w 컨테이너와 패딩을 분리하기 위한 구조 변경 */}
         <section className="w-full flex flex-col gap-4 max-w-[1160px] max-ta:max-w-full">
           <div className="max-xt:px-6 max-xs:px-5"> {/* 제목용 패딩 래퍼 */}
@@ -488,7 +488,7 @@ function ListPage() {
         {/* **[참고]** max-w 컨테이너와 패딩을 분리하기 위한 구조 변경 */}
         <section className="w-full flex flex-col gap-4 max-w-[1160px] max-ta:max-w-full">
           <div className="max-xt:px-6 max-xs:px-5"> {/* 제목용 패딩 래퍼 */}
-            <div className={`flex items-center justify-between max-xt:flex-col max-xt:items-start gap-4 ${styles.sectionHeaderRow}`}>
+            <div className={`flex items-center justify-between max-xt:items-start gap-4 max-xt:flex-row ${styles.sectionHeaderRow}`}>
               <h2
                 className="mb-4 text-24-bold text-gray-900 max-xt:text-24-bold max-xs:text-[20px] max-xs:leading-[30px] max-xs:mb-3"
               >
@@ -506,6 +506,7 @@ function ListPage() {
                             after:content-['>']
                             after:ml-1
                             after:group-hover:text- purple-600
+                            max-xt:pr-[24px]
                           "
                 >
                 전체보기

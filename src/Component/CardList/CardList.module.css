@@ -14,7 +14,7 @@
   right: clamp(16px, 9%, 24px);
   margin-top: clamp(14px, 4vw, 14px);
   padding-top: clamp(12px, 3.5vw, 20px);
-  justify-content: end;
+  justify-content: center;
   transform: translateX(-1%);
 }
 

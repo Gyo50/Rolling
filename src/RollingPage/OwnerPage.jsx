@@ -78,7 +78,10 @@ function OwnerPage({ recipientId }) {
     [recipientId, paramsId]
   );
 
-  useEffect(() => {
+
+
+  // 이 부분은 /owner 이동을 막음  
+  /*useEffect(() => {
     if (currentRecipientId) {
       // 로컬 스토리지에서 소유자 키를 확인
       const isOwner = localStorage.getItem(`owner_${currentRecipientId}`) === 'true';
@@ -89,7 +92,9 @@ function OwnerPage({ recipientId }) {
         navigate(`/post/${currentRecipientId}`, { replace: true });
       }
     }
-  }, [currentRecipientId, navigate]);
+  }, [currentRecipientId, navigate]);*/
+
+
 
   // ====== 데이터 로드 (페이지 정보 / 메시지 / 반응) ======
   const loadData = useCallback(async () => {

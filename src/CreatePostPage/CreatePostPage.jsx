@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Check from '../img/Check.svg'; 
 import HeaderNobutton from "../Component/Header/HeaderNobutton";
 import Input from "../Component/Text_Field/Input";
 import ToggleButton from "../Component/Button/Toggle-button";
@@ -25,7 +26,7 @@ function ImageSelectGrid({ presets, selectedIndex, onSelect }) {
           key={`${url}-${index}`}
           type="button"
           onClick={() => onSelect(index)}
-          className={`relative w-[154px] md:w-[168px] h-[154px] md:h-[168px] rounded-xl overflow-hidden border transition-all duration-200 flex items-center justify-center ${
+          className={`shadow-[inset_0_0_0_1px_rgba(0,0,0,0.08)] aspect-square w-full md:h-[168px] rounded-xl cursor-pointer flex items-center justify-center transition-all duration-200 ${
             selectedIndex === index ? "border-purple-500 shadow-lg" : "border-gray-200"
           }`}
           style={{
@@ -35,9 +36,9 @@ function ImageSelectGrid({ presets, selectedIndex, onSelect }) {
           }}
         >
           {selectedIndex === index && (
-            <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-              <div className="w-[44px] h-[44px] rounded-full bg-gray-600 flex items-center justify-center">
-                <span className="text-white text-18-bold">✓</span>
+            <div className="w-[44px] h-[44px] rounded-full bg-gray-500 flex items-center justify-center">
+              <div className="w-[24px] h-[24px] rounded-full flex items-center justify-center">
+                <img src={Check} alt="체크 표시" />
               </div>
             </div>
           )}
@@ -118,7 +119,7 @@ function CreatePostPage() {
     };
 
     fetchImages();
-  }, [selectedIndex]);
+  }, []);
 
   const handleNameChange = (value) => {
     setRecipientName(value);
@@ -257,6 +258,7 @@ function CreatePostPage() {
                   presets={imagePresets}
                   selectedIndex={selectedIndex}
                   onSelect={handleSelectImage}
+                  className={'grid grid-cols-2 gap-[4%] md:grid-cols-4 md:gap-4 w-full justify-center items-center'}
                 />
               )}
             </div>

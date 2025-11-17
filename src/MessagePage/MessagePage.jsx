@@ -98,7 +98,7 @@ function Send() {
 
     try {
       setSubmitting(true);
-      const res = await apiClient.post(`/recipients/${id}/messages/`, payload);
+      await apiClient.post(`/recipients/${id}/messages/`, payload);
       alert("생성 완료!");
       navigate(`/post/${id}`);
     } catch (err) {
