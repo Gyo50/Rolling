@@ -1,4 +1,3 @@
-// src/Component/Text_Field/Froala.jsx
 import React from "react";
 import "froala-editor/css/froala_style.min.css";
 import "froala-editor/css/froala_editor.pkgd.min.css";
@@ -10,7 +9,7 @@ import "froala-editor/js/plugins/colors.min.js";
 import "froala-editor/js/plugins/align.min.js";
 import "froala-editor/js/plugins/lists.min.js";
 import "froala-editor/js/plugins/table.min.js";
-import "froala-editor/js/plugins/font_family.min.js"; // 폰트 패밀리 플러그인
+import "froala-editor/js/plugins/font_family.min.js";
 
 import FroalaEditorComponent from "react-froala-wysiwyg";
 
@@ -20,7 +19,7 @@ import FroalaEditorComponent from "react-froala-wysiwyg";
     - model (string) : 에디터 내용 (html)
     - onModelChange (fn) : 에디터 내용 변경 콜백
 */
-export default function Froala({ font = "Noto Sans", model, onModelChange, width="720px" }) {
+export default function Froala({ font = "Noto Sans", model, onModelChange, width = "720px" }) {
   // Froala 설정
   const config = {
     width: width,
@@ -30,6 +29,14 @@ export default function Froala({ font = "Noto Sans", model, onModelChange, width
     charCounterCount: false,
     attribution: false,
     pluginsEnabled: ["align", "lists", "fontSize", "colors", "table", "fontFamily"],
+
+    fontFamily: {
+      "Noto Sans": "Noto Sans, sans-serif",
+      "Pretendard": "Pretendard, sans-serif",
+      "나눔명조": "Nanum Myeongjo, serif",
+      "나눔손글씨 손편지체": "Nanum Pen Script, cursive",
+    },
+
     toolbarButtons: {
       moreText: {
         buttons: [
@@ -47,26 +54,22 @@ export default function Froala({ font = "Noto Sans", model, onModelChange, width
         ],
         buttonsVisible: 3,
       },
-        moreCustom:{
-          buttons:[
+      moreCustom: {
+        buttons: [
           "formatOL",
           "formatUL",
           "backgroundColor"
-          ]
-        }
+        ]
+      }
     },
   };
 
-  // 만약 전달된 font가 config.fontFamily에 없다면, 동적으로 추가
-  if (font) {
-    config.fontFamily = {
-      [font]: `${font}, sans-serif`,
-      ...config.fontFamily,
-    };
-  }
-
-  // key를 font로 주면 font가 바뀔 때 에디터가 리마운트되어 새 config가 적용됩니다.
   const key = `froala-${font || "default"}`;
+
+  const editorStyle = {
+    fontFamily: `'${font}', sans-serif`, // 따옴표로 감싸서 공백 포함 폰트 이름도 처리
+  };
+
 
   return (
     <FroalaEditorComponent
@@ -75,6 +78,7 @@ export default function Froala({ font = "Noto Sans", model, onModelChange, width
       config={config}
       model={model}
       onModelChange={onModelChange}
+      style={editorStyle}
     />
   );
 }
