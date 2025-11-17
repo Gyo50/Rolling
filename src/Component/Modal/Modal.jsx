@@ -4,9 +4,7 @@ import Modalbtn from "../../Component/Button/Modal-button";
 
 export const MODAL_DATA_API_URL = "https://placeholder.example.com/api/modal";
 
-
 function Modal({ isOpen = false, onClose, onButtonClick, message }) {
-
   const handleBackdropClick = (e) => {
     if (e.target === e.currentTarget) {
       onClose?.();
@@ -30,7 +28,7 @@ function Modal({ isOpen = false, onClose, onButtonClick, message }) {
   }, [decodedHtml]);
 
   if (!isOpen) return null;
-  
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(0,0,0,0.54)]"
@@ -39,18 +37,18 @@ function Modal({ isOpen = false, onClose, onButtonClick, message }) {
       <div
         className="
           relative
-          w-[75%] max-w-[600px]
+          w-[calc(100%-32px)] max-w-[600px]
           bg-white rounded-2xl
           shadow-[0px_2px_12px_rgba(0,0,0,0.08)]
           min-h-[400px]
         "
       >
         {/* 헤더 영역 */}
-        <div className="relative w-full h-[116px] border-b border-gray-200 px-6 flex items-center justify-between">
+        <div className="relative pt-[40px] pb-[20px] border-b border-gray-200 mx-6 flex items-center justify-between">
           {/* 왼쪽: 프로필 + From + 배지/날짜 */}
-          <div className="flex items-center gap-4">
+          <div className="relative flex items-center w-full">
             {/* 프로필 */}
-            <div className="w-14 h-14 bg-white border border-gray-200 rounded-full overflow-hidden">
+            <div className="w-14 h-14 bg-white border border-gray-200 rounded-full overflow-hidden flex-shrink-0">
               {message ? (
                 <img
                   src={message.profileImageURL}
@@ -63,50 +61,34 @@ function Modal({ isOpen = false, onClose, onButtonClick, message }) {
             </div>
 
             {/* From + 이름 + (모바일) 배지/날짜 */}
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-1 mx-[16px] flex-1">
               <div className="flex items-center gap-1.5">
                 <span className="text-[20px] leading-6">From.</span>
-                <span className="text-[20px] leading-6 font-bold">
-                  {message.sender}
-                </span>
+                <span className="text-[20px] leading-6 font-bold">{message.sender}</span>
               </div>
 
               {/* 모바일: 배지 + 날짜 */}
-              <div className="flex items-center gap-2 sm:hidden">
-                <Badge text={message.relationship} />
-                <span className="text-[12px] text-gray-400">
-                  {message.createdAt}
-                </span>
-              </div>
-
-              {/* 태블릿/PC: 배지만 */}
-              <div className="hidden sm:block">
-                <Badge text={message.relationship} />
+              <div className="flex items-center gap-2">
+                <Badge text={message.relationship} type={message.relationship} />
               </div>
             </div>
-          </div>
 
-          {/* 태블릿/PC 날짜 */}
-          <span className="hidden sm:block text-[14px] text-gray-400">
-            {message.createdAt}
-          </span>
+            {/* 태블릿/PC 날짜 */}
+            <p className="max-xs:absolute max-xs:ml-0 max-xs:top-[calc(100%-24px)] max-xs:left-[120px] text-[14px] text-gray-400 ml-auto">
+              {message.createdAt}
+            </p>
+          </div>
         </div>
 
         {/* 내용 영역 */}
-        <div
-          className="
-            absolute left-10 top-[116px]
-            w-[calc(100%-80px)] max-w-[520px]
-            h-[256px]
-          "
-        >
-          <div className="relative w-full h-full overflow-y-auto overflow-x-hidden pr-5">
+        <div>
+          <div className="h-[256px] overflow-y-auto overflow-x-hidden mx-6 mt-4">
             <p
               className="
                 text-[14px] sm:text-[15px] lg:text-[16px]
                 leading-[22px] sm:leading-[26px] lg:leading-[28px]
                 font-normal tracking-[-0.01em] text-[#5A5A5A]
-                w-full max-w-[500px] pt-4
+                w-full max-w-[500px]
               "
             >
               <span dangerouslySetInnerHTML={{ __html: contentHtml }} />
@@ -115,7 +97,7 @@ function Modal({ isOpen = false, onClose, onButtonClick, message }) {
         </div>
 
         {/* 버튼 */}
-        <div className="absolute left-1/2 -translate-x-1/2 bottom-[40px]">
+        <div className="mb-[40px] mt-[24px] text-center">
           <Modalbtn
             onClick={handleButtonClick}
             text="확인"
@@ -141,7 +123,6 @@ function Modal({ isOpen = false, onClose, onButtonClick, message }) {
       }
     }
     */
-  
   );
 }
 

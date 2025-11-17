@@ -102,8 +102,8 @@ function UserCard({ message, onClick }) {
             mt-4
             text-grayscale-600
           "
+          dangerouslySetInnerHTML={{ __html: contentHtml }}
         >
-          {data.content}
         </div>
 
         <div

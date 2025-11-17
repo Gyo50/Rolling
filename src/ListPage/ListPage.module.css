@@ -46,6 +46,8 @@
 
 .recentGrid {
   --card-width: 275px;
+  /* RecentPage 전용: 이모지 배지 bottom 값 */
+  --reaction-bottom: clamp(12px, 3vw, 0px);
   display: grid;
   grid-template-columns: repeat(3, var(--card-width));
   column-gap: 20px;
@@ -58,6 +60,14 @@
 .recentGridItem {
   display: flex;
   justify-content: center;
+  /* 카드 내부 텍스트 오버플로우가 정상 작동하도록 보장 */
+  min-width: 0;
+  width: 100%;
+}
+
+/* RecentPage Grid에서 카드 크기를 Grid의 --card-width와 동일하게 설정 */
+.recentGridItem :global([data-cardlist]) {
+  width: var(--card-width) !important;
 }
 
 .swiperShell {
@@ -65,6 +75,8 @@
   --card-width: 275px;
   --card-height: 260px;
   --card-gap: 20px;
+  /* ListPage 전용: 이모지 배지 bottom 값 */
+  --reaction-bottom: clamp(12px, 3vw, 30px);
   touch-action: pan-y pan-x;
 }
 
