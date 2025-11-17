@@ -9,7 +9,7 @@ function AddCard() {
         tabIndex="0"
         className="
           w-full
-          h-[230px] sm:h-[280px]
+          h-[280px]
           rounded-[16px]
           p-[28px_24px_24px_24px]
           shadow-[0_2px_13px_rgba(0,0,0,0.08)]

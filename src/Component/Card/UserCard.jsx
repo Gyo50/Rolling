@@ -2,7 +2,6 @@ import React from "react";
 
 // 더미 데이터를 별도 관리 파일로 뺄지 여부 고민!!!!
 
-
 const RELATIONSHIP_COLORS = {
   친구: {
     bgColor: "bg-blue-100",
@@ -23,9 +22,8 @@ const RELATIONSHIP_COLORS = {
   default: {
     bgColor: "bg-gray-100",
     textColor: "text-gray-600",
-  }
+  },
 };
-
 
 // 카드 컴포넌트
 function UserCard({ message, onClick }) {
@@ -37,7 +35,7 @@ function UserCard({ message, onClick }) {
       <div
         className="
         w-full
-        h-[230px] sm:h-[280px]
+        h-[280px]
         rounded-[16px]
         p-[20px_18px_18px_18px] sm:p-[28px_24px_24px_24px]
         shadow-[0_2px_13px_rgba(0,0,0,0.08)]
@@ -56,15 +54,15 @@ function UserCard({ message, onClick }) {
             border-b border-[rgba(238,238,238,1)]
           "
         >
-          <div className="flex flex-wrap">
+          <div className="flex flex-wrap w-full">
             <img
               className="w-14 h-14 rounded-full"
               src={data.profileImageURL}
               alt="프로필 이미지"
             />
 
-            <div className="flex flex-col gap-[5px] pl-[10px]">
-              <div className="text-20-regular text-black">
+            <div className="flex flex-1 flex-col gap-[5px] pl-[10px] overflow-hidden">
+              <div className="text-20-regular text-black truncate">
                 From.&nbsp;<span className="text-20-bold text-black">{data.sender}</span>
               </div>
 
@@ -85,10 +83,8 @@ function UserCard({ message, onClick }) {
             </div>
           </div>
         </div>
-
         <div
-          className="
-            w-[336px] h-[106px]
+          className="h-[106px] break-all overflow-hidden text-ellipsis line-clamp-4
             text-[18px] leading-[1.5]
             mt-4
             text-grayscale-600
@@ -100,8 +96,8 @@ function UserCard({ message, onClick }) {
         <div
           className="
             text-[12px] text-grayscale-400
-            absolute bottom-6 left-6
-          "
+            bottom-6 left-6 mt-[15px]
+            "
         >
           {data.createdAt}
         </div>
