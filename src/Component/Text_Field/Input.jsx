@@ -29,8 +29,8 @@ export default function Input({ text="이름을 입력해주세요.", value: con
           onBlur={handleBlurValidation}
           type="text"
           placeholder={text}
-          className={`max-[360px]:w-[320px] w-[720px] max-w-full px-[16px] h-[50px] border  text-grayscale-900 rounded-[8px] ${
-            error ? "border-error" : "border-grayscale-300"
+          className={`max-[360px]:w-[320px] w-[720px] max-w-full px-[16px] h-[50px] border  text-gray-900 rounded-[8px] ${
+            error ? "border-error" : "border-gray-300"
           }`}
         />
         {error && <p className="mt-[4px] text-12-regular text-error">필수 입력 항목입니다.</p>}

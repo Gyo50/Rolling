@@ -21,7 +21,7 @@ function Header({ hideCreateButton = false }) {
               <div>
                 <Link
                   to="/post"
-                  className="border border-grayscale-300 bg-white rounded-lg text-16-bold h-[42px] w-[149px] hover:bg-gray-100 flex items-center justify-center"
+                  className="border border-gray-300 bg-white rounded-lg text-16-bold h-[42px] w-[149px] hover:bg-gray-100 flex items-center justify-center"
                 >
                   롤링 페이퍼 만들기
                 </Link>

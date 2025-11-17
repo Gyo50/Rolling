@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import Trashbutton from "../../Component/Button/Trash-button"; 
+import Trashbutton from "../../Component/Button/Trash-button";
 
 // 관계에 따른 색상 매핑 정의
 const RELATIONSHIP_COLORS = {
@@ -22,9 +22,8 @@ const RELATIONSHIP_COLORS = {
   default: {
     bgColor: "bg-gray-100",
     textColor: "text-gray-600",
-  }
+  },
 };
-
 
 function Card({
   senderName,
@@ -34,11 +33,11 @@ function Card({
   date,
   onClick,
   onDeleteClick,
-  isHtml = false
+  isHtml = false,
 }) {
-  
-  const relationshipStyle = RELATIONSHIP_COLORS[relationship] || RELATIONSHIP_COLORS.default;
-  
+  const relationshipStyle =
+    RELATIONSHIP_COLORS[relationship] || RELATIONSHIP_COLORS.default;
+
   const decodedHtml = useMemo(() => {
     const raw = content || "";
     // 엔티티가 없다면 그대로 반환
@@ -60,7 +59,7 @@ function Card({
       onClick={onClick}
       className="
         w-full
-        h-[230px] sm:h-[280px]
+        min-h-[280px]
         rounded-[16px]
         p-[20px_18px_18px_18px] sm:p-[28px_24px_24px_24px]
         shadow-[0_2px_13px_rgba(0,0,0,0.08)]
@@ -117,29 +116,30 @@ function Card({
         </div>
       </div>
 
-     {isHtml ? (
-         <div
-           className="
-             text-15-regular sm:text-18-regular
-             leading-[1.4] sm:leading-[1.5]
-             mt-3 sm:mt-4
-             text-grayscale-600
-             flex-1
-             overflow-hidden
-             line-clamp-3 sm:line-clamp-4
-           "
-           dangerouslySetInnerHTML={{ __html: contentHtml }}
-         />
-       ) : (
-         <div className="text-15-regular sm:text-18-regular leading-[1.4] sm:leading-[1.5] mt-3 sm:mt-4 text-grayscale-600 flex-1 overflow-hidden line-clamp-3 sm:line-clamp-4">
-           {content}
-         </div>
-       )}
+      {isHtml ? (
+        <div
+          className="
+            text-15-regular sm:text-18-regular
+            leading-[1.4] sm:leading-[1.5]
+            mt-3 sm:mt-4
+            text-gray-600
+            overflow-hidden
+            break-words
+            line-clamp-6 sm:line-clamp-4
+            flex-none
+            "
+          dangerouslySetInnerHTML={{ __html: contentHtml }}
+        />
+      ) : (
+        <div className="text-15-regular sm:text-18-regular leading-[1.4] sm:leading-[1.5] mt-3 sm:mt-4 text-gray-600 flex-1 overflow-hidden line-clamp-3 sm:line-clamp-4">
+          {content}
+        </div>
+      )}
 
       <div
         className="
           text-[11px] sm:text-[12px]
-          text-grayscale-400
+          text-gray-400
           absolute bottom-4 sm:bottom-6 left-4 sm:left-6
         "
       >

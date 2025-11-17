@@ -48,7 +48,7 @@ function UserCard({ message, onClick }) {
       <div
         className="
         w-full
-        h-[280px]
+        min-h-[280px]
         rounded-[16px]
         p-[20px_18px_18px_18px] sm:p-[28px_24px_24px_24px]
         shadow-[0_2px_13px_rgba(0,0,0,0.08)]
@@ -63,28 +63,29 @@ function UserCard({ message, onClick }) {
         <div
           className="
             flex justify-between
-            pb-4
+            pb-3 sm:pb-4
             border-b border-[rgba(238,238,238,1)]
           "
         >
           <div className="flex flex-wrap w-full">
             <img
-              className="w-14 h-14 rounded-full"
+              className="w-10 h-10 sm:w-14 sm:h-14
+              rounded-full"
               src={data.profileImageURL}
               alt="프로필 이미지"
             />
 
-            <div className="flex flex-1 flex-col gap-[5px] pl-[10px] overflow-hidden">
-              <div className="text-20-regular text-black truncate">
-                From.&nbsp;<span className="text-20-bold text-black">{data.sender}</span>
+            <div className="flex flex-col gap-[3px] sm:gap-[5px] pl-[8px] sm:pl-[10px]">
+              <div className="text-18-regular sm:text-20-regular text-black">
+                From.&nbsp;<span className="text-16-bold sm:text-20-bold text-black">{data.sender}</span>
               </div>
 
               <div
                 className={`
-                  w-[41px] h-5
-                  text-[14px]
-                  rounded-[5px] 
-                  px-[5px]
+                  w-[41px] h-[20px]
+                  px-[4px]
+                  text-[12px] sm:text-[14px]
+                  rounded-[4px] sm:rounded-[5px]
                   flex items-center justify-center
                   /* ⭐️ 동적 스타일 적용 */
                   ${relationshipStyle.textColor}
@@ -97,10 +98,15 @@ function UserCard({ message, onClick }) {
           </div>
         </div>
         <div
-          className="h-[106px] break-all overflow-hidden text-ellipsis line-clamp-4
-            text-[18px] leading-[1.5]
-            mt-4
-            text-grayscale-600
+          className="
+            text-15-regular sm:text-18-regular
+            leading-[1.4] sm:leading-[1.5]
+            mt-3 sm:mt-4
+            text-gray-600
+            overflow-hidden
+            break-words
+            line-clamp-6 sm:line-clamp-4
+            flex-none
           "
           dangerouslySetInnerHTML={{ __html: contentHtml }}
         >
@@ -108,8 +114,9 @@ function UserCard({ message, onClick }) {
 
         <div
           className="
-            text-[12px] text-grayscale-400
-            bottom-6 left-6 mt-[15px]
+            text-[11px] sm:text-[12px]
+            text-gray-400
+            absolute bottom-4 sm:bottom-6 left-4 sm:left-6
             "
         >
           {data.createdAt}
