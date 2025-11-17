@@ -86,7 +86,18 @@ function Toast({
 
   return (
     <div className="fixed bottom-24 left-1/2 transform -translate-x-1/2 z-50 animate-fade-in">
-      <div className="relative w-[524px] h-16 bg-black/80 rounded-lg flex items-center px-[30px]">
+      <div className="
+        relative 
+        w-[100%]
+        max-w-[524px]
+        h-16
+        bg-black/80
+        rounded-lg
+        flex flex-row items-center
+        px-[20px]
+        sm:px-[30px]
+        gap-3"
+      >
         {/* 아이콘과 메시지 */}
         <div className="flex flex-row items-center gap-3 flex-1">
           {type === "success" && (
@@ -96,7 +107,7 @@ function Toast({
               <CheckIcon />
             </div>
           )}
-          <span className="text-[16px] leading-[26px] font-normal text-white tracking-[-0.01em]">
+          <span className="text-[16px] text-white whitespace-nowrap tracking-[-0.01em] flex-shrink">
             {message}
           </span>
         </div>
@@ -105,7 +116,9 @@ function Toast({
         {showCloseButton && (
           <button
             onClick={handleClose}
-            className="absolute right-[30px] top-5 w-6 h-6 flex items-center justify-center hover:opacity-70 transition-opacity"
+            className="ml-auto flex items-center justify-center 
+              w-6 h-6 flex-shrink-0
+              hover:opacity-70 transition-opacity"
             aria-label="닫기"
           >
             <CloseIcon />
