@@ -1,7 +1,7 @@
 // src/pages/Send.jsx
 import React, { useState, useEffect, useMemo } from "react";
 import Header from "../Component/Header/HeaderNobutton";
-import Input from "../Component/Text_Field/Input"; 
+import Input from "../Component/Text_Field/Input";
 import User from "../Component/Option/User";
 import Select from "../Component/Text_Field/SelectBox";
 import Froala from "../Component/Text_Field/Froala";
@@ -17,8 +17,8 @@ function Send() {
   const [profileImages, setProfileImages] = useState([]);
   const [selectedProfileImage, setSelectedProfileImage] = useState(null);
 
-  const [sender, setSender] = useState("");                  // 이름
-  const [messageContent, setMessageContent] = useState("");  // 내용(HTML)
+  const [sender, setSender] = useState(""); // 이름
+  const [messageContent, setMessageContent] = useState(""); // 내용(HTML)
   const relationOptions = [
     { label: "친구", value: "친구" },
     { label: "지인", value: "지인" },
@@ -33,7 +33,7 @@ function Send() {
     { label: "나눔명조", value: "나눔명조" },
     { label: "나눔손글씨 손편지체", value: "나눔손글씨 손편지체" },
   ];
-  const [selectedFont, setSelectedFont] = useState(fontOptions[0]);  // 폰트
+  const [selectedFont, setSelectedFont] = useState(fontOptions[0]); // 폰트
 
   const ROOT_API_URL = "https://rolling-api.vercel.app";
 
@@ -81,7 +81,7 @@ function Send() {
 
     // 내용 정리 (비어있을 때 '내용 없음' 처리는 그대로)
     let finalContent = messageContent.trim();
-    const pTagRegex = /^<p[^>]*>(.*?)<\/p>$/si;
+    const pTagRegex = /^<p[^>]*>(.*?)<\/p>$/is;
     const match = finalContent.match(pTagRegex);
     if (match && match[1] !== undefined) finalContent = match[1].trim();
 
@@ -111,6 +111,16 @@ function Send() {
 
   const imagesToDisplay = profileImages.slice(0, 10);
 
+  // 폴로라 라이센스 삭제 함수
+  useEffect(() => {
+    setTimeout(() => {
+      const link = document.querySelector('a[href*="froala.com/wysiwyg_editor-download"]');
+      if (link.parentNode) {
+        link.parentNode.remove();
+      }
+    }, 0);
+  }, []);
+
   return (
     <>
       <Header />
@@ -132,9 +142,7 @@ function Send() {
               <User className="w-[80px] h-[80px]" selectedImageUrl={selectedProfileImage} />
 
               <div>
-                <p className="text-16-regular text-gray-500 mb-4">
-                  프로필 이미지를 선택해주세요!
-                </p>
+                <p className="text-16-regular text-gray-500 mb-4">프로필 이미지를 선택해주세요!</p>
 
                 <div className="flex flex-wrap gap-1 max-xs:gap-0.5">
                   {imagesToDisplay.map((imageUrl, index) => (
@@ -192,7 +200,7 @@ function Send() {
               text={submitting ? "생성 중..." : "생성하기"}
               to=""
               onClick={handleCreate}
-              disabled={!canSubmit || submitting} 
+              disabled={!canSubmit || submitting}
             />
           </div>
         </div>
