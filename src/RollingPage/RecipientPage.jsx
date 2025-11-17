@@ -9,19 +9,26 @@ import {
   EMOJI_TO_ALIAS,
 } from "../api/recipients";
 
-// 컴포넌트 임포트
-import Header from "../Component/Header/Header";
+// 컴포넌트 임포트 (OwnerPage에서 사용된 컴포넌트 구조 유지)
+import HeaderNobutton from "../Component/Header/HeaderNobutton"; // OwnerPage와 동일
 import MobileHeader from "../Component/Header/MobileHeader";
 import MessageHeader from "../Component/Header/MessageHeader";
 import Modal from "../Component/Modal/Modal";
-import UserCard, { defaultMessage } from "../Component/Card/UserCard";
-import AddCard from "../Component/Card/AddCard";
-import HeaderNobutton from "../Component/Header/HeaderNobutton";
+import UserCard from "../Component/Card/UserCard"; // 메시지 삭제 기능이 없는 UserCard 유지
+import AddCard from "../Component/Card/AddCard"; // 새 메시지 작성 기능 유지
+
+// **[추가]** OwnerPage에서 가져온 색상 매핑
+const COLOR_MAP = {
+  beige: "#FFE2AD", // 연한 베이지 톤
+  purple: "#ECD9FF", // 연한 보라 톤
+  green: "#D0F5C3", // 연한 초록 톤
+  blue: "#B1E4FF", // 연한 파랑 톤
+};
 
 // 상수 정의
 const STATIC_MESSAGES = [];
 const DEFAULT_AVATAR = "https://placehold.co/28x28";
-const DEFAULT_BACKGROUND_COLOR = "bg-beige-200";
+// const DEFAULT_BACKGROUND_COLOR = "bg-beige-200"; // OwnerPage 스타일을 위해 사용하지 않음
 
 function RecipientPage() {
   const navigate = useNavigate();
@@ -40,7 +47,7 @@ function RecipientPage() {
   const [selectedMessage, setSelectedMessage] = useState(null); // 선택된 메시지
   const [screenMode, setScreenMode] = useState("pc"); // 반응형 모드 (pc / tablet / mobile)
 
-  // ====== 반응형 화면 체크 (OwnerPage 로직 차용) ======
+  // ====== 반응형 화면 체크 ======
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 768) setScreenMode("mobile");
@@ -52,7 +59,7 @@ function RecipientPage() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // ====== 데이터 로드 (OwnerPage 로직 참고) ======
+  // ====== 데이터 로드 ======
   const loadData = useCallback(async () => {
     if (!currentRecipientId) return;
 
@@ -69,15 +76,17 @@ function RecipientPage() {
 
       setRecipient(recipientData || null);
 
-      // 배경 설정
+      // **[수정]** OwnerPage 스타일: 배경 설정 시 COLOR_MAP 사용
       if (recipientData) {
         const bg = recipientData.backgroundImageURL || recipientData.backgroundImage;
         if (bg) {
           setBackgroundValue(bg); // 이미지 URL 또는 base64/data URL
         } else if (recipientData.backgroundColor) {
-          setBackgroundValue(recipientData.backgroundColor); // 색상 코드
+          const lowerCaseColor = recipientData.backgroundColor.toLowerCase();
+          const mappedColor = COLOR_MAP[lowerCaseColor] || recipientData.backgroundColor;
+          setBackgroundValue(mappedColor); // 매핑된 HEX 코드
         } else {
-          setBackgroundValue(DEFAULT_BACKGROUND_COLOR);
+          setBackgroundValue(""); // 기본값 없음 (흰색 또는 기본 CSS 배경)
         }
       }
 
@@ -103,9 +112,9 @@ function RecipientPage() {
       console.error("데이터 불러오기 실패:", err);
       setError(new Error(err?.message || "데이터를 불러올 수 없습니다."));
       setRecipient(null);
-      setMessages(STATIC_MESSAGES); // 실패 시 빈 배열 대신 STATIC_MESSAGES 사용
+      setMessages(STATIC_MESSAGES);
       setReactions([]);
-      setBackgroundValue(DEFAULT_BACKGROUND_COLOR);
+      setBackgroundValue(""); // 에러 시 배경값 초기화
     } finally {
       setLoading(false);
     }
@@ -116,10 +125,9 @@ function RecipientPage() {
   }, [loadData]);
 
   // 랜더링 데이터 선택: 메시지가 없거나 로딩 실패 시 더미 데이터 표시
-  const messagesToRender =
-    messages && messages.length > 0 ? messages : Array(6).fill(defaultMessage);
+  const messagesToRender =messages ;
 
-  // 작성자 프로필 아바타 (OwnerPage 로직 차용)
+  // 작성자 프로필 아바타
   const topAvatars = useMemo(() => {
     const unique = [];
     const seen = new Set();
@@ -137,25 +145,21 @@ function RecipientPage() {
   }, [messages]);
 
   const totalMessageCount = recipient?.messageCount ?? messages.length ?? 0;
+  const hasMessages = Array.isArray(messages) && messages.length > 0;
+  const isUsingFallbackMessages = messages === STATIC_MESSAGES || !hasMessages;
 
-  // ====== 반응(이모지) 추가 (OwnerPage 로직 차용) ======
+
+  // ====== 반응(이모지) 추가 ======
   const handleAddReaction = async (emoji) => {
     if (!currentRecipientId) return;
-
-    // emoji 객체에서 실제 이모지 값 추출 (MessageHeader에서 전달되는 형태에 따라 다를 수 있음)
     const emojiValue = emoji.emoji || emoji;
-
     try {
-      // API에서 별칭(alias)을 요구하는 경우를 대비해 OwnerPage 로직 유지
-      // EMOJI_TO_ALIAS는 API 파일에서 임포트되어야 함
       const alias = EMOJI_TO_ALIAS[emojiValue] || emojiValue;
-
       await reactToRecipient(currentRecipientId, {
         emoji: alias,
         type: "increase",
       });
 
-      // 갱신된 리액션 목록을 다시 불러와 상태 업데이트 (반드시 필요)
       const updated = await fetchRecipientReactions(currentRecipientId);
       setReactions(normalizeReactionsResponse(updated));
     } catch (err) {
@@ -174,8 +178,10 @@ function RecipientPage() {
   };
 
   // ====== 모달 처리 ======
-  // UserCard에서 message 객체를 통째로 전달받도록 수정
   const handleCardClick = (message) => {
+    // 더미 메시지 클릭 방지
+    if (!message.id) return; 
+
     setSelectedMessage(message);
     setIsOpen(true);
   };
@@ -187,66 +193,104 @@ function RecipientPage() {
 
   return (
     <>
-      {/* 전체 배경 처리 */}
+      {/* 전체 배경 처리 (OwnerPage 스타일) */}
       <div
-        className={`owner-page-scrollbar-hide ${
-          backgroundValue?.startsWith("bg-") ? backgroundValue : ""
-        }`}
+        className="owner-page-scrollbar-hide relative"
         style={{
-          ...(backgroundValue?.startsWith("http") || backgroundValue?.startsWith("/")
+          // 배경 이미지/색상 적용 로직
+          ...(backgroundValue?.startsWith("http") ||
+          backgroundValue?.startsWith("/")
             ? {
                 backgroundImage: `url(${backgroundValue})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center top",
                 backgroundRepeat: "no-repeat",
               }
-            : backgroundValue && !backgroundValue.startsWith("bg-")
-            ? {
+            : {
                 backgroundColor: backgroundValue,
-              }
-            : {}),
+              }),
         }}
       >
-        <div className="flex flex-col min-h-screen">
-          {/* 상단 헤더 영역 (고정) */}
-          <div className="fixed top-0 left-0 w-full shadow-sm z-30 bg-white">
-            <div className="max-w-[1200px] mx-auto">
-              {screenMode === "mobile" ? <MobileHeader hideCreateButton /> : <HeaderNobutton />}
-              {screenMode !== "mobile" && (
-                <div className="mx-auto">
-                  <MessageHeader
-                    recipient={recipient}
-                    messageCount={totalMessageCount}
-                    topAvatars={topAvatars}
-                    reactions={reactions}
-                    onAddReaction={handleAddReaction}
-                    hideAvatars={screenMode === "tablet"}
-                  />
-                </div>
-              )}
-            </div>
-          </div>
+        {/* **[추가]** 배경에 투명도(opacity)를 적용하는 오버레이 (OwnerPage 스타일) */}
+        <div 
+          className="absolute inset-0 z-0" 
+          style={{ 
+            backgroundColor: backgroundValue?.startsWith("http") || backgroundValue?.startsWith("/") ? '#000' : 'transparent', // 이미지 배경일 때만 검은색 오버레이
+            opacity: 0.2 // 투명도
+          }}
+        />
+        
+        {/* 상단 헤더 영역 (고정) */}
+        <div className="fixed top-0 left-0 w-full shadow-sm z-30 bg-white">
+          <div className="w-full mx-auto">
+            {screenMode === "mobile" ? (
+              <MobileHeader 
+              hideCreateButton
+              onAddReaction={handleAddReaction}
+              recipient={recipient}
+              reactions={reactions} />
+            ) : (
+              // OwnerPage와 동일한 헤더 컴포넌트 사용
+              <HeaderNobutton /> 
+            )}
 
-          {/* 메시지 카드 영역 */}
-          <div className="flex-1 w-full pt-[102px] sm:pt-[147px] lg:pt-[171px] pb-10 relative">
+            {screenMode !== "mobile" && (
+              <div className="mx-auto">
+                <MessageHeader
+                  recipient={recipient}
+                  messageCount={totalMessageCount}
+                  topAvatars={topAvatars}
+                  reactions={reactions}
+                  onAddReaction={handleAddReaction}
+                  hideAvatars={screenMode === "tablet"}
+                />
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* 메시지 카드 영역 (OwnerPage의 z-10 구조 유지) */}
+        <div className="flex flex-col min-h-screen relative z-10">
+          <div className="flex-1 w-full max-w-[1200px] mx-auto pt-[102px] sm:pt-[147px] lg:pt-[171px] pb-10 relative">
             {loading && <p className="text-center mt-10">로딩 중...</p>}
             {error && !loading && (
               <div className="text-center text-red-500 mt-10">데이터를 불러오지 못했습니다.</div>
             )}
 
             {/* 카드 목록 */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[24px] mt-[28px] relative z-10 px-[24px]">
-              {/* 메시지 추가 버튼 */}
-              <div onClick={handleAddCardClick} className="cursor-pointer">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[24px] mt-[28px] relative z-10 px-[24px] ">
+              {/* 메시지 추가 버튼 (RecipientPage 기능 유지) */}
+              <div onClick={handleAddCardClick} className="cursor-pointer w-full min-w-0">
                 <AddCard />
               </div>
-              {messagesToRender.map((message, idx) => (
-                <UserCard
-                  key={message.id ?? `default-${idx}`}
-                  message={message}
-                  onClick={() => handleCardClick(message)}
-                />
-              ))}
+              
+              {/* 실제 메시지 렌더링 */}
+              {hasMessages ? (
+                messages.map((message) => (
+                    <UserCard
+                      key={message.id} className="min-w-0"
+                      message={message}
+                      onClick={() => handleCardClick(message)}
+                    />
+                ))
+              ) : (
+                !loading && (
+                  <div className="mt-20 text-center text-gray-500 col-span-full">
+                    아직 메시지가 없습니다.
+                  </div>
+                )
+              )}
+
+              {/* 로딩 실패 또는 메시지 없을 때 더미 카드 표시 (AddCard와 겹치지 않게 5개만) */}
+              {isUsingFallbackMessages && !loading && (
+                 messagesToRender.slice(0, 5).map((message, idx) => (
+                    <UserCard
+                        key={`default-${idx}`}
+                        message={message}
+                        onClick={() => handleCardClick(message)}
+                    />
+                 ))
+              )}
             </div>
           </div>
         </div>

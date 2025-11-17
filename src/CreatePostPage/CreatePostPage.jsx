@@ -1,10 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Check from '../img/Check.svg'; 
 import HeaderNobutton from "../Component/Header/HeaderNobutton";
 import Input from "../Component/Text_Field/Input";
 import ToggleButton from "../Component/Button/Toggle-button";
 import Option from "../Component/Option/Option";
-import PrimaryMain from "../Component/Button/Primary-main";
+import Primarypc from "../Component/Button/Primary-pc";
 import apiClient from "../api/client";
 import { createRecipient } from "../api/recipients"; // 수신인 생성 API 함수 사용
 
@@ -25,7 +26,7 @@ function ImageSelectGrid({ presets, selectedIndex, onSelect }) {
           key={`${url}-${index}`}
           type="button"
           onClick={() => onSelect(index)}
-          className={`relative w-[154px] md:w-[168px] h-[154px] md:h-[168px] rounded-xl overflow-hidden border transition-all duration-200 flex items-center justify-center ${
+          className={`shadow-[inset_0_0_0_1px_rgba(0,0,0,0.08)] aspect-square w-full md:h-[168px] rounded-xl cursor-pointer flex items-center justify-center transition-all duration-200 ${
             selectedIndex === index ? "border-purple-500 shadow-lg" : "border-gray-200"
           }`}
           style={{
@@ -35,9 +36,9 @@ function ImageSelectGrid({ presets, selectedIndex, onSelect }) {
           }}
         >
           {selectedIndex === index && (
-            <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-              <div className="w-[44px] h-[44px] rounded-full bg-gray-600 flex items-center justify-center">
-                <span className="text-white text-18-bold">✓</span>
+            <div className="w-[44px] h-[44px] rounded-full bg-gray-500 flex items-center justify-center">
+              <div className="w-[24px] h-[24px] rounded-full flex items-center justify-center">
+                <img src={Check} alt="체크 표시" />
               </div>
             </div>
           )}
@@ -59,6 +60,22 @@ function CreatePostPage() {
   const [loadingImages, setLoadingImages] = useState(false);
   const [imageError, setImageError] = useState(null);
   const ROOT_API_URL = "https://rolling-api.vercel.app";
+
+  const [showHeader, setShowHeader] = useState(true);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 360) {
+        setShowHeader(false);
+      } else {
+        setShowHeader(true);
+      }
+    };
+
+    handleResize(); // 초기 실행
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   // 이미지 프리셋 로딩 (기존 로직 유지)
   useEffect(() => {
@@ -102,7 +119,7 @@ function CreatePostPage() {
     };
 
     fetchImages();
-  }, [selectedIndex]);
+  }, []);
 
   const handleNameChange = (value) => {
     setRecipientName(value);
@@ -147,6 +164,7 @@ function CreatePostPage() {
 
       if (newId) {
         // navigate(`/post/${newId}`, { replace: true });
+        localStorage.setItem(`owner_${newId}`, "true");
         navigate(`/post/${newId}/owner`, { replace: true });
       } else {
         alert("ID를 확인할 수 없어 리스트로 이동합니다.");
@@ -182,64 +200,74 @@ function CreatePostPage() {
     } finally {
       setSubmitting(false);
     }
+    
   };
+
+  console.log(handleSubmit)
 
   return (
     <>
-      <HeaderNobutton />
+      {/* 헤더: 360px 이하에서 숨김 (유지) */}
+      {showHeader && <HeaderNobutton />}
+
+      {/* ✅ 컨테이너: 예전 클래스 구조로 복원 */}
       <div
         className="
-             w-full max-w-[768px] min-h-[646px] mx-auto mt-[57px]
-             p-[45px_24px] mb-[120px] text-left
-             flex flex-col items-center
-             "
+          w-full max-w-[768px] mt-[57px]
+          mx-auto px-[24px] text-left
+          flex flex-col items-start
+          max-ta:mt-[49px] max-xt:mt-[49px] max-xs:mt-[50px]
+        "
       >
-        <div className="w-[320px] md:w-[720px] flex flex-col items-start gap-[40px]">
-          <div className="w-full">
-            <div className="mb-[12px] text-gray-900 text-24-bold">To.</div>
-            <Input
-              value={recipientName}
-              onChange={handleNameChange}
-              placeholder="받는 사람 이름을 입력하세요"
-            />
-          </div>
-
-          <section className="w-full flex flex-col gap-[24px]">
-            <div>
-              <p className="text-gray-900 text-24-bold">배경화면을 선택해 주세요.</p>
-              <p className="text-gray-500 text-16-regular">
-                컬러를 선택하거나, 이미지를 선택할 수 있습니다.
-              </p>
-            </div>
-
-            <div>
-              <ToggleButton active={mode} onChange={handleToggleChange} />
-            </div>
-
-            {mode === "color" ? (
-              <Option activeColor={selectedColor} onChange={handleColorChange} />
-            ) : (
-              <div className="w-full flex flex-col gap-4">
-                {loadingImages ? (
-                  <div>이미지 로딩중...</div>
-                ) : imageError ? (
-                  <div className="text-red-500 text-14-regular">
-                    이미지 불러오기 실패: {String(imageError.message || "네트워크 오류")}
-                  </div>
-                ) : (
-                  <ImageSelectGrid
-                    presets={imagePresets}
-                    selectedIndex={selectedIndex}
-                    onSelect={handleSelectImage}
-                  />
-                )}
-              </div>
-            )}
-          </section>
+        {/* ✅ 상단 입력 영역: 예전 구조 */}
+        <div className="w-full max-w-[768px]">
+          <div className="mb-[12px] text-gray-900 text-24-bold flex flex-col items-start">To.</div>
+          {/* 예전엔 onChangeValue였지만, 현재 컴포넌트 시그니처 유지 */}
+          <Input value={recipientName} onChange={handleNameChange} placeholder="받는 사람 이름을 입력하세요" />
         </div>
 
-        <div className="py-[24px] px-[20px] md:p-[24px] flex justify-center items-center">
-          <PrimaryMain
+        {/* ✅ 설명 타이틀 영역 */}
+        <div className="mb-[24px] mt-[50px] max-ta:mt-[54px] max-xt:mt-[52px] max-xs:mt-[48px]">
+          <div className="text-gray-900 text-24-bold mb-1">
+            배경화면을 선택해 주세요.
+          </div>
+          <div className="text-gray-500 text-16-regular">
+            컬러를 선택하거나, 이미지를 선택할 수 있습니다.
+          </div>
+        </div>
+
+        {/* ✅ 토글 버튼 영역 */}
+        <div className="w-[244px] mb-[45px] max-ta:mb-[40px] max-xt:mb-[40px] max-xs:mb-[28px]">
+          <ToggleButton active={mode} onChange={handleToggleChange} />
+        </div>
+
+        {/* ✅ 옵션/이미지 선택 영역 */}
+        <div className="w-full">
+          {mode === 'color' ? (
+            <Option activeColor={selectedColor} onChange={handleColorChange} />
+          ) : (
+            <div className="w-full flex flex-col gap-4">
+              {loadingImages ? (
+                <div>이미지 로딩중...</div>
+              ) : imageError ? (
+                <div className="text-red-500 text-14-regular">
+                  이미지 불러오기 실패: {String(imageError.message || '네트워크 오류')}
+                </div>
+              ) : (
+                <ImageSelectGrid
+                  presets={imagePresets}
+                  selectedIndex={selectedIndex}
+                  onSelect={handleSelectImage}
+                  className={'grid grid-cols-2 gap-[4%] md:grid-cols-4 md:gap-4 w-full justify-center items-center'}
+                />
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* ✅ 생성 버튼 영역: 예전 마진 로직 복원 */}
+        <div className={`w-full h-full max-xt:w-full py-[24px] mt-[69px] flex justify-center items-center max-ta:mt-[340px] max-xt:mt-[316px] max-xs:mt-[83px]`}>
+          <Primarypc
             text={submitting ? "생성 중..." : "생성하기"}
             to={null}
             disabled={!isValid || submitting}
@@ -251,4 +279,4 @@ function CreatePostPage() {
   );
 }
 
-export default CreatePostPage;
+export default CreatePostPage

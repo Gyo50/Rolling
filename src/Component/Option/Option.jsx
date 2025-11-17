@@ -26,11 +26,11 @@ function Option({ activeColor = 'beige', onChange }) {
 
   return (
     // 전체 컨테이너
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full justify-center items-center">
+    <div className="grid grid-cols-2 gap-[4%] md:grid-cols-4 md:gap-4 w-full justify-center items-center">
       {COLOR_ITEMS.map((item) => (
         <div 
           key={item.id}
-          className={`w-[154px] md:w-[168px] h-[154px] md:h-[168px] ${item.className} rounded-xl cursor-pointer flex items-center justify-center transition-all duration-200`}
+          className={`shadow-[inset_0_0_0_1px_rgba(0,0,0,0.08)] aspect-square w-full md:h-[168px] ${item.className} rounded-xl cursor-pointer flex items-center justify-center transition-all duration-200`}
           onClick={() => handleBoxClick(item.value)}
         >
           {/* 박스 클릭 시 체크 아이콘이 뜨도록 */}

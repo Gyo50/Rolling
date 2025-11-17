@@ -100,7 +100,9 @@ function MessageHeader({
 
   const handleEmojiSelect = (emojiData) => {
     const selectedEmoji =
-      typeof emojiData === "string" ? emojiData : emojiData?.emoji || emojiData?.native;
+      typeof emojiData === "string"
+        ? emojiData
+        : emojiData?.emoji || emojiData?.native;
 
     if (!selectedEmoji) return;
 
@@ -131,7 +133,9 @@ function MessageHeader({
       const existing = prev.find((r) => r.emoji === selectedEmoji);
       if (existing) {
         // prop으로 받은 reactions를 업데이트하는 대신, 임시로 로컬 count를 증가시켜 애니메이션 트리거
-        return prev.map((r) => (r.emoji === selectedEmoji ? { ...r, count: r.count + 1 } : r));
+        return prev.map((r) =>
+          r.emoji === selectedEmoji ? { ...r, count: r.count + 1 } : r
+        );
       } else {
         // 새 이모지인 경우 임시로 추가
         return [...prev, { emoji: selectedEmoji, count: 1, id: Date.now() }];
@@ -168,12 +172,65 @@ function MessageHeader({
   };
 
   // ==========================
-  // 공유 기능 (Toast 사용)
+  // 공유 데이터
+  // ==========================
+  const sharePayload = useMemo(() => {
+    const pageUrl =
+      typeof window !== "undefined" ? window.location.href : "https://rolling.com";
+    const recipientTitle = recipient?.name
+      ? `To. ${recipient.name}`
+      : "To. 이름 없는 대상";
+    const writers = messageCount ?? 0;
+    const description =
+      writers > 0
+        ? `${writers}명이 작성해준 롤링페이퍼`
+        : "롤링페이퍼를 만들어 보세요!";
+    const shareImage =
+      recipient?.backgroundImageURL ||
+      recipient?.backgroundImage ||
+      "https://rolling-api.vercel.app/share-default.png";
+
+    return {
+      objectType: "feed",
+      content: {
+        title: recipientTitle,
+        description,
+        imageUrl: shareImage,
+        link: {
+          mobileWebUrl: pageUrl,
+          webUrl: pageUrl
+        }
+      },
+      buttons: [
+        {
+          title: "롤링페이퍼 보러가기",
+          link: {
+            mobileWebUrl: pageUrl,
+            webUrl: pageUrl
+          }
+        }
+      ]
+    };
+  }, [recipient, messageCount]);
+
+  // ==========================
+  // 공유 기능
   // ==========================
   const handleKakaoShare = () => {
-    // 실제 카카오톡 공유 API 호출 로직은 생략하고 Toast만 표시
-    showToast("카카오톡 공유 URL이 복사되었습니다!", "success");
-    setShowShareMenu(false);
+    try {
+      if (!window.Kakao) {
+        showToast("카카오 SDK가 로드되지 않았어요.", "error");
+        return;
+      }
+      if (!window.Kakao.isInitialized()) {
+        window.Kakao.init("2afbc104b2bff5e31cce3e9f33759d23");
+      }
+      window.Kakao.Share.sendDefault(sharePayload);
+      setShowShareMenu(false);
+    } catch (error) {
+      console.error("카카오톡 공유 실패:", error);
+      showToast("카카오톡 공유에 실패했습니다.", "error");
+    }
   };
 
   // URL 복사 기능 (HEAD 버전의 복사 로직 + Toast)
@@ -211,16 +268,26 @@ function MessageHeader({
   const shareButtonClasses = `
     flex items-center justify-center 
     border border-gray-300 w-[56px] h-[36px] rounded-[6px] transition
-    ${showShareMenu ? "border-gray-500 bg-gray-50" : "bg-white hover:bg-gray-100"}
+    ${
+      showShareMenu
+        ? "border-gray-500 bg-gray-50"
+        : "bg-white hover:bg-gray-100"
+    }
   `;
 
   const plusButtonClasses = `
     flex items-center justify-center gap-1 border border-gray-300 text-gray-900 rounded-[6px]
     w-[88px] h-[36px] transition
-    ${showEmojiPicker ? "bg-gray-100 border-gray-500" : "bg-white hover:bg-gray-50"}
+    ${
+      showEmojiPicker
+        ? "bg-gray-100 border-gray-500"
+        : "bg-white hover:bg-gray-50"
+    }
   `;
 
-  const displayName = recipient?.name ? `To. ${recipient.name}` : "To. 이름 없는 대상";
+  const displayName = recipient?.name
+    ? `To. ${recipient.name}`
+    : "To. 이름 없는 대상";
   const totalWriters = messageCount ?? 0;
 
   // 아바타 렌더링을 위한 데이터 준비
@@ -240,13 +307,13 @@ function MessageHeader({
       )}
 
       {/* 토스트 (URL 복사 알림) */}
-      {/*<Toast
+      <Toast
         isOpen={toastOpen}
         onClose={() => setToastOpen(false)}
         message={toastMessage}
         type={toastType}
         duration={2000}
-      />*/}
+      />
 
       <div className="flex items-center justify-center w-full bg-white">
         <div className="flex items-center justify-between w-full max-w-[1200px] px-6 h-[68px]">
@@ -280,13 +347,14 @@ function MessageHeader({
                     ))}
                   </div>
                   {hiddenCount > 0 && (
-                    <div className="ml-2 w-[28px] h-[28px] bg-white border border-[#E3E3E3] rounded-full flex items-center justify-center text-xs text-[#484848]">
+                    <div className="ml-[-12px] w-[28px] h-[28px] bg-white border border-[#E3E3E3] rounded-full flex items-center justify-center text-xs text-[#484848]">
                       +{hiddenCount}
                     </div>
                   )}
                 </div>
                 <span className="text-18-regular text-gray-900 whitespace-nowrap">
-                  <span className="text-18-bold">{totalWriters}</span>명이 작성했어요!
+                  <span className="text-18-bold">{totalWriters}</span>명이
+                  작성했어요!
                 </span>
               </div>
             )}
@@ -302,7 +370,9 @@ function MessageHeader({
                         key={reaction.id || reaction.emoji}
                         onClick={() => handleEmojiSelect(reaction.emoji)}
                         className={`flex items-center justify-center gap-1 bg-black bg-opacity-[54%] text-white rounded-full px-[12px] py-[6px] transition-transform duration-150 ${
-                          animatedId === (reaction.id || reaction.emoji) ? "emoji-animate" : ""
+                          animatedId === (reaction.id || reaction.emoji)
+                            ? "emoji-animate"
+                            : ""
                         }`}
                       >
                         {reaction.emoji}&nbsp;{reaction.count}
@@ -332,7 +402,9 @@ function MessageHeader({
                           key={reaction.id || reaction.emoji}
                           onClick={() => handleEmojiSelect(reaction.emoji)}
                           className={`flex flex-row items-center justify-center bg-black bg-opacity-[54%] text-white rounded-full px-[12px] py-[6px] text-16-regular w-full transition-transform duration-150 ${
-                            animatedId === (reaction.id || reaction.emoji) ? "emoji-animate" : ""
+                            animatedId === (reaction.id || reaction.emoji)
+                              ? "emoji-animate"
+                              : ""
                           }`}
                         >
                           {reaction.emoji}&nbsp;{reaction.count}
@@ -344,11 +416,16 @@ function MessageHeader({
               )}
             </div>
 
+            
+
             {/* 이모지 추가 & 공유 버튼 */}
             <div className="flex items-center gap-[13px] min-w-[171px] justify-end">
               {/* 이모지 추가 버튼 */}
               <div className="relative z-20">
-                <button onClick={toggleEmojiPicker} className={plusButtonClasses}>
+                <button
+                  onClick={toggleEmojiPicker}
+                  className={plusButtonClasses}
+                >
                   <PlusIcon />
                   추가
                 </button>

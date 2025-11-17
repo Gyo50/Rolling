@@ -1,51 +1,35 @@
-/* 이모지 배지 컨테이너 - 모바일 기본값 (≤360px) */
-/* 카드: w-[208px] h-[232px], pt-6(24px) pr-5(20px) pb-5(20px) pl-5(20px) */
+.card {
+  width: var(--card-width, clamp(208px, 65vw, 275px));
+  max-width: 100%;
+}
+
+/* 이모지 배지 컨테이너 - 카드 너비 변화에 유연하게 대응 */
 .reactionContainer {
   display: flex;
   align-items: flex-end;
-  gap: 4px;
+  gap: clamp(4px, 2vw, 8px);
   position: absolute;
   z-index: 1;
-  left: 20px; /* pr-5 = 20px */
-  right: 20px; /* pl-5 = 20px */
-  /* 원래 위치 유지: mt-4(16px) + pt-[14px](14px) = 30px from top */
-  margin-top: 16px;
-  padding-top: 14px;
+  left: clamp(16px, 9%, 24px);
+  right: clamp(16px, 9%, 24px);
+  margin-top: clamp(14px, 4vw, 14px);
+  padding-top: clamp(12px, 3.5vw, 20px);
+  justify-content: center;
+  transform: translateX(-1%);
 }
 
-/* 이모지 배지 - 모바일 기본값 (≤360px) */
+/* 이모지 배지 - 카드 크기(208~275px)와 비율을 맞춘 유연한 크기 */
 .reactionBadge {
   display: flex;
   justify-content: center;
   align-items: center;
   border-radius: 32px;
-  gap: 4px;
-  min-width: 50px;
-  height: 28px;
-  padding: 4px 8px;
-  font-size: 12px;
-  line-height: 18px;
+  gap: clamp(4px, 1.5vw, 6px);
+  width: clamp(44px, 18vw, 66px);
+  height: clamp(26px, 4vw, 36px);
+  padding: clamp(3px, 1vw, 6px) clamp(6px, 1.5vw, 12px);
+  font-size: clamp(11px, 1.4vw, 15px);
+  line-height: clamp(16px, 2vw, 22px);
   font-weight: 400;
-}
-
-/* 태블릿 이상 (361px 이상) - 카드 크기 변경과 동기화 */
-/* 카드: w-[275px] h-[260px], pt-[30px] pr-6(24px) pb-5(20px) pl-6(24px) */
-@media (min-width: 361px) {
-  .reactionContainer {
-    gap: 8px;
-    left: 24px; /* pr-6 = 24px */
-    right: 24px; /* pl-6 = 24px */
-    /* 원래 위치 유지: mt-[17px](17px) + pt-[18px](18px) = 35px from top */
-    margin-top: 17px;
-    padding-top: 18px;
-  }
-
-  .reactionBadge {
-    min-width: 66px;
-    height: 36px;
-    padding: 8px 12px;
-    font-size: 16px;
-    line-height: 24px;
-  }
 }
 

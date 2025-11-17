@@ -20,6 +20,14 @@ import {
 
 const STATIC_MESSAGES = [];
 
+const COLOR_MAP = {
+  beige: "#FFE2AD",
+  purple: "#ECD9FF",
+  green: "#D0F5C3",
+  blue: "#B1E4FF",
+};
+
+
 // URL 경로에서 recipientId 추출
 const getRecipientIdFromPath = (explicitId, paramsId) => {
   if (explicitId != null) return explicitId;
@@ -70,6 +78,24 @@ function OwnerPage({ recipientId }) {
     [recipientId, paramsId]
   );
 
+
+
+  // 이 부분은 /owner 이동을 막음  
+  /*useEffect(() => {
+    if (currentRecipientId) {
+      // 로컬 스토리지에서 소유자 키를 확인
+      const isOwner = localStorage.getItem(`owner_${currentRecipientId}`) === 'true';
+
+      if (!isOwner) {
+        console.warn(`ID ${currentRecipientId}: 소유자 권한 없음. 방문자 페이지로 리다이렉트.`);
+        // 소유자가 아니면 '/post/:id' 경로로 리다이렉트 (RecipientPage로 이동)
+        navigate(`/post/${currentRecipientId}`, { replace: true });
+      }
+    }
+  }, [currentRecipientId, navigate]);*/
+
+
+
   // ====== 데이터 로드 (페이지 정보 / 메시지 / 반응) ======
   const loadData = useCallback(async () => {
     if (!currentRecipientId) {
@@ -97,11 +123,14 @@ function OwnerPage({ recipientId }) {
             recipientData.backgroundImageURL || recipientData.backgroundImage
           );
         } else if (recipientData.backgroundColor) {
-          setBackgroundValue(recipientData.backgroundColor);
+          const lowerCaseColor = recipientData.backgroundColor.toLowerCase();
+          const mappedColor = COLOR_MAP[lowerCaseColor] || recipientData.backgroundColor;
+          setBackgroundValue(mappedColor);
         } else {
           setBackgroundValue("");
         }
       }
+      console.log(recipientData.backgroundColor)
 
       // 메시지
       const rawMessages =
@@ -151,6 +180,7 @@ function OwnerPage({ recipientId }) {
         emoji: alias,
         type: "increase",
       });
+      // 반응 업데이트 후 다시 불러오기
       const updated = await fetchRecipientReactions(currentRecipientId);
       setReactions(normalizeReactionsResponse(updated));
     } catch (err) {
@@ -242,56 +272,70 @@ function OwnerPage({ recipientId }) {
     <>
       {/* 전체 배경 처리 */}
       <div
-        className="owner-page-scrollbar-hide"
+        className="owner-page-scrollbar-hide relative"
         style={{
           ...(backgroundValue?.startsWith("http") ||
-          backgroundValue?.startsWith("/")
+            backgroundValue?.startsWith("/")
             ? {
-                backgroundImage: `url(${backgroundValue})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center top",
-                backgroundRepeat: "no-repeat",
-              }
+              backgroundImage: `url(${backgroundValue})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center top",
+              backgroundRepeat: "no-repeat",
+            }
             : {
-                backgroundColor: backgroundValue,
-              }),
+              backgroundColor: backgroundValue,
+            }),
         }}
       >
+        <div
+          className="absolute inset-0 z-0"
+          style={{
+            backgroundColor: '#0000',
+            opacity: 0.2
+          }}
+        />
+
         {/* 헤더 */}
+        
         <div className="fixed top-0 left-0 w-full shadow-sm z-30 bg-white">
-          <div className="max-w-[1200px] mx-auto">
+          <div className="mx-auto">
             {screenMode === "mobile" ? (
-              <MobileHeader hideCreateButton />
+              <MobileHeader
+                hideCreateButton
+                reactions={reactions}
+                onAddReaction={handleAddReaction}
+                recipient={recipient}
+              />
             ) : (
               <HeaderNobutton />
             )}
 
-            {screenMode !== "mobile" && (
-              <div className="mx-auto">
-                <MessageHeader
-                  recipient={recipient}
-                  messageCount={totalMessageCount}
-                  topAvatars={topAvatars}
-                  reactions={reactions}
-                  onAddReaction={handleAddReaction}
-                  hideAvatars={screenMode === "tablet"}
-                />
-              </div>
-            )}
+            {screenMode !== "mobile" &&
+            <div className="mx-auto">
+              <MessageHeader
+                recipient={recipient}
+                messageCount={totalMessageCount}
+                topAvatars={topAvatars}
+                reactions={reactions}
+                onAddReaction={handleAddReaction}
+                hideAvatars={screenMode === "tablet"}
+              />
+            </div>
+            }
           </div>
         </div>
-
-        <div className="flex flex-col min-h-screen">
+       
+        <div className="flex flex-col min-h-screen relative z-10">
           {/* 카드 영역 */}
-          <div className="flex-1 w-full pt-[102px] sm:pt-[147px] lg:pt-[171px] pb-10 relative">
-            <div className="mx-auto max-w-[1200px] relative">
+          <div className={`flex-1 w-full pt-[102px] sm:pt-[147px] lg:pt-[171px] pb-10 relative`}>
+            <div className="mx-auto max-w-[1200px] relative mb-[70px]">
               {/* PC 삭제 버튼 */}
               {screenMode === "pc" && (
                 <div className="w-full max-w-[1200px] mx-auto flex justify-end px-[24px] mb-[16px]">
                   <div onClick={handleOpenPageDeleteModal} disabled={deleting}>
                     <DeleteButton text={deleting ? "삭제 중..." : "삭제하기"} />
                   </div>
-                </div>
+                </div> 
               )}
 
               {loading && <p className="text-center mt-10">로딩 중...</p>}
@@ -322,6 +366,7 @@ function OwnerPage({ recipientId }) {
                       profileImageURL={item.profileImageURL}
                       relationship={item.relationship}
                       content={item.content}
+                      isHtml
                       date={item.date}
                       onClick={() => handleCardClick(item)}
                       onDeleteClick={(e) => {
@@ -341,12 +386,13 @@ function OwnerPage({ recipientId }) {
                 )
               )}
             </div>
+
           </div>
 
           {/* 모바일 삭제 버튼 */}
           {screenMode !== "pc" && (
             <div className="fixed bottom-0 left-0 right-0 z-40 px-[24px] pt-0">
-              <div className="mx-auto max-w-[1200px] px-0">
+              <div className="mx-auto max-w-[1200px] py-[24px] px-0">
                 <div
                   onClick={handleOpenPageDeleteModal}
                   disabled={deleting}

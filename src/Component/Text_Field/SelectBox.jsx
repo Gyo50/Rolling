@@ -66,7 +66,7 @@ export default function SelectBox({ options = [], selected, setSelected, placeho
         onClick={handleToggle}
         style={{ backgroundImage: isOpen ? `url(${dropDownOpenIcon})` : `url(${dropDownIcon})` }}
         type="button"
-        className={`block w-[320px] max-w-full px-[16px] h-[50px] border text-gray-500 rounded-[8px] bg-no-repeat bg-[position:right_16px_center] text-left ${
+        className={`block w-[100%] px-[16px] h-[50px] border text-gray-500 rounded-[8px] bg-no-repeat bg-[position:right_16px_center] text-left ${
           error ? "border-error" : "border-gray-500"
         }`}
         aria-expanded={isOpen}

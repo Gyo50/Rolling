@@ -94,6 +94,9 @@ module.exports = {
         "max-xt": { max: "768px" },
         "max-xs": { max: "360px" },
       },
+      content: {
+        'chevron': '>', // 'chevron'이라는 이름으로 '>' 콘텐츠 정의
+      },
     },
   },
   plugins: [scrollbarHide],

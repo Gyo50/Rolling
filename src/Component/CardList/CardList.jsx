@@ -1,11 +1,12 @@
-import React, { useMemo } from 'react'
-import profile01 from './assets/profile01.svg'
-import profile02 from './assets/profile02.svg'
-import profile03 from './assets/profile03.svg'
-import pattern01 from './assets/pattern01.svg'
-import pattern02 from './assets/pattern02.svg'
-import pattern03 from './assets/pattern03.svg'
-import pattern04 from './assets/pattern04.svg'
+import React, { useEffect, useMemo, useState } from 'react'
+import { fetchRecipientMessages } from '../../api/messages'
+// import profile01 from './assets/profile01.svg'
+// import profile02 from './assets/profile02.svg'
+// import profile03 from './assets/profile03.svg'
+import pattern01 from '../CardList/assets/pattern01.svg'
+import pattern02 from '../CardList/assets/pattern02.svg'
+import pattern03 from '../CardList/assets/pattern03.svg'
+import pattern04 from '../CardList/assets/pattern04.svg'
 import { REACTION_ALIAS_TO_EMOJI } from '../../api/recipients'
 import styles from './CardList.module.css'
 
@@ -20,6 +21,8 @@ const DEFAULT_BACKGROUND =
   "https://mblogthumb-phinf.pstatic.net/MjAyMTAzMDVfOTYg/MDAxNjE0OTU1MTgyMzYz.ozwJXDtUw0V_Gniz6i7qgDOkNs09MX-rJdCcaw6AAeAg.DZivXhGnQDUUx7kgkRXNOEI0DEltAo6p9Jk9SDBbxRcg.JPEG.sosohan_n/IMG_3725.JPG?type=w800"
 
 function CardList({ recipient, isRecent }) {
+
+  const [profileImageUrls, setProfileImageUrls] = useState([])
   // API에서 내려온 수신인 정보(name, messageCount 등)를 카드 UI에 반영
   const name = recipient?.name || 'To.Sowon'
   // messageCount는 API가 문자열을 줄 수도 있어 Number 변환 후 기본값 처리
@@ -69,6 +72,7 @@ function CardList({ recipient, isRecent }) {
           count: typeof item.count === 'number' ? item.count : Number(item.count) || 0
         }
       })
+
       .filter((item) => item.count > 0)
       .sort((a, b) => b.count - a.count)
       .slice(0, 3)
@@ -78,26 +82,61 @@ function CardList({ recipient, isRecent }) {
     ? 'bg-black/60 text-white'
     : 'bg-white/80 text-gray-900 border border-white/60 shadow-sm'
 
+    useEffect(() => {
+    const recipientId = recipient?.id ?? recipient?.recipientId
+    if (!recipientId) return
+
+    async function loadMessages() {
+      try {
+        const data = await fetchRecipientMessages(recipientId, {
+          limit: 3,
+          offset: 0,
+        })
+
+        // 메시지 배열에서 프로필 이미지 URL 뽑기
+        const urls = (data.results || [])
+          .map((item) => {
+            // DB에 저장된 profileImageURL이 있으면 그거 쓰고,
+            // 없으면 sender 첫 글자로 placeholder 만들어줌
+            return (
+              item.profileImageURL ||
+              `https://placehold.co/40x40?text=${(item.sender || 'U').slice(0, 1)}`
+            )
+          })
+          .filter(Boolean)
+
+        setProfileImageUrls(urls)
+      } catch (error) {
+        console.error('프로필 이미지 불러오기 실패:', error)
+      }
+    }
+
+    loadMessages()
+  }, [recipient])
+
+
+
   // 프로필 사진 표시 로직: 최대 3개까지 표시, 나머지는 +숫자로 표시
-  const visibleProfileCount = Math.min(messageCount, 3) // 최대 3개까지 표시
-  const remainingCount = Math.max(messageCount - 3, 0) // 나머지 수 (최소 0)
-  const profileImages = [profile01, profile02, profile03] // 프로필 이미지 배열
+  const visibleProfileCount = Math.min(profileImageUrls.length, 3) // 최대 3개까지 표시
+  const remainingCount = Math.max(messageCount - visibleProfileCount, 0) // 나머지 수 (최소 0)
+  // const profileImages = [profile01, profile02, profile03] // 프로필 이미지 배열
 
 //가을님 작업 복붙했어요
   return (
       <div
         data-cardlist
-        className="
+        className={`
+          ${styles.card}
           relative overflow-hidden flex-shrink-0
-        w-[208px] h-[232px] rounded-[16px] box-border
-        pt-6 pr-5 pb-5 pl-5
-        min-[361px]:w-[275px] min-[361px]:h-[260px]
-        min-[361px]:pt-[30px] min-[361px]:pr-6 min-[361px]:pb-5 min-[361px]:pl-6
+          h-[232px] rounded-[16px] box-border
+          pt-6 pr-5 pb-5 pl-5
+          min-[361px]:h-[260px]
+          min-[361px]:pt-[30px] min-[361px]:pr-6 min-[361px]:pb-5 min-[361px]:pl-6
           border border-grayscale-500/20
           shadow-[0_2px_13px_rgba(0,0,0,0.08)]
           bg-cover bg-center
-        transition-colors duration-200
-        "
+          transition-colors duration-200
+        `}
         style={{
         ...backgroundStyle,
         color: isImageCard ? '#FFFFFF' : '#2B2B2B'
@@ -115,7 +154,7 @@ function CardList({ recipient, isRecent }) {
         />
       )}
       {isRecent && (
-        <div className="absolute top-2 right-2 z-20 flex items-center justify-center">
+        <div className="absolute top-2 right-3 z-20 flex items-center justify-center">
           <span className="text-14-bold min-[361px]:text-16-bold font-bold text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
             NEW!
           </span>
@@ -141,16 +180,20 @@ function CardList({ recipient, isRecent }) {
             ) : (
               <>
                 {/* 프로필 사진 최대 3개까지 표시 */}
-                {Array.from({ length: visibleProfileCount }).map((_, index) => (
+                {Array.from({ length: visibleProfileCount }).map((_, index) => {
+                    const imageUrl = profileImageUrls[index]
+
+                return (
                   <img
                     key={index}
                     className={`w-7 h-7 rounded-full border border-white object-cover relative ${
                       index === 0 ? 'ml-0' : 'ml-[-10px]'
                     }`}
-                    src={profileImages[index]}
-                    alt={`profile${index + 1}`}
+                    src={imageUrl}
+                    alt={`profile-${index + 1}`}
                   />
-                ))}
+                  )
+                })}
                 {/* 나머지 수 표시 (4번째 동그라미) - 나머지가 있을 때만 표시 */}
                 {remainingCount > 0 && (
                   <span className="inline-flex items-center justify-center ml-[-10px] relative z-[1]">
