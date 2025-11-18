@@ -113,25 +113,20 @@ function Send() {
 
   // 폴로라 라이센스 삭제 함수
 useEffect(() => {
-    const removeWatermark = () => {
-      const watermarkDiv = document.querySelector('div[style*="z-index:9999"]');
-      
-      if (watermarkDiv) {
-        watermarkDiv.remove();
-        return true;
-      }
-      return false; 
-    };
-    if (removeWatermark()) {
-      return; 
+    const editor = document.querySelector(".fr-element");
+    const watermarkToolbar = document.querySelector(".fr-second-toolbar");
+
+    // 에디터 영역 CSS 강제 적용
+    if (editor) {
+      editor.style.setProperty("transform", "translateY(-59px)", "important");
+      editor.style.setProperty("z-index", "9999999", "important");
+      editor.style.setProperty("background", "#fff", "important");
     }
-    const observer = new MutationObserver((mutationsList, obs) => {
-      if (removeWatermark()) {
-        obs.disconnect();
-      }
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
-    return () => observer.disconnect();
+
+    // 툴바 로고 제거
+    if (watermarkToolbar) {
+      watermarkToolbar.remove();
+    }
   }, []);
   return (
     <>
