@@ -227,15 +227,15 @@ function RecentPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <header className="flex justify-center shadow-[0_1px_0_rgba(237,237,237,1)] bg-white px-[5%]">
+      <header className="flex justify-center shadow-[0_1px_0_rgba(237,237,237,1)] bg-white">
         <div className={`w-full max-w-[1199px] ${styles.headerShell}`}>
           <Header hideCreateButton={viewportWidth <= 500} />
         </div>
       </header>
 
-      <main className={`flex flex-col items-center w-full gap-[50px] pt-[50px] pb-[172px] px-[5%] overflow-visible max-ta:px-0 max-ta:overflow-hidden max-ta:pb-6 max-xt:w-full max-xt:items-start max-xs:pt-[50px] max-xs:gap-[74px] max-xs:items-start ${styles.mainLayout}`}>
+      <main className={`flex flex-col items-center w-full gap-[50px] pt-[50px] pb-[172px] px-6 overflow-visible max-ta:px-0 max-ta:overflow-hidden max-ta:pb-6 max-xt:w-full max-xt:items-start max-xs:pt-[50px] max-xs:gap-[74px] max-xs:items-start ${styles.mainLayout}`}>
         {/* 검색창 */}
-        <div className={`w-full max-w-[1160px] ${styles.searchContainer} max-ta:max-w-full max-xt:px-6 max-xs:px-5`}>
+        <div className={`w-full max-w-[1160px] ${styles.searchContainer} max-ta:max-w-full max-xs:px-5`}>
           <div className="relative">
             <input
               type="text"
@@ -271,7 +271,7 @@ function RecentPage() {
           </div>
         </div>
 
-        <section className={`w-full max-w-[1160px] flex flex-col gap-4 max-ta:max-w-full max-xt:px-6 max-xs:px-5 ${styles.section}`}>
+        <section className={`w-full max-w-[1160px] flex flex-col gap-4 max-ta:max-w-full max-xs:px-5 ${styles.section}`}>
           <div className={`flex items-center justify-between ${styles.sectionHeader} ${styles.sectionHeaderRow}`}>
             <h2 
               onClick={() => navigate('/list')}

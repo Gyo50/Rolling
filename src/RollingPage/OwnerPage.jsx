@@ -406,7 +406,7 @@ function OwnerPage({ recipientId }) {
 
         {/* 카드 리스트 */}
         <div className="flex flex-col min-h-screen relative z-10">
-          <div className="flex-1 w-full max-w-[1200px] mx-auto pt-[102px] sm:pt-[147px] lg:pt-[171px] pb-10">
+          <div className="flex-1 w-full max-w-[1200px] mx-auto pt-[124px] sm:pt-[147px] lg:pt-[171px] pb-10">
             {/* PC 삭제 버튼 */}
             {screenMode === "pc" && (
               <div className="flex justify-end px-[24px] mb-[16px]">
@@ -452,7 +452,7 @@ function OwnerPage({ recipientId }) {
             <div className="fixed bottom-0 left-0 right-0 z-40 px-[24px] pb-[24px]">
               <div
                 onClick={handleOpenPageDeleteModal}
-                className="w-full bg-purple-600 hover:bg-purple-700 text-white py-4 rounded-[12px] text-18-bold shadow-lg"
+                className="w-full bg-purple-600 hover:bg-purple-700 text-white py-4 rounded-[12px] text-18-bold shadow-lg text-center"
               >
                 {deleting ? "삭제 중..." : "삭제하기"}
               </div>

@@ -131,7 +131,7 @@ useEffect(() => {
   return (
     <>
       <Header />
-      <div className="max-w-[768px] mx-auto mt-[47px] px-6 max-xs:px-5">
+      <div className="max-w-[768px] mx-auto mt-[47px] px-6 max-xs:px-5 pb-16">
         <div className="w-full">
           <div>
             <p className="text-24-bold mb-3">From.</p>
