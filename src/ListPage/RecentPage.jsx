@@ -35,14 +35,45 @@ function NavigableCard({ card, isRecent }) {
 }
 
 const ITEMS_PER_PAGE = 16
+const MOBILE_ITEMS_PER_PAGE = 5 // 360px 이하에서 페이지당 아이템 수
 
 function RecentPage() {
   const navigate = useNavigate()
+  const [viewportWidth, setViewportWidth] = useState(() => {
+    if (typeof window === "undefined") return 1920;
+    const measured = window.innerWidth || document.documentElement.clientWidth || 1920;
+    return Math.round(measured);
+  });
   const [recentCards, setRecentCards] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
+  
+  // 뷰포트 너비에 따른 페이지당 아이템 수
+  const itemsPerPage = useMemo(() => {
+    return viewportWidth <= 500 ? MOBILE_ITEMS_PER_PAGE : ITEMS_PER_PAGE
+  }, [viewportWidth])
+  
+  // 뷰포트 너비 감지
+  useEffect(() => {
+    if (typeof window === "undefined") return undefined;
+
+    let timeoutId = null;
+    const handleResize = () => {
+      if (timeoutId) return;
+      timeoutId = setTimeout(() => {
+        const measured = window.innerWidth || document.documentElement.clientWidth || 1920;
+        setViewportWidth(Math.round(measured));
+        timeoutId = null;
+      }, 150);
+    };
+    window.addEventListener("resize", handleResize, { passive: true });
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   useEffect(() => {
     let active = true
@@ -151,9 +182,9 @@ function RecentPage() {
 
   // 페이지네이션 계산
   const totalPages = useMemo(() => {
-    const pages = Math.ceil(filteredRecentCards.length / ITEMS_PER_PAGE)
+    const pages = Math.ceil(filteredRecentCards.length / itemsPerPage)
     return pages > 0 ? pages : 1
-  }, [filteredRecentCards.length])
+  }, [filteredRecentCards.length, itemsPerPage])
 
   // 검색어가 변경되면 첫 페이지로 리셋
   useEffect(() => {
@@ -167,8 +198,13 @@ function RecentPage() {
     }
   }, [totalPages, currentPage])
   
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
-  const endIndex = startIndex + ITEMS_PER_PAGE
+  // itemsPerPage가 변경되면 현재 페이지를 조정 (페이지당 아이템 수가 바뀌면 첫 페이지로 리셋)
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [itemsPerPage])
+  
+  const startIndex = (currentPage - 1) * itemsPerPage
+  const endIndex = startIndex + itemsPerPage
   const currentPageCards = filteredRecentCards.slice(startIndex, endIndex)
 
   // 페이지 번호 배열 생성 (최대 5개씩 표시)
@@ -193,7 +229,7 @@ function RecentPage() {
     <div className="min-h-screen bg-white">
       <header className="flex justify-center shadow-[0_1px_0_rgba(237,237,237,1)] bg-white px-[5%]">
         <div className={`w-full max-w-[1199px] ${styles.headerShell}`}>
-          <Header />
+          <Header hideCreateButton={viewportWidth <= 500} />
         </div>
       </header>
 

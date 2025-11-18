@@ -204,33 +204,38 @@
   }
 
   .recentGrid {
-    grid-template-columns: 1fr;
-    width: 100%;
-    --card-width: min(208px, calc(100vw - 40px));
+    --card-width: 275px;
+    grid-template-columns: 1fr !important;
+    width: 100% !important;
+    justify-content: center;
+    max-width: 100%;
   }
   .headerShell {
     display: flex;
     justify-content: center;
     width: 100%;
     height: 64px;
+    position: relative;
   }
 
   .headerShell :global(> div) {
     width: 100%;
     border-bottom: none !important;
+    position: relative;
   }
 
   .headerShell :global(> div > header) {
-    position: absolute !important;
+    position: static !important;
     width: 360px !important;
     height: 64px !important;
-    left: 50%;
-    top: 0;
-    transform: translateX(-50%);
+    left: auto;
+    top: auto !important;
+    transform: none;
     padding: 0 !important;
     background: #ffffff;
     border-bottom: 1px solid #ededed;
     box-sizing: border-box;
+    margin: 0 auto;
   }
 
   .headerShell :global(> div > header > div) {
@@ -391,6 +396,15 @@
     --card-width: 220px;
     grid-template-columns: repeat(2, var(--card-width));
     width: min(100%, calc(2 * var(--card-width) + 20px));
+  }
+}
+
+@media (max-width: 500px) {
+  .recentGrid {
+    --card-width: 275px !important;
+    grid-template-columns: 1fr !important;
+    width: 100% !important;
+    justify-content: center;
   }
 
   .bottomShell {
