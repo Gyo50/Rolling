@@ -1,5 +1,29 @@
-import React from "react";
+import React, { useMemo } from "react";
 import Trashbutton from "../../Component/Button/Trash-button";
+
+// 관계에 따른 색상 매핑 정의
+const RELATIONSHIP_COLORS = {
+  친구: {
+    bgColor: "bg-blue-100",
+    textColor: "text-blue-500",
+  },
+  지인: {
+    bgColor: "bg-beige-100",
+    textColor: "text-beige-500",
+  },
+  동료: {
+    bgColor: "bg-purple-100",
+    textColor: "text-purple-600",
+  },
+  가족: {
+    bgColor: "bg-green-100",
+    textColor: "text-green-500",
+  },
+  default: {
+    bgColor: "bg-gray-100",
+    textColor: "text-gray-600",
+  },
+};
 
 function Card({
   senderName,
@@ -9,13 +33,33 @@ function Card({
   date,
   onClick,
   onDeleteClick,
+  isHtml = false,
 }) {
+  const relationshipStyle =
+    RELATIONSHIP_COLORS[relationship] || RELATIONSHIP_COLORS.default;
+
+  const decodedHtml = useMemo(() => {
+    const raw = content || "";
+    // 엔티티가 없다면 그대로 반환
+    if (!/[&][lg]t;|&amp;|&#/.test(raw)) return raw;
+    const doc = new DOMParser().parseFromString(raw, "text/html");
+    return doc.documentElement.textContent || raw;
+  }, [content]);
+
+  // 2) 허용 태그만 남기고 나머지 태그 제거(스크립트/스타일 차단)
+  const contentHtml = useMemo(() => {
+    return decodedHtml.replace(
+      /<(?!\/?(b|strong|i|em|u|p|br|span)\b)[^>]*>/gi,
+      ""
+    );
+  }, [decodedHtml]);
+
   return (
     <div
       onClick={onClick}
       className="
         w-full
-        h-[230px] sm:h-[280px]
+        min-h-[280px]
         rounded-[16px]
         p-[20px_18px_18px_18px] sm:p-[28px_24px_24px_24px]
         shadow-[0_2px_13px_rgba(0,0,0,0.08)]
@@ -50,15 +94,16 @@ function Card({
             </div>
 
             <div
-              className="
+              className={`
                 w-[41px] h-[20px]
                 px-[4px]
                 text-[12px] sm:text-[14px]
-                text-purple-600
                 rounded-[4px] sm:rounded-[5px]
-                bg-purple-100
                 flex items-center justify-center
-              "
+              
+                ${relationshipStyle.textColor}
+                ${relationshipStyle.bgColor}
+              `}
             >
               {relationship}
             </div>
@@ -71,24 +116,30 @@ function Card({
         </div>
       </div>
 
-      <div
-        className="
-          text-15-regular sm:text-18-regular
-          leading-[1.4] sm:leading-[1.5]
-          mt-3 sm:mt-4
-          text-grayscale-600
-          flex-1
-          overflow-hidden
-          line-clamp-3 sm:line-clamp-4
-        "
-      >
-        {content}
-      </div>
+      {isHtml ? (
+        <div
+          className="
+            text-15-regular sm:text-18-regular
+            leading-[1.4] sm:leading-[1.5]
+            mt-3 sm:mt-4
+            text-gray-600
+            overflow-hidden
+            break-words
+            line-clamp-6 sm:line-clamp-4
+            flex-none
+            "
+          dangerouslySetInnerHTML={{ __html: contentHtml }}
+        />
+      ) : (
+        <div className="text-15-regular sm:text-18-regular leading-[1.4] sm:leading-[1.5] mt-3 sm:mt-4 text-gray-600 flex-1 overflow-hidden line-clamp-3 sm:line-clamp-4">
+          {content}
+        </div>
+      )}
 
       <div
         className="
           text-[11px] sm:text-[12px]
-          text-grayscale-400
+          text-gray-400
           absolute bottom-4 sm:bottom-6 left-4 sm:left-6
         "
       >

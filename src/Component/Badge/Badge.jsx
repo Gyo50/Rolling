@@ -1,9 +1,9 @@
-import React from 'react'
-import BadgeCoworker from './BadgeCoworker'
-import BadgeOther from './BadgeOther'
-import BadgeFamily from './BadgeFamily'
-import BadgeFriend from './BadgeFriend'
-import BadgeEmoji from './BadgeEmoji'
+import React from "react";
+import BadgeCoworker from "./BadgeCoworker";
+import BadgeOther from "./BadgeOther";
+import BadgeFamily from "./BadgeFamily";
+import BadgeFriend from "./BadgeFriend";
+import BadgeEmoji from "./BadgeEmoji";
 
 /**
  * Badge 컴포넌트
@@ -12,30 +12,25 @@ import BadgeEmoji from './BadgeEmoji'
  * @param {string} emoji - 이모지 배지일 때 표시할 이모지
  * @param {number} count - 이모지 배지일 때 표시할 숫자
  */
-function Badge({ type = 'coworker', text, emoji, count }) {
-  if (type === 'emoji') {
-    return <BadgeEmoji emoji={emoji} count={count} />
+
+function Badge({ type = "동료", text, emoji, count }) {
+  if (type === "emoji") {
+    return <BadgeEmoji emoji={emoji} count={count} />;
   }
 
   const relationshipComponents = {
-    coworker: BadgeCoworker,
-    other: BadgeOther,
-    family: BadgeFamily,
-    friend: BadgeFriend,
-  }
+    동료: BadgeCoworker,
+    지인: BadgeOther,
+    가족: BadgeFamily,
+    친구: BadgeFriend,
+  };
 
-  const Component = relationshipComponents[type] || BadgeCoworker
+  const Component = relationshipComponents[type] || BadgeCoworker;
 
-  return <Component text={text} />
+  return <Component text={text} type={type} />;
 }
 
-export {
-  BadgeCoworker,
-  BadgeOther,
-  BadgeFamily,
-  BadgeFriend,
-  BadgeEmoji,
-}
+export { BadgeCoworker, BadgeOther, BadgeFamily, BadgeFriend, BadgeEmoji };
 
 /* 사용법
       <div className="p-5 flex gap-4 items-center">
@@ -46,4 +41,4 @@ export {
         <Badge type="other" text="지인" />
       </div>
 */
-export default Badge
+export default Badge;

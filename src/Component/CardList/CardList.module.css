@@ -1,0 +1,115 @@
+.card {
+  width: var(--card-width, clamp(208px, 65vw, 275px));
+  max-width: 100%;
+}
+
+/* 제목 텍스트 - ellipsis 처리로 긴 텍스트 처리 */
+.titleText {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+  /* 이모지 영역과 겹치지 않도록 여유 공간 확보 */
+  padding-right: 4px;
+}
+
+/* 이모지 배지 컨테이너 - 카드 너비 변화에 유연하게 대응 */
+.reactionContainer {
+  display: flex;
+  align-items: center; /* 가운데 정렬로 변경 */
+  /* 작은 카드(175px)와 중간(190px)에서 3개가 잘리지 않도록 gap 축소 */
+  /* 작은 카드: (175 - 2*gap) / 3, 중간: (190 - 2*gap) / 3 */
+  gap: clamp(3px, 1.2vw, 8px);
+  position: absolute;
+  z-index: 1;
+  /* 카드 패딩과 일치하거나 더 안쪽으로 - 카드 패딩이 pr-5/pl-5(20px), pr-6/pl-6(24px) */
+  left: clamp(20px, 10%, 28px);
+  right: clamp(20px, 10%, 28px);
+  /* 선 아래 영역의 가운데에 위치하도록 top 값 조정 */
+  top: auto;
+  /* 각 페이지에서 CSS 변수로 다른 bottom 값 설정 가능 */
+  bottom: var(--reaction-bottom, clamp(12px, 3vw, 30px));
+  /* 이모지가 1개, 2개일 때 양옆 간격 조정 - flex-start로 왼쪽 정렬 */
+  justify-content: flex-start;
+  /* 이모지가 적을 때도 자연스러운 간격 유지 */
+  flex-wrap: nowrap;
+  /* 카드 밖으로 나가지 않도록 최대 너비 제한 */
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden; /* 배지가 컨테이너 밖으로 나가지 않도록 */
+}
+
+/* 이모지 배지 - 카드 크기(208~275px)와 비율을 맞춘 유연한 크기 */
+.reactionBadge {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: clamp(24px, 8vw, 32px); /* 반응형 border-radius */
+  gap: clamp(3px, 1.2vw, 4px);
+  /* 카드 안쪽 넓이에 맞춰 배지 크기 조정 - 이모지와 숫자 크기에 맞춰 함께 줄어들도록 */
+  /* 작은 카드(175px): gap 8px면 (175 - 16) / 3 = 53px */
+  /* 중간(190px): gap 8px면 (190 - 16) / 3 = 58px */
+  /* 큰 넓이(215px): gap 8px면 (215 - 16) / 3 = 66.33px */
+  /* 카드 최소 크기(208px)에 도달하면 더 이상 줄어들지 않도록 최소값 고정 */
+  /* 배지가 너무 작아져서 왼쪽으로 치우치지 않도록 적절한 최소값 유지 */
+  min-width: clamp(42px, 9.5vw, 55px);
+  /* max-width도 이모지/숫자 크기에 맞춰 조정 - 카드 최소 크기 기준으로 최소값 설정 */
+  max-width: clamp(48px, 13.5vw, 66px);
+  width: auto; /* 내용에 맞게 조정되되 max-width 제한 */
+  /* 카드 높이에 비례하여 높이 조정 */
+  height: clamp(26px, 4.5vw, 36px);
+  /* 패딩도 반응형으로 조정 - 카드 최소 크기에 도달하면 더 이상 줄어들지 않도록 최소값 고정 */
+  padding: clamp(3px, 0.8vw, 5px) clamp(4px, 1vw, 8px);
+  /* 폰트 크기도 카드 최소 크기에 도달하면 더 이상 줄어들지 않도록 최소값 고정 */
+  font-size: clamp(11px, 1.4vw, 15px);
+  line-height: clamp(16px, 2vw, 22px);
+  font-weight: 400;
+  /* 내부 텍스트 오버플로우 처리 */
+  overflow: hidden;
+  flex-shrink: 1; /* 공간이 부족할 때 축소 가능 */
+  box-sizing: border-box;
+  /* 배지가 컨테이너 밖으로 나가지 않도록 - flex-shrink 활성화 */
+  flex: 0 1 auto;
+  /* 배경 크기가 부드럽게 전환되도록 */
+  transition: min-width 0.2s ease, max-width 0.2s ease, height 0.2s ease, padding 0.2s ease;
+}
+
+/* 이모지 배지 내부 이모지 - 반응형 크기 */
+/* 카드 최소 크기(208px)에 도달하면 더 이상 줄어들지 않도록 최소값 고정 */
+.reactionEmoji {
+  font-size: clamp(12px, 1.6vw, 18px);
+  line-height: 1;
+  display: inline-block;
+  flex-shrink: 0; /* 이모지는 축소되지 않도록 */
+  /* 카드가 최소 크기에 도달했을 때 이모지도 최소 크기 유지 */
+  min-width: 12px;
+  min-height: 12px;
+}
+
+/* 이모지 배지 내부 숫자 텍스트 - ellipsis 처리 */
+.reactionCount {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+  flex-shrink: 1;
+  min-width: 0; /* flex 아이템이 축소될 수 있도록 */
+}
+
+/* 카드 최소 크기(208px)에 도달했을 때 이모지와 배경 크기 고정 */
+/* tailwind.config.js의 max-xs (360px)에 맞춰 조정 */
+/* 카드가 208px 이하일 때는 더 이상 줄어들지 않도록 최소값 고정 */
+@media (max-width: 360px) {
+  .reactionBadge {
+    min-width: 40px !important;
+    max-width: 53px !important;
+    padding: 3px 4px !important;
+    font-size: 11px !important;
+    height: 26px !important;
+  }
+  
+  .reactionEmoji {
+    font-size: 12px !important;
+  }
+}
+

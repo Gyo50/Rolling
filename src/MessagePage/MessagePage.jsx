@@ -1,112 +1,221 @@
 // src/pages/Send.jsx
-import React, { useState } from "react";
-import Header from "../Header/HeaderNobutton";
-import Input from "../Text_Field/Input";
-import User from "../Option/User";
-import Select from "../Text_Field/SelectBox";
-import Froala from "../Text_Field/Froala";
-import PrimaryPc from "../Button/Primary-pc";
+import React, { useState, useEffect, useMemo } from "react";
+import Header from "../Component/Header/HeaderNobutton";
+import Input from "../Component/Text_Field/Input";
+import User from "../Component/Option/User";
+import Select from "../Component/Text_Field/SelectBox";
+import Froala from "../Component/Text_Field/Froala";
+import Primarypc from "../Component/Button/Primary-pc";
+import apiClient from "../api/client";
+import { useNavigate, useParams } from "react-router-dom";
 
 function Send() {
-  // 관계 선택 상태
-  const [selectedRelation, setSelectedRelation] = useState(null);
-  // 폰트 선택 상태
-  const [selectedFont, setSelectedFont] = useState(null);
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [submitting, setSubmitting] = useState(false);
 
-  // 예시 옵션들 (파일로 분리해서 import 해도 됨)
+  const [profileImages, setProfileImages] = useState([]);
+  const [selectedProfileImage, setSelectedProfileImage] = useState(null);
+
+  const [sender, setSender] = useState(""); // 이름
+  const [messageContent, setMessageContent] = useState(""); // 내용(HTML)
   const relationOptions = [
-    { label: "친구", value: "friend" },
-    { label: "연인", value: "partner" },
-    { label: "가족", value: "family" },
-    { label: "직장동료", value: "colleague" },
+    { label: "친구", value: "친구" },
+    { label: "지인", value: "지인" },
+    { label: "동료", value: "동료" },
+    { label: "가족", value: "가족" },
   ];
+  const [selectedRelation, setSelectedRelation] = useState(relationOptions[1]);
 
   const fontOptions = [
-    { label: "나눔스퀘어", value: "nanum_square" },
-    { label: "맑은고딕", value: "malgun_gothic" },
-    { label: "Roboto", value: "roboto" },
+    { label: "Noto Sans", value: "Noto Sans" },
+    { label: "Pretendard", value: "Pretendard" },
+    { label: "나눔명조", value: "나눔명조" },
+    { label: "나눔손글씨 손편지체", value: "나눔손글씨 손편지체" },
   ];
+  const [selectedFont, setSelectedFont] = useState(fontOptions[0]); // 폰트
 
-  // 생성(전송) 핸들러 — 실제 API 전송 로직 넣기
-  const handleCreate = async () => {
-    if (!selectedRelation || !selectedFont) {
-      alert("관계와 폰트를 모두 선택해주세요.");
-      return;
-    }
+  const ROOT_API_URL = "https://rolling-api.vercel.app";
 
-    const payload = {
-      relation: selectedRelation.value,
-      font: selectedFont.value,
-      // 추가적으로 Input, Froala 등에서 값을 모아 함께 보냄
-    };
+  // HTML → 순수 텍스트 추출(공백/nbsp 제거)
+  const contentText = useMemo(() => {
+    const withoutTags = messageContent
+      .replace(/<br\s*\/?>/gi, "\n")
+      .replace(/<\/?p[^>]*>/gi, "\n")
+      .replace(/<\/?[^>]+>/g, ""); // 모든 태그 제거
+    return withoutTags.replace(/&nbsp;|\s|\u00A0/g, "").trim();
+  }, [messageContent]);
 
+  // 세 가지 모두 채워져야 활성화
+  const canSubmit = useMemo(() => {
+    const hasName = sender.trim().length > 0;
+    const hasFont = !!selectedFont?.value?.trim();
+    const hasContent = contentText.length > 0; // 실제 텍스트가 있나
+    return hasName && hasFont && hasContent;
+  }, [sender, selectedFont, contentText]);
+
+  const fetchProfileImages = async () => {
     try {
-      const res = await fetch("/api/create-resource", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (!res.ok) throw new Error("서버 에러");
-      await res.json();
-      alert("생성 완료!");
-    } catch (err) {
-      console.error(err);
-      alert("생성 실패: " + err.message);
+      const response = await apiClient.get(`${ROOT_API_URL}/profile-images/`);
+      const data = response.data;
+      let images = [];
+
+      if (Array.isArray(data)) images = data;
+      else if (data && Array.isArray(data.imageUrls)) images = data.imageUrls;
+
+      setProfileImages(images);
+      if (images.length > 0) setSelectedProfileImage(images[0]);
+    } catch (error) {
+      console.error("프로필 이미지 로딩 실패:", error);
+      setProfileImages([]);
     }
   };
 
+  useEffect(() => {
+    fetchProfileImages();
+  }, []);
+
+  const handleCreate = async () => {
+    // 가드: 혹시나 disabled 무시하고 들어오는 경우 대비
+    if (!canSubmit || submitting) return;
+
+    // 내용 정리 (비어있을 때 '내용 없음' 처리는 그대로)
+    let finalContent = messageContent.trim();
+    const pTagRegex = /^<p[^>]*>(.*?)<\/p>$/is;
+    const match = finalContent.match(pTagRegex);
+    if (match && match[1] !== undefined) finalContent = match[1].trim();
+
+    const contentToSend = contentText.length > 0 ? finalContent : "내용 없음";
+
+    const payload = {
+      team: "20-4",
+      sender: sender.trim(),
+      content: contentToSend,
+      profileImageURL: selectedProfileImage,
+      relationship: selectedRelation?.value, // 관계는 기존대로 유지
+      font: selectedFont?.value,
+    };
+
+    try {
+      setSubmitting(true);
+      await apiClient.post(`/recipients/${id}/messages/`, payload);
+      alert("생성 완료!");
+      navigate(`/post/${id}`);
+    } catch (err) {
+      console.error("생성 실패:", err.response ? err.response.data : err.message);
+      alert("생성 실패: " + (err.response ? err.response.data.message : err.message));
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const imagesToDisplay = profileImages.slice(0, 10);
+
+  // 폴로라 라이센스 삭제 함수
+useEffect(() => {
+    const removeWatermark = () => {
+      const watermarkDiv = document.querySelector('div[style*="z-index:9999"]');
+      
+      if (watermarkDiv) {
+        watermarkDiv.remove();
+        return true;
+      }
+      return false; 
+    };
+    if (removeWatermark()) {
+      return; 
+    }
+    const observer = new MutationObserver((mutationsList, obs) => {
+      if (removeWatermark()) {
+        obs.disconnect();
+      }
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+    return () => observer.disconnect();
+  }, []);
   return (
     <>
       <Header />
-      <div className="w-[768px] mx-auto mt-[47px]">
-        <div className="w-[720px] mx-auto">
+      <div className="max-w-[768px] mx-auto mt-[47px] px-6 max-xs:px-5">
+        <div className="w-full">
           <div>
             <p className="text-24-bold mb-3">From.</p>
-            <Input />
+            <Input
+              value={sender}
+              onChange={(value) => setSender(value)}
+              placeholder="보내는 사람 이름을 입력하세요"
+            />
           </div>
 
-          <div className="mt-[50px]">
+          <div className="mt-[50px] w-full">
             <p className="text-24-bold mb-3">프로필 이미지</p>
-            <div className="flex gap-8 h-[94px]">
-              <User />
+
+            <div className="flex justify-start items-center gap-8">
+              <User className="w-[80px] h-[80px]" selectedImageUrl={selectedProfileImage} />
+
               <div>
-                <p className="text-16-regular text-gray-500">프로필 이미지를 선택해주세요!</p>
-                {/* api */}
+                <p className="text-16-regular text-gray-500 mb-4">프로필 이미지를 선택해주세요!</p>
+
+                <div className="flex flex-wrap gap-1 max-xs:gap-0.5">
+                  {imagesToDisplay.map((imageUrl, index) => (
+                    <img
+                      alt={`프로필 이미지 ${index + 1}`}
+                      key={index}
+                      src={imageUrl}
+                      className={`w-[56px] h-[56px] rounded-full object-cover cursor-pointer max-xs:w-[40px] max-xs:h-[40px] ${
+                        selectedProfileImage === imageUrl
+                          ? "border-[3px] border-purple-600 p-1"
+                          : "opacity-70 hover:opacity-100"
+                      }`}
+                      onClick={() => setSelectedProfileImage(imageUrl)}
+                    />
+                  ))}
+                </div>
               </div>
             </div>
           </div>
 
-          <div className="mt-[50px]">
-            <p className="text-24-bold">상대와의 관계</p>
+          <div className="mt-[50px] w-full">
+            <p className="text-24-bold mb-3">상대와의 관계</p>
             <Select
               options={relationOptions}
               selected={selectedRelation}
               setSelected={setSelectedRelation}
-              placeholder="옵션을 선택하세요"
+              placeholder="지인"
+              errorText="관계를 선택하세요"
             />
           </div>
 
-          <div className="mt-[50px]">
-            <p className="text-24-bold">내용을 입력해주세요.</p>
-            <Froala />
+          <div className="mt-[50px] w-full">
+            <p className="text-24-bold mb-3">내용을 입력해주세요.</p>
+            <Froala
+              font={selectedFont ? selectedFont.value : "Noto Sans"}
+              model={messageContent}
+              onModelChange={(newModel) => setMessageContent(newModel)}
+            />
           </div>
 
-          <div className="mt-[50px] mb-[62px]">
-            <p className="text-24-bold">폰트 선택</p>
+          <div className="mt-[50px] mb-[62px] w-full">
+            <p className="text-24-bold mb-3">폰트 선택</p>
             <Select
               options={fontOptions}
               selected={selectedFont}
               setSelected={setSelectedFont}
-              placeholder="폰트를 선택하세요"
+              placeholder="Noto Sans"
+              errorText="폰트를 선택하세요 "
             />
           </div>
-        <div>
-          <div onClick={handleCreate} style={{ display: "inline-block", cursor: "pointer" }}>
-            <PrimaryPc text="생성하기" />
+
+          {/* 버튼: disabled를 Primarypc에 직접 전달 (포인터 제거/회색 처리 컴포넌트에서 수행) */}
+          <div className="w-full mb-[60px] inline-block mx-auto text-center">
+            <Primarypc
+              text={submitting ? "생성 중..." : "생성하기"}
+              to=""
+              onClick={handleCreate}
+              disabled={!canSubmit || submitting}
+            />
           </div>
         </div>
-        </div>
-
       </div>
     </>
   );

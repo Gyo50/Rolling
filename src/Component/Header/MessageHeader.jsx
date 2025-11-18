@@ -172,12 +172,65 @@ function MessageHeader({
   };
 
   // ==========================
-  // 공유 기능 (Toast 사용)
+  // 공유 데이터
+  // ==========================
+  const sharePayload = useMemo(() => {
+    const pageUrl =
+      typeof window !== "undefined" ? window.location.href : "https://rolling.com";
+    const recipientTitle = recipient?.name
+      ? `To. ${recipient.name}`
+      : "To. 이름 없는 대상";
+    const writers = messageCount ?? 0;
+    const description =
+      writers > 0
+        ? `${writers}명이 작성해준 롤링페이퍼`
+        : "롤링페이퍼를 만들어 보세요!";
+    const shareImage =
+      recipient?.backgroundImageURL ||
+      recipient?.backgroundImage ||
+      "https://rolling-api.vercel.app/share-default.png";
+
+    return {
+      objectType: "feed",
+      content: {
+        title: recipientTitle,
+        description,
+        imageUrl: shareImage,
+        link: {
+          mobileWebUrl: pageUrl,
+          webUrl: pageUrl
+        }
+      },
+      buttons: [
+        {
+          title: "롤링페이퍼 보러가기",
+          link: {
+            mobileWebUrl: pageUrl,
+            webUrl: pageUrl
+          }
+        }
+      ]
+    };
+  }, [recipient, messageCount]);
+
+  // ==========================
+  // 공유 기능
   // ==========================
   const handleKakaoShare = () => {
-    // 실제 카카오톡 공유 API 호출 로직은 생략하고 Toast만 표시
-    showToast("카카오톡 공유 URL이 복사되었습니다!", "success");
-    setShowShareMenu(false);
+    try {
+      if (!window.Kakao) {
+        showToast("카카오 SDK가 로드되지 않았어요.", "error");
+        return;
+      }
+      if (!window.Kakao.isInitialized()) {
+        window.Kakao.init("2afbc104b2bff5e31cce3e9f33759d23");
+      }
+      window.Kakao.Share.sendDefault(sharePayload);
+      setShowShareMenu(false);
+    } catch (error) {
+      console.error("카카오톡 공유 실패:", error);
+      showToast("카카오톡 공유에 실패했습니다.", "error");
+    }
   };
 
   // URL 복사 기능 (HEAD 버전의 복사 로직 + Toast)
@@ -294,7 +347,7 @@ function MessageHeader({
                     ))}
                   </div>
                   {hiddenCount > 0 && (
-                    <div className="ml-2 w-[28px] h-[28px] bg-white border border-[#E3E3E3] rounded-full flex items-center justify-center text-xs text-[#484848]">
+                    <div className="ml-[-12px] w-[28px] h-[28px] bg-white border border-[#E3E3E3] rounded-full flex items-center justify-center text-xs text-[#484848]">
                       +{hiddenCount}
                     </div>
                   )}
